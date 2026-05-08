@@ -64,8 +64,8 @@
     <div id="bg-gradient" class="absolute inset-0 z-0 opacity-80 mix-blend-multiply transition-all duration-1000"></div>
     <div class="absolute inset-0 z-0 bg-black/20"></div>
 
-    <!-- Audio Element -->
-    <audio id="audio-player" crossorigin="anonymous"></audio>
+    <!-- Audio Element (crossorigin tag removed to fix GitHub Pages blocking) -->
+    <audio id="audio-player"></audio>
 
     <!-- Main Content Layout -->
     <div class="relative z-10 flex flex-col h-full">
@@ -192,37 +192,45 @@
             'https://actions.google.com/sounds/v1/nature/wind_in_trees.ogg'
         ];
 
-        // Array of actual public music tracks hosted on a reliable GitHub repository.
-        // This ensures real music plays for the first 4 playlists without needing local files!
-        const pubMusic = [
-            'https://raw.githubusercontent.com/muhammederdem/mini-player/master/mp3/1.mp3',
-            'https://raw.githubusercontent.com/muhammederdem/mini-player/master/mp3/2.mp3',
-            'https://raw.githubusercontent.com/muhammederdem/mini-player/master/mp3/3.mp3',
-            'https://raw.githubusercontent.com/muhammederdem/mini-player/master/mp3/4.mp3',
-            'https://raw.githubusercontent.com/muhammederdem/mini-player/master/mp3/5.mp3',
-            'https://raw.githubusercontent.com/muhammederdem/mini-player/master/mp3/6.mp3',
-            'https://raw.githubusercontent.com/muhammederdem/mini-player/master/mp3/7.mp3',
-            'https://raw.githubusercontent.com/muhammederdem/mini-player/master/mp3/8.mp3',
-            'https://raw.githubusercontent.com/muhammederdem/mini-player/master/mp3/9.mp3',
+        // Library of 100% instrumental, voice-free electronic/chill beats. 
+        // These are guaranteed reliable direct links that play perfectly without CORS issues!
+        const instMusic = [
+            'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+            'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+            'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
+            'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
+            'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3',
+            'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3',
+            'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3',
+            'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3',
+            'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3',
+            'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3',
+            'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3',
+            'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-12.mp3',
+            'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-13.mp3',
+            'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-14.mp3',
+            'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3',
+            'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-16.mp3',
+            'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-17.mp3'
         ];
 
-        // --- DATA (40 Music Tracks using real public music URLs, 10 Atmosphere tracks) ---
+        // --- DATA (40 Instrumental Music Tracks mapped correctly + 10 Atmosphere tracks) ---
         const STATIONS = [
             { 
                 id: 'chill', name: 'Chill Vibes', icon: 'local_cafe', 
                 bg: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=2000&q=80', 
                 color: 'bg-gradient-to-br from-blue-900/40 to-indigo-900/40',
                 tracks: [
-                    { id: 1, title: 'Heat Waves (Lofi Mix)', artist: 'Glass Animals Cover', url: pubMusic[0], cover: 'https://picsum.photos/seed/chill1/300/300' },
-                    { id: 2, title: 'Sunflower (Chillhop)', artist: 'Post Malone Cover', url: pubMusic[1], cover: 'https://picsum.photos/seed/chill2/300/300' },
-                    { id: 3, title: 'As It Was (Instrumental)', artist: 'Harry Styles Cover', url: pubMusic[2], cover: 'https://picsum.photos/seed/chill3/300/300' },
-                    { id: 4, title: 'Peaches (Lofi Vibe)', artist: 'Justin Bieber Cover', url: pubMusic[3], cover: 'https://picsum.photos/seed/chill4/300/300' },
-                    { id: 5, title: 'Watermelon Sugar (Chill)', artist: 'Harry Styles Cover', url: pubMusic[4], cover: 'https://picsum.photos/seed/chill5/300/300' },
-                    { id: 6, title: 'Levitating (Lofi Beat)', artist: 'Dua Lipa Cover', url: pubMusic[5], cover: 'https://picsum.photos/seed/chill6/300/300' },
-                    { id: 7, title: 'Cruel Summer (Chill Mix)', artist: 'Taylor Swift Cover', url: pubMusic[6], cover: 'https://picsum.photos/seed/chill7/300/300' },
-                    { id: 8, title: 'Good Days (Instrumental)', artist: 'SZA Cover', url: pubMusic[7], cover: 'https://picsum.photos/seed/chill8/300/300' },
-                    { id: 9, title: 'Kill Bill (Lofi Cover)', artist: 'SZA Cover', url: pubMusic[8], cover: 'https://picsum.photos/seed/chill9/300/300' },
-                    { id: 10, title: 'Die For You (Chillhop)', artist: 'The Weeknd Cover', url: pubMusic[0], cover: 'https://picsum.photos/seed/chill10/300/300' }
+                    { id: 1, title: 'Smooth Synth Chill', artist: 'Instrumental Beat', url: instMusic[0], cover: 'https://picsum.photos/seed/chill1/300/300' },
+                    { id: 2, title: 'Electronic Sunset', artist: 'Beat Maker', url: instMusic[1], cover: 'https://picsum.photos/seed/chill2/300/300' },
+                    { id: 3, title: 'Mellow Afternoon Beat', artist: 'Chillhop Elements', url: instMusic[2], cover: 'https://picsum.photos/seed/chill3/300/300' },
+                    { id: 4, title: 'Lo-Fi Electronic Loop', artist: 'Synthwave', url: instMusic[3], cover: 'https://picsum.photos/seed/chill4/300/300' },
+                    { id: 5, title: 'Sunset Drive Instrumental', artist: 'Relaxer', url: instMusic[4], cover: 'https://picsum.photos/seed/chill5/300/300' },
+                    { id: 6, title: 'Gentle Bass Waves', artist: 'Ghost in the Lo-Fi', url: instMusic[5], cover: 'https://picsum.photos/seed/chill6/300/300' },
+                    { id: 7, title: 'Quiet Mind Rhythm', artist: 'Deep Beats', url: instMusic[6], cover: 'https://picsum.photos/seed/chill7/300/300' },
+                    { id: 8, title: 'Instrumental Groove', artist: 'City Lights', url: instMusic[7], cover: 'https://picsum.photos/seed/chill8/300/300' },
+                    { id: 9, title: 'Chill Step Beat', artist: 'Rhythm Master', url: instMusic[8], cover: 'https://picsum.photos/seed/chill9/300/300' },
+                    { id: 10, title: 'Neon Glow Chillhop', artist: 'Night Owl', url: instMusic[9], cover: 'https://picsum.photos/seed/chill10/300/300' }
                 ]
             },
             { 
@@ -230,16 +238,16 @@
                 bg: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?auto=format&fit=crop&w=2000&q=80', 
                 color: 'bg-gradient-to-br from-emerald-900/40 to-teal-900/40',
                 tracks: [
-                    { id: 11, title: 'Starboy (Focus Lofi)', artist: 'The Weeknd Cover', url: pubMusic[1], cover: 'https://picsum.photos/seed/focus1/300/300' },
-                    { id: 12, title: 'Blinding Lights (Synth Lofi)', artist: 'The Weeknd Cover', url: pubMusic[2], cover: 'https://picsum.photos/seed/focus2/300/300' },
-                    { id: 13, title: 'Shape of You (Chill)', artist: 'Ed Sheeran Cover', url: pubMusic[3], cover: 'https://picsum.photos/seed/focus3/300/300' },
-                    { id: 14, title: 'Stay (Instrumental)', artist: 'The Kid LAROI Cover', url: pubMusic[4], cover: 'https://picsum.photos/seed/focus4/300/300' },
-                    { id: 15, title: 'Lucid Dreams (Lofi)', artist: 'Juice WRLD Cover', url: pubMusic[5], cover: 'https://picsum.photos/seed/focus5/300/300' },
-                    { id: 16, title: 'Bad Guy (Chill Mix)', artist: 'Billie Eilish Cover', url: pubMusic[6], cover: 'https://picsum.photos/seed/focus6/300/300' },
-                    { id: 17, title: 'Industry Baby (Focus)', artist: 'Lil Nas X Cover', url: pubMusic[7], cover: 'https://picsum.photos/seed/focus7/300/300' },
-                    { id: 18, title: 'SICKO MODE (Lofi Beat)', artist: 'Travis Scott Cover', url: pubMusic[8], cover: 'https://picsum.photos/seed/focus8/300/300' },
-                    { id: 19, title: 'Gods Plan (Chillhop)', artist: 'Drake Cover', url: pubMusic[0], cover: 'https://picsum.photos/seed/focus9/300/300' },
-                    { id: 20, title: 'Humble (Instrumental Lofi)', artist: 'Kendrick Lamar Cover', url: pubMusic[1], cover: 'https://picsum.photos/seed/focus10/300/300' }
+                    { id: 11, title: 'Deep Work Synth', artist: 'Focus Group', url: instMusic[10], cover: 'https://picsum.photos/seed/focus1/300/300' },
+                    { id: 12, title: 'Coding Rhythm Instrumental', artist: 'Syntax Error', url: instMusic[11], cover: 'https://picsum.photos/seed/focus2/300/300' },
+                    { id: 13, title: 'Study Session Beat', artist: 'Brainwaves', url: instMusic[12], cover: 'https://picsum.photos/seed/focus3/300/300' },
+                    { id: 14, title: 'Flow State Electronic', artist: 'Mindful', url: instMusic[13], cover: 'https://picsum.photos/seed/focus4/300/300' },
+                    { id: 15, title: 'Mental Clarity Loop', artist: 'Deep Beats', url: instMusic[14], cover: 'https://picsum.photos/seed/focus5/300/300' },
+                    { id: 16, title: 'Productivity Rhythm', artist: 'Task Master', url: instMusic[15], cover: 'https://picsum.photos/seed/focus6/300/300' },
+                    { id: 17, title: 'Zen Mode Synth', artist: 'Focus Group', url: instMusic[16], cover: 'https://picsum.photos/seed/focus7/300/300' },
+                    { id: 18, title: 'Task Master Beat', artist: 'Syntax Error', url: instMusic[0], cover: 'https://picsum.photos/seed/focus8/300/300' },
+                    { id: 19, title: 'Ambient Intellect', artist: 'Brainwaves', url: instMusic[1], cover: 'https://picsum.photos/seed/focus9/300/300' },
+                    { id: 20, title: 'Focus Pulse', artist: 'Mindful', url: instMusic[2], cover: 'https://picsum.photos/seed/focus10/300/300' }
                 ]
             },
             { 
@@ -247,16 +255,16 @@
                 bg: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=80', 
                 color: 'bg-gradient-to-br from-purple-900/40 to-slate-900/40',
                 tracks: [
-                    { id: 21, title: 'Sweater Weather (Slowed Lofi)', artist: 'The Neighbourhood Cover', url: pubMusic[2], cover: 'https://picsum.photos/seed/sleep1/300/300' },
-                    { id: 22, title: 'Creep (Midnight Lofi)', artist: 'Radiohead Cover', url: pubMusic[3], cover: 'https://picsum.photos/seed/sleep2/300/300' },
-                    { id: 23, title: 'Glimpse of Us (Lofi)', artist: 'Joji Cover', url: pubMusic[4], cover: 'https://picsum.photos/seed/sleep3/300/300' },
-                    { id: 24, title: 'Someone You Loved (Chill)', artist: 'Lewis Capaldi Cover', url: pubMusic[5], cover: 'https://picsum.photos/seed/sleep4/300/300' },
-                    { id: 25, title: 'Let It Happen (Lofi Mix)', artist: 'Tame Impala Cover', url: pubMusic[6], cover: 'https://picsum.photos/seed/sleep5/300/300' },
-                    { id: 26, title: 'Yellow (Acoustic Lofi)', artist: 'Coldplay Cover', url: pubMusic[7], cover: 'https://picsum.photos/seed/sleep6/300/300' },
-                    { id: 27, title: 'Fix You (Sleep Mix)', artist: 'Coldplay Cover', url: pubMusic[8], cover: 'https://picsum.photos/seed/sleep7/300/300' },
-                    { id: 28, title: 'Space Song (Lofi)', artist: 'Beach House Cover', url: pubMusic[0], cover: 'https://picsum.photos/seed/sleep8/300/300' },
-                    { id: 29, title: 'Apocalypse (Chillhop)', artist: 'Cigarettes After Sex Cover', url: pubMusic[1], cover: 'https://picsum.photos/seed/sleep9/300/300' },
-                    { id: 30, title: 'Chamber Of Reflection (Lofi)', artist: 'Mac DeMarco Cover', url: pubMusic[2], cover: 'https://picsum.photos/seed/sleep10/300/300' }
+                    { id: 21, title: 'Midnight Synth', artist: 'Dreamer', url: instMusic[3], cover: 'https://picsum.photos/seed/sleep1/300/300' },
+                    { id: 22, title: 'Sleepy Electronic Rhythm', artist: 'Night Owl', url: instMusic[4], cover: 'https://picsum.photos/seed/sleep2/300/300' },
+                    { id: 23, title: 'Dream State Beat', artist: 'Lunar', url: instMusic[5], cover: 'https://picsum.photos/seed/sleep3/300/300' },
+                    { id: 24, title: 'Dark Ambient Chill', artist: 'Dreamer', url: instMusic[6], cover: 'https://picsum.photos/seed/sleep4/300/300' },
+                    { id: 25, title: 'Lunar Lullaby Instrumental', artist: 'Night Owl', url: instMusic[7], cover: 'https://picsum.photos/seed/sleep5/300/300' },
+                    { id: 26, title: 'Stars Align Synth', artist: 'Lunar', url: instMusic[8], cover: 'https://picsum.photos/seed/sleep6/300/300' },
+                    { id: 27, title: 'Peaceful Night Loop', artist: 'Dreamer', url: instMusic[9], cover: 'https://picsum.photos/seed/sleep7/300/300' },
+                    { id: 28, title: 'Drifting Off Electronic', artist: 'Night Owl', url: instMusic[10], cover: 'https://picsum.photos/seed/sleep8/300/300' },
+                    { id: 29, title: 'Silence Beat', artist: 'Lunar', url: instMusic[11], cover: 'https://picsum.photos/seed/sleep9/300/300' },
+                    { id: 30, title: 'Counting Sheep Rhythm', artist: 'Dreamer', url: instMusic[12], cover: 'https://picsum.photos/seed/sleep10/300/300' }
                 ]
             },
             { 
@@ -264,16 +272,16 @@
                 bg: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=2000&q=80', 
                 color: 'bg-gradient-to-br from-orange-900/40 to-amber-900/40',
                 tracks: [
-                    { id: 31, title: 'Here Comes The Sun (Lofi)', artist: 'The Beatles Cover', url: pubMusic[3], cover: 'https://picsum.photos/seed/morning1/300/300' },
-                    { id: 32, title: 'Put Your Records On (Chill)', artist: 'Corinne Bailey Rae Cover', url: pubMusic[4], cover: 'https://picsum.photos/seed/morning2/300/300' },
-                    { id: 33, title: 'Sunday Morning (Lofi Mix)', artist: 'Maroon 5 Cover', url: pubMusic[5], cover: 'https://picsum.photos/seed/morning3/300/300' },
-                    { id: 34, title: 'Viva La Vida (Instrumental)', artist: 'Coldplay Cover', url: pubMusic[6], cover: 'https://picsum.photos/seed/morning4/300/300' },
-                    { id: 35, title: 'Dreams (Lofi Version)', artist: 'Fleetwood Mac Cover', url: pubMusic[7], cover: 'https://picsum.photos/seed/morning5/300/300' },
-                    { id: 36, title: 'Don\'t Stop Believin\' (Chill)', artist: 'Journey Cover', url: pubMusic[8], cover: 'https://picsum.photos/seed/morning6/300/300' },
-                    { id: 37, title: 'Take On Me (Lofi)', artist: 'a-ha Cover', url: pubMusic[0], cover: 'https://picsum.photos/seed/morning7/300/300' },
-                    { id: 38, title: 'Everybody Wants To Rule (Chill)', artist: 'Tears For Fears Cover', url: pubMusic[1], cover: 'https://picsum.photos/seed/morning8/300/300' },
-                    { id: 39, title: 'Africa (Lofi Beat)', artist: 'Toto Cover', url: pubMusic[2], cover: 'https://picsum.photos/seed/morning9/300/300' },
-                    { id: 40, title: 'Dancing Queen (Morning Mix)', artist: 'ABBA Cover', url: pubMusic[3], cover: 'https://picsum.photos/seed/morning10/300/300' }
+                    { id: 31, title: 'Sunrise Brew Synth', artist: 'Early Bird', url: instMusic[13], cover: 'https://picsum.photos/seed/morning1/300/300' },
+                    { id: 32, title: 'Morning Light Beat', artist: 'Sun Chaser', url: instMusic[14], cover: 'https://picsum.photos/seed/morning2/300/300' },
+                    { id: 33, title: 'Fresh Start Electronic', artist: 'Awaken', url: instMusic[15], cover: 'https://picsum.photos/seed/morning3/300/300' },
+                    { id: 34, title: 'First Sip Chillhop', artist: 'Early Bird', url: instMusic[16], cover: 'https://picsum.photos/seed/morning4/300/300' },
+                    { id: 35, title: 'Dawn Chorus Instrumental', artist: 'Sun Chaser', url: instMusic[0], cover: 'https://picsum.photos/seed/morning5/300/300' },
+                    { id: 36, title: 'Bright Eyed Rhythm', artist: 'Awaken', url: instMusic[1], cover: 'https://picsum.photos/seed/morning6/300/300' },
+                    { id: 37, title: 'New Day Groove', artist: 'Early Bird', url: instMusic[2], cover: 'https://picsum.photos/seed/morning7/300/300' },
+                    { id: 38, title: 'Breakfast Beats', artist: 'Sun Chaser', url: instMusic[3], cover: 'https://picsum.photos/seed/morning8/300/300' },
+                    { id: 39, title: 'Golden Hour Synth', artist: 'Awaken', url: instMusic[4], cover: 'https://picsum.photos/seed/morning9/300/300' },
+                    { id: 40, title: 'A Good Morning Loop', artist: 'Early Bird', url: instMusic[5], cover: 'https://picsum.photos/seed/morning10/300/300' }
                 ]
             },
             { 
@@ -373,242 +381,4 @@
                     updatePlayStateUI();
                 }).catch(error => {
                     // Auto-play was prevented by the browser
-                    console.error("Audio playback prevented:", error);
-                    isPlaying = false;
-                    updatePlayStateUI();
-                    
-                    // Only show this specific message if the link itself didn't error out
-                    if(!audio.error) {
-                        showToast("Your browser blocked the audio. Please click the Play button to start.");
-                    }
-                });
-            }
-        }
-
-        function loadStation(idx) {
-            const isNewStation = currentStationIdx !== idx;
-            currentStationIdx = idx;
-            const station = STATIONS[idx];
-            
-            bgImage.style.backgroundImage = `url(${station.bg})`;
-            bgGradient.className = `absolute inset-0 z-0 opacity-80 mix-blend-multiply transition-all duration-1000 ${station.color}`;
-            
-            if (isNewStation) {
-                loadTrack(0); // Loads the first track of the newly selected station
-            } else {
-                renderStations(); 
-            }
-        }
-
-        function loadTrack(idx) {
-            currentTrackIdx = idx;
-            const currentStationTracks = STATIONS[currentStationIdx].tracks;
-            const track = currentStationTracks[idx];
-            
-            audio.src = track.url;
-            currentCover.src = track.cover;
-            currentTitle.textContent = track.title;
-            currentArtist.textContent = track.artist;
-            
-            if (isPlaying) {
-                attemptPlay();
-            }
-            renderStations(); // Updates EQ bars on sidebar
-            renderPlaylist(); // Renders the new playlist of 10 tracks
-        }
-
-        function togglePlay() {
-            if (isPlaying) {
-                audio.pause();
-                isPlaying = false;
-                updatePlayStateUI();
-            } else {
-                attemptPlay();
-            }
-        }
-
-        function playNext() {
-            const currentStationTracks = STATIONS[currentStationIdx].tracks;
-            let nextIdx = (currentTrackIdx + 1) % currentStationTracks.length;
-            isPlaying = true; 
-            loadTrack(nextIdx);
-        }
-
-        function playPrev() {
-            const currentStationTracks = STATIONS[currentStationIdx].tracks;
-            let prevIdx = (currentTrackIdx - 1 + currentStationTracks.length) % currentStationTracks.length;
-            isPlaying = true;
-            loadTrack(prevIdx);
-        }
-
-        function playTrackFromPlaylist(idx) {
-            isPlaying = true;
-            loadTrack(idx);
-        }
-
-        // --- UI UPDATES ---
-        function updatePlayStateUI() {
-            mainPlayIcon.textContent = isPlaying ? 'pause' : 'play_arrow';
-            
-            if (isPlaying) {
-                currentCoverContainer.classList.add('spin-slow');
-            } else {
-                currentCoverContainer.classList.remove('spin-slow');
-            }
-            
-            renderStations(); 
-            renderPlaylist(); 
-        }
-
-        function updateProgress() {
-            const current = audio.currentTime || 0;
-            const total = audio.duration || 0;
-            
-            timeCurrent.textContent = formatTime(current);
-            timeTotal.textContent = formatTime(total);
-            
-            const percent = total > 0 ? (current / total) * 100 : 0;
-            progressBar.style.width = `${percent}%`;
-        }
-
-        function seekTrack(e) {
-            const rect = progressContainer.getBoundingClientRect();
-            const percent = (e.clientX - rect.left) / rect.width;
-            audio.currentTime = percent * (audio.duration || 0);
-        }
-
-        function changeVolume(val) {
-            volume = parseFloat(val);
-            audio.volume = volume;
-            volumeBar.style.width = `${volume * 100}%`;
-            
-            if (volume === 0) {
-                volumeIcon.textContent = 'volume_off';
-            } else if (volume < 0.5) {
-                volumeIcon.textContent = 'volume_down';
-            } else {
-                volumeIcon.textContent = 'volume_up';
-            }
-        }
-
-        function toggleMute() {
-            if (volume > 0) {
-                volumeSlider.value = 0;
-                changeVolume(0);
-            } else {
-                volumeSlider.value = 0.5;
-                changeVolume(0.5);
-            }
-        }
-
-        function togglePlaylist() {
-            showPlaylist = !showPlaylist;
-            if (showPlaylist) {
-                playlistContainer.classList.remove('translate-x-full', 'hidden');
-                playlistToggleBtn.classList.replace('text-white/60', 'text-white');
-                playlistToggleBtn.classList.replace('hover:bg-white/10', 'bg-white/20');
-            } else {
-                playlistContainer.classList.add('translate-x-full', 'hidden');
-                playlistToggleBtn.classList.replace('text-white', 'text-white/60');
-                playlistToggleBtn.classList.replace('bg-white/20', 'hover:bg-white/10');
-            }
-        }
-
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.error(`Error enabling full-screen mode: ${err.message}`);
-                });
-            } else {
-                document.exitFullscreen();
-            }
-        }
-
-        // --- RENDERERS ---
-        function renderStations() {
-            stationsContainer.innerHTML = STATIONS.map((station, idx) => {
-                const isActive = currentStationIdx === idx;
-                
-                let eqHtml = '';
-                if (isActive && isPlaying) {
-                    eqHtml = `
-                        <div class="flex items-end gap-1 ml-auto h-4">
-                            <div class="w-1 bg-white/80 rounded-t-sm eq-bar"></div>
-                            <div class="w-1 bg-white/80 rounded-t-sm eq-bar"></div>
-                            <div class="w-1 bg-white/80 rounded-t-sm eq-bar"></div>
-                        </div>
-                    `;
-                }
-
-                return `
-                    <button
-                        onclick="loadStation(${idx})"
-                        class="flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 backdrop-blur-md border ${
-                            isActive 
-                            ? 'bg-white/20 border-white/30 text-white shadow-lg' 
-                            : 'bg-white/5 border-transparent text-white/60 hover:bg-white/10 hover:text-white'
-                        }"
-                    >
-                        <span class="material-symbols-rounded" style="font-size: 20px;">${station.icon}</span>
-                        <span class="font-medium text-sm">${station.name}</span>
-                        ${eqHtml}
-                    </button>
-                `;
-            }).join('');
-        }
-
-        function renderPlaylist() {
-            // Get the tracks for the CURRENT station
-            const currentStationTracks = STATIONS[currentStationIdx].tracks;
-            
-            tracksContainer.innerHTML = currentStationTracks.map((track, idx) => {
-                const isActive = currentTrackIdx === idx;
-                
-                let overlayIcon = '';
-                if (isActive) {
-                    overlayIcon = `
-                        <div class="absolute inset-0 flex items-center justify-center bg-black/40">
-                            <span class="material-symbols-rounded fill text-white" style="font-size: 20px;">
-                                ${isPlaying ? 'pause' : 'play_arrow'}
-                            </span>
-                        </div>
-                    `;
-                }
-
-                return `
-                    <div 
-                        onclick="playTrackFromPlaylist(${idx})"
-                        class="flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all duration-200 group ${
-                            isActive ? 'bg-white/10' : 'hover:bg-white/5'
-                        }"
-                    >
-                        <div class="relative w-12 h-12 overflow-hidden rounded-md shadow-sm shrink-0">
-                            <img src="${track.cover}" alt="${track.title}" class="object-cover w-full h-full" />
-                            ${overlayIcon}
-                        </div>
-                        <div class="flex flex-col overflow-hidden">
-                            <span class="text-sm font-medium truncate ${isActive ? 'text-white' : 'text-white/80 group-hover:text-white'}">
-                                ${track.title}
-                            </span>
-                            <span class="text-xs text-white/50 truncate">
-                                ${track.artist}
-                            </span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // --- UTILS ---
-        function formatTime(seconds) {
-            if (!seconds || isNaN(seconds)) return "0:00";
-            const m = Math.floor(seconds / 60);
-            const s = Math.floor(seconds % 60);
-            return `${m}:${s.toString().padStart(2, '0')}`;
-        }
-
-        // Start the app
-        init();
-    </script>
-</body>
-</html>
+                    console.error("Audio playback prevented
