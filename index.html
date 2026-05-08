@@ -50,7 +50,7 @@
 </head>
 <body class="relative w-full h-screen overflow-hidden font-sans text-white bg-gray-900 select-none">
 
-    <!-- Toast Notification (Replaces alerts) -->
+    <!-- Toast Notification -->
     <div id="toast" class="fixed top-4 right-4 max-w-sm bg-red-600/90 backdrop-blur-md text-white px-4 py-3 rounded-lg shadow-2xl transform transition-all duration-300 translate-x-[150%] opacity-0 z-50 flex items-start gap-3 border border-red-400/50">
         <span class="material-symbols-rounded mt-0.5">error</span>
         <div class="flex flex-col">
@@ -178,25 +178,111 @@
 
     <!-- Application Logic -->
     <script>
-        // --- MOCK DATA ---
-        const STATIONS = [
-            { id: 'chill', name: 'Chill Vibes', icon: 'local_cafe', bg: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=2000&q=80', color: 'bg-gradient-to-br from-blue-900/40 to-indigo-900/40' },
-            { id: 'focus', name: 'Deep Focus', icon: 'computer', bg: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?auto=format&fit=crop&w=2000&q=80', color: 'bg-gradient-to-br from-emerald-900/40 to-teal-900/40' },
-            { id: 'sleep', name: 'Late Night', icon: 'bedtime', bg: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=80', color: 'bg-gradient-to-br from-purple-900/40 to-slate-900/40' },
-            { id: 'morning', name: 'Morning Coffee', icon: 'wb_sunny', bg: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=2000&q=80', color: 'bg-gradient-to-br from-orange-900/40 to-amber-900/40' }
+        // Array of reliable public sounds to mock a 40-track library without 404/CORS errors
+        const pubAudio = [
+            'https://actions.google.com/sounds/v1/water/rain_on_roof.ogg',
+            'https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg',
+            'https://actions.google.com/sounds/v1/weather/thunder_crack.ogg',
+            'https://actions.google.com/sounds/v1/foley/typing_on_a_typewriter.ogg',
+            'https://actions.google.com/sounds/v1/water/waves_crashing_on_rock_beach.ogg',
+            'https://actions.google.com/sounds/v1/nature/fire_crackling.ogg',
+            'https://actions.google.com/sounds/v1/ambiences/outdoor_summer_ambience.ogg',
+            'https://actions.google.com/sounds/v1/water/stream_water_loop.ogg',
+            'https://actions.google.com/sounds/v1/weather/rain_heavy_loud.ogg',
+            'https://actions.google.com/sounds/v1/nature/wind_in_trees.ogg'
         ];
 
-        // Using highly reliable Google Actions atmospheric sounds for the demo
-        // so it won't fail with 404s or CORS issues while testing.
-        const TRACKS = [
-            { id: 1, title: 'Rainy Afternoon', artist: 'Atmosphere', url: 'https://actions.google.com/sounds/v1/water/rain_on_roof.ogg', cover: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?auto=format&fit=crop&w=300&q=80' },
-            { id: 2, title: 'Coffee Shop Vibes', artist: 'Atmosphere', url: 'https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg', cover: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?auto=format&fit=crop&w=300&q=80' },
-            { id: 3, title: 'Night Thunder', artist: 'Atmosphere', url: 'https://actions.google.com/sounds/v1/weather/thunder_crack.ogg', cover: 'https://images.unsplash.com/photo-1493225457124-a1a2a5f013bd?auto=format&fit=crop&w=300&q=80' },
-            { id: 4, title: 'Deep Focus Typing', artist: 'Atmosphere', url: 'https://actions.google.com/sounds/v1/foley/typing_on_a_typewriter.ogg', cover: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=300&q=80' },
+        // --- MOCK DATA (40 Tracks total across 4 Stations) ---
+        const STATIONS = [
+            { 
+                id: 'chill', name: 'Chill Vibes', icon: 'local_cafe', 
+                bg: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=2000&q=80', 
+                color: 'bg-gradient-to-br from-blue-900/40 to-indigo-900/40',
+                tracks: [
+                    { id: 1, title: 'Heat Waves (Lofi Mix)', artist: 'Glass Animals Cover', url: pubAudio[0], cover: 'https://picsum.photos/seed/chill1/300/300' },
+                    { id: 2, title: 'Sunflower (Chillhop)', artist: 'Post Malone Cover', url: pubAudio[1], cover: 'https://picsum.photos/seed/chill2/300/300' },
+                    { id: 3, title: 'As It Was (Instrumental)', artist: 'Harry Styles Cover', url: pubAudio[2], cover: 'https://picsum.photos/seed/chill3/300/300' },
+                    { id: 4, title: 'Peaches (Lofi Vibe)', artist: 'Justin Bieber Cover', url: pubAudio[3], cover: 'https://picsum.photos/seed/chill4/300/300' },
+                    { id: 5, title: 'Watermelon Sugar (Chill)', artist: 'Harry Styles Cover', url: pubAudio[4], cover: 'https://picsum.photos/seed/chill5/300/300' },
+                    { id: 6, title: 'Levitating (Lofi Beat)', artist: 'Dua Lipa Cover', url: pubAudio[5], cover: 'https://picsum.photos/seed/chill6/300/300' },
+                    { id: 7, title: 'Cruel Summer (Chill Mix)', artist: 'Taylor Swift Cover', url: pubAudio[6], cover: 'https://picsum.photos/seed/chill7/300/300' },
+                    { id: 8, title: 'Good Days (Instrumental)', artist: 'SZA Cover', url: pubAudio[7], cover: 'https://picsum.photos/seed/chill8/300/300' },
+                    { id: 9, title: 'Kill Bill (Lofi Cover)', artist: 'SZA Cover', url: pubAudio[8], cover: 'https://picsum.photos/seed/chill9/300/300' },
+                    { id: 10, title: 'Die For You (Chillhop)', artist: 'The Weeknd Cover', url: pubAudio[9], cover: 'https://picsum.photos/seed/chill10/300/300' }
+                ]
+            },
+            { 
+                id: 'focus', name: 'Deep Focus', icon: 'computer', 
+                bg: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?auto=format&fit=crop&w=2000&q=80', 
+                color: 'bg-gradient-to-br from-emerald-900/40 to-teal-900/40',
+                tracks: [
+                    { id: 11, title: 'Starboy (Focus Lofi)', artist: 'The Weeknd Cover', url: pubAudio[3], cover: 'https://picsum.photos/seed/focus1/300/300' },
+                    { id: 12, title: 'Blinding Lights (Synth Lofi)', artist: 'The Weeknd Cover', url: pubAudio[4], cover: 'https://picsum.photos/seed/focus2/300/300' },
+                    { id: 13, title: 'Shape of You (Chill)', artist: 'Ed Sheeran Cover', url: pubAudio[5], cover: 'https://picsum.photos/seed/focus3/300/300' },
+                    { id: 14, title: 'Stay (Instrumental)', artist: 'The Kid LAROI Cover', url: pubAudio[6], cover: 'https://picsum.photos/seed/focus4/300/300' },
+                    { id: 15, title: 'Lucid Dreams (Lofi)', artist: 'Juice WRLD Cover', url: pubAudio[7], cover: 'https://picsum.photos/seed/focus5/300/300' },
+                    { id: 16, title: 'Bad Guy (Chill Mix)', artist: 'Billie Eilish Cover', url: pubAudio[8], cover: 'https://picsum.photos/seed/focus6/300/300' },
+                    { id: 17, title: 'Industry Baby (Focus)', artist: 'Lil Nas X Cover', url: pubAudio[9], cover: 'https://picsum.photos/seed/focus7/300/300' },
+                    { id: 18, title: 'SICKO MODE (Lofi Beat)', artist: 'Travis Scott Cover', url: pubAudio[0], cover: 'https://picsum.photos/seed/focus8/300/300' },
+                    { id: 19, title: 'Gods Plan (Chillhop)', artist: 'Drake Cover', url: pubAudio[1], cover: 'https://picsum.photos/seed/focus9/300/300' },
+                    { id: 20, title: 'Humble (Instrumental Lofi)', artist: 'Kendrick Lamar Cover', url: pubAudio[2], cover: 'https://picsum.photos/seed/focus10/300/300' }
+                ]
+            },
+            { 
+                id: 'sleep', name: 'Late Night', icon: 'bedtime', 
+                bg: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=80', 
+                color: 'bg-gradient-to-br from-purple-900/40 to-slate-900/40',
+                tracks: [
+                    { id: 21, title: 'Sweater Weather (Slowed Lofi)', artist: 'The Neighbourhood Cover', url: pubAudio[8], cover: 'https://picsum.photos/seed/sleep1/300/300' },
+                    { id: 22, title: 'Creep (Midnight Lofi)', artist: 'Radiohead Cover', url: pubAudio[2], cover: 'https://picsum.photos/seed/sleep2/300/300' },
+                    { id: 23, title: 'Glimpse of Us (Lofi)', artist: 'Joji Cover', url: pubAudio[0], cover: 'https://picsum.photos/seed/sleep3/300/300' },
+                    { id: 24, title: 'Someone You Loved (Chill)', artist: 'Lewis Capaldi Cover', url: pubAudio[1], cover: 'https://picsum.photos/seed/sleep4/300/300' },
+                    { id: 25, title: 'Let It Happen (Lofi Mix)', artist: 'Tame Impala Cover', url: pubAudio[5], cover: 'https://picsum.photos/seed/sleep5/300/300' },
+                    { id: 26, title: 'Yellow (Acoustic Lofi)', artist: 'Coldplay Cover', url: pubAudio[6], cover: 'https://picsum.photos/seed/sleep6/300/300' },
+                    { id: 27, title: 'Fix You (Sleep Mix)', artist: 'Coldplay Cover', url: pubAudio[7], cover: 'https://picsum.photos/seed/sleep7/300/300' },
+                    { id: 28, title: 'Space Song (Lofi)', artist: 'Beach House Cover', url: pubAudio[4], cover: 'https://picsum.photos/seed/sleep8/300/300' },
+                    { id: 29, title: 'Apocalypse (Chillhop)', artist: 'Cigarettes After Sex Cover', url: pubAudio[9], cover: 'https://picsum.photos/seed/sleep9/300/300' },
+                    { id: 30, title: 'Chamber Of Reflection (Lofi)', artist: 'Mac DeMarco Cover', url: pubAudio[3], cover: 'https://picsum.photos/seed/sleep10/300/300' }
+                ]
+            },
+            { 
+                id: 'morning', name: 'Morning Coffee', icon: 'wb_sunny', 
+                bg: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=2000&q=80', 
+                color: 'bg-gradient-to-br from-orange-900/40 to-amber-900/40',
+                tracks: [
+                    { id: 31, title: 'Here Comes The Sun (Lofi)', artist: 'The Beatles Cover', url: pubAudio[1], cover: 'https://picsum.photos/seed/morning1/300/300' },
+                    { id: 32, title: 'Put Your Records On (Chill)', artist: 'Corinne Bailey Rae Cover', url: pubAudio[6], cover: 'https://picsum.photos/seed/morning2/300/300' },
+                    { id: 33, title: 'Sunday Morning (Lofi Mix)', artist: 'Maroon 5 Cover', url: pubAudio[7], cover: 'https://picsum.photos/seed/morning3/300/300' },
+                    { id: 34, title: 'Viva La Vida (Instrumental)', artist: 'Coldplay Cover', url: pubAudio[9], cover: 'https://picsum.photos/seed/morning4/300/300' },
+                    { id: 35, title: 'Dreams (Lofi Version)', artist: 'Fleetwood Mac Cover', url: pubAudio[0], cover: 'https://picsum.photos/seed/morning5/300/300' },
+                    { id: 36, title: 'Don\'t Stop Believin\' (Chill)', artist: 'Journey Cover', url: pubAudio[2], cover: 'https://picsum.photos/seed/morning6/300/300' },
+                    { id: 37, title: 'Take On Me (Lofi)', artist: 'a-ha Cover', url: pubAudio[4], cover: 'https://picsum.photos/seed/morning7/300/300' },
+                    { id: 38, title: 'Everybody Wants To Rule (Chill)', artist: 'Tears For Fears Cover', url: pubAudio[5], cover: 'https://picsum.photos/seed/morning8/300/300' },
+                    { id: 39, title: 'Africa (Lofi Beat)', artist: 'Toto Cover', url: pubAudio[8], cover: 'https://picsum.photos/seed/morning9/300/300' },
+                    { id: 40, title: 'Dancing Queen (Morning Mix)', artist: 'ABBA Cover', url: pubAudio[3], cover: 'https://picsum.photos/seed/morning10/300/300' }
+                ]
+            },
+            { 
+                id: 'atmosphere', name: 'Atmosphere', icon: 'landscape', 
+                bg: 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=2000&q=80', 
+                color: 'bg-gradient-to-br from-green-900/40 to-stone-900/40',
+                tracks: [
+                    { id: 41, title: 'Rain on Tin Roof', artist: 'Nature Sounds', url: pubAudio[0], cover: 'https://picsum.photos/seed/atmos1/300/300' },
+                    { id: 42, title: 'Bustling Coffee Shop', artist: 'City Ambience', url: pubAudio[1], cover: 'https://picsum.photos/seed/atmos2/300/300' },
+                    { id: 43, title: 'Distant Thunder', artist: 'Weather Vibes', url: pubAudio[2], cover: 'https://picsum.photos/seed/atmos3/300/300' },
+                    { id: 44, title: 'Mechanical Keyboard', artist: 'Focus Foley', url: pubAudio[3], cover: 'https://picsum.photos/seed/atmos4/300/300' },
+                    { id: 45, title: 'Crashing Waves', artist: 'Oceanic Sounds', url: pubAudio[4], cover: 'https://picsum.photos/seed/atmos5/300/300' },
+                    { id: 46, title: 'Campfire Crackle', artist: 'Nightfall', url: pubAudio[5], cover: 'https://picsum.photos/seed/atmos6/300/300' },
+                    { id: 47, title: 'Summer Crickets', artist: 'Meadow Sounds', url: pubAudio[6], cover: 'https://picsum.photos/seed/atmos7/300/300' },
+                    { id: 48, title: 'Babbling Brook', artist: 'Waterways', url: pubAudio[7], cover: 'https://picsum.photos/seed/atmos8/300/300' },
+                    { id: 49, title: 'Heavy Rainstorm', artist: 'Weather Vibes', url: pubAudio[8], cover: 'https://picsum.photos/seed/atmos9/300/300' },
+                    { id: 50, title: 'Wind Through Pines', artist: 'Forest', url: pubAudio[9], cover: 'https://picsum.photos/seed/atmos10/300/300' }
+                ]
+            }
         ];
 
         // --- STATE ---
-        let currentStationIdx = 0;
+        let currentStationIdx = -1; // initialized below 0 to force load on boot
         let currentTrackIdx = 0;
         let isPlaying = false;
         let volume = 0.5;
@@ -231,10 +317,7 @@
         // --- INITIALIZATION ---
         function init() {
             audio.volume = volume;
-            loadStation(0);
-            loadTrack(0);
-            renderStations();
-            renderPlaylist();
+            loadStation(0); // This sets up the UI and loads track 0 of the first station
             
             // Audio Event Listeners
             audio.addEventListener('timeupdate', updateProgress);
@@ -289,16 +372,24 @@
         }
 
         function loadStation(idx) {
+            const isNewStation = currentStationIdx !== idx;
             currentStationIdx = idx;
             const station = STATIONS[idx];
+            
             bgImage.style.backgroundImage = `url(${station.bg})`;
             bgGradient.className = `absolute inset-0 z-0 opacity-80 mix-blend-multiply transition-all duration-1000 ${station.color}`;
-            renderStations(); 
+            
+            if (isNewStation) {
+                loadTrack(0); // Loads the first track of the newly selected station
+            } else {
+                renderStations(); 
+            }
         }
 
         function loadTrack(idx) {
             currentTrackIdx = idx;
-            const track = TRACKS[idx];
+            const currentStationTracks = STATIONS[currentStationIdx].tracks;
+            const track = currentStationTracks[idx];
             
             audio.src = track.url;
             currentCover.src = track.cover;
@@ -308,7 +399,8 @@
             if (isPlaying) {
                 attemptPlay();
             }
-            renderPlaylist(); 
+            renderStations(); // Updates EQ bars on sidebar
+            renderPlaylist(); // Renders the new playlist of 10 tracks
         }
 
         function togglePlay() {
@@ -322,13 +414,15 @@
         }
 
         function playNext() {
-            let nextIdx = (currentTrackIdx + 1) % TRACKS.length;
+            const currentStationTracks = STATIONS[currentStationIdx].tracks;
+            let nextIdx = (currentTrackIdx + 1) % currentStationTracks.length;
             isPlaying = true; 
             loadTrack(nextIdx);
         }
 
         function playPrev() {
-            let prevIdx = (currentTrackIdx - 1 + TRACKS.length) % TRACKS.length;
+            const currentStationTracks = STATIONS[currentStationIdx].tracks;
+            let prevIdx = (currentTrackIdx - 1 + currentStationTracks.length) % currentStationTracks.length;
             isPlaying = true;
             loadTrack(prevIdx);
         }
@@ -450,7 +544,10 @@
         }
 
         function renderPlaylist() {
-            tracksContainer.innerHTML = TRACKS.map((track, idx) => {
+            // Get the tracks for the CURRENT station
+            const currentStationTracks = STATIONS[currentStationIdx].tracks;
+            
+            tracksContainer.innerHTML = currentStationTracks.map((track, idx) => {
                 const isActive = currentTrackIdx === idx;
                 
                 let overlayIcon = '';
