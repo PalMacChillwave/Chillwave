@@ -64,8 +64,8 @@
     <div id="bg-gradient" class="absolute inset-0 z-0 opacity-80 mix-blend-multiply transition-all duration-1000"></div>
     <div class="absolute inset-0 z-0 bg-black/20"></div>
 
-    <!-- Audio Element -->
-    <audio id="audio-player" crossorigin="anonymous"></audio>
+    <!-- Audio Element (Removed crossorigin attribute to allow standard CDN streaming) -->
+    <audio id="audio-player"></audio>
 
     <!-- Main Content Layout -->
     <div class="relative z-10 flex flex-col h-full">
@@ -193,18 +193,18 @@
         ];
 
         // 100% PURE INSTRUMENTALS: NO VOICES. 
-        // Mixkit previews are completely reliable for embedding without throwing CORS/404 errors.
+        // Using highly reliable, direct Pixabay CDN links. These are royalty-free, instrumental Lo-Fi beats.
         const pubMusic = [
-            'https://assets.mixkit.co/music/preview/mixkit-chill-bro-89.mp3',
-            'https://assets.mixkit.co/music/preview/mixkit-sleepy-cat-135.mp3',
-            'https://assets.mixkit.co/music/preview/mixkit-driving-ambition-32.mp3',
-            'https://assets.mixkit.co/music/preview/mixkit-tech-house-vibes-130.mp3',
-            'https://assets.mixkit.co/music/preview/mixkit-hip-hop-02-738.mp3',
-            'https://assets.mixkit.co/music/preview/mixkit-sun-and-his-daughter-580.mp3',
-            'https://assets.mixkit.co/music/preview/mixkit-deep-urban-623.mp3',
-            'https://assets.mixkit.co/music/preview/mixkit-beautiful-dream-493.mp3',
-            'https://assets.mixkit.co/music/preview/mixkit-serene-view-443.mp3',
-            'https://assets.mixkit.co/music/preview/mixkit-raise-your-glass-421.mp3'
+            'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3', // Lofi Study
+            'https://cdn.pixabay.com/download/audio/2022/02/10/audio_f535d55e09.mp3', // Relaxing Lofi
+            'https://cdn.pixabay.com/download/audio/2022/05/16/audio_db8724cc63.mp3', // Chill Beat
+            'https://cdn.pixabay.com/download/audio/2022/04/27/audio_51792b270a.mp3', // Chill Lofi
+            'https://cdn.pixabay.com/download/audio/2021/09/06/audio_03d985a7bb.mp3', // Empty Mind
+            'https://cdn.pixabay.com/download/audio/2022/03/15/audio_c1c4e7ab2f.mp3', // Lofi Relax
+            'https://cdn.pixabay.com/download/audio/2022/11/08/audio_c5df07fc71.mp3', // Chill Lofi Song
+            'https://cdn.pixabay.com/download/audio/2022/10/14/audio_993ebfeede.mp3', // Lofi Type Beat
+            'https://cdn.pixabay.com/download/audio/2022/11/22/audio_7bebc118c7.mp3', // Lofi Ambient
+            'https://cdn.pixabay.com/download/audio/2022/12/28/audio_ee4cd58a8a.mp3'  // Vintage Lofi
         ];
 
         // --- DATA ---
@@ -231,15 +231,15 @@
                 bg: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?auto=format&fit=crop&w=2000&q=80', 
                 color: 'bg-gradient-to-br from-emerald-900/40 to-teal-900/40',
                 tracks: [
-                    { id: 11, title: 'Study Mode', artist: 'Brain Waves', url: pubMusic[1], cover: 'https://picsum.photos/seed/focus1/300/300' },
-                    { id: 12, title: 'Page Turner', artist: 'Focus Group', url: pubMusic[2], cover: 'https://picsum.photos/seed/focus2/300/300' },
-                    { id: 13, title: 'Coding Rhythm', artist: 'Syntax Error', url: pubMusic[3], cover: 'https://picsum.photos/seed/focus3/300/300' },
-                    { id: 14, title: 'Flow State', artist: 'Brain Waves', url: pubMusic[4], cover: 'https://picsum.photos/seed/focus4/300/300' },
+                    { id: 11, title: 'Study Mode', artist: 'Brain Waves', url: pubMusic[9], cover: 'https://picsum.photos/seed/focus1/300/300' },
+                    { id: 12, title: 'Page Turner', artist: 'Focus Group', url: pubMusic[8], cover: 'https://picsum.photos/seed/focus2/300/300' },
+                    { id: 13, title: 'Coding Rhythm', artist: 'Syntax Error', url: pubMusic[7], cover: 'https://picsum.photos/seed/focus3/300/300' },
+                    { id: 14, title: 'Flow State', artist: 'Brain Waves', url: pubMusic[6], cover: 'https://picsum.photos/seed/focus4/300/300' },
                     { id: 15, title: 'Deep Work', artist: 'Focus Group', url: pubMusic[5], cover: 'https://picsum.photos/seed/focus5/300/300' },
-                    { id: 16, title: 'Concentration', artist: 'Syntax Error', url: pubMusic[6], cover: 'https://picsum.photos/seed/focus6/300/300' },
-                    { id: 17, title: 'Mental Clarity', artist: 'Brain Waves', url: pubMusic[7], cover: 'https://picsum.photos/seed/focus7/300/300' },
-                    { id: 18, title: 'Zen Mode', artist: 'Focus Group', url: pubMusic[8], cover: 'https://picsum.photos/seed/focus8/300/300' },
-                    { id: 19, title: 'Productivity Loop', artist: 'Syntax Error', url: pubMusic[9], cover: 'https://picsum.photos/seed/focus9/300/300' },
+                    { id: 16, title: 'Concentration', artist: 'Syntax Error', url: pubMusic[4], cover: 'https://picsum.photos/seed/focus6/300/300' },
+                    { id: 17, title: 'Mental Clarity', artist: 'Brain Waves', url: pubMusic[3], cover: 'https://picsum.photos/seed/focus7/300/300' },
+                    { id: 18, title: 'Zen Mode', artist: 'Focus Group', url: pubMusic[2], cover: 'https://picsum.photos/seed/focus8/300/300' },
+                    { id: 19, title: 'Productivity Loop', artist: 'Syntax Error', url: pubMusic[1], cover: 'https://picsum.photos/seed/focus9/300/300' },
                     { id: 20, title: 'Ambient Intellect', artist: 'Brain Waves', url: pubMusic[0], cover: 'https://picsum.photos/seed/focus10/300/300' }
                 ]
             },
@@ -248,16 +248,16 @@
                 bg: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=80', 
                 color: 'bg-gradient-to-br from-purple-900/40 to-slate-900/40',
                 tracks: [
-                    { id: 21, title: '3 AM Thoughts', artist: 'Night Owl', url: pubMusic[2], cover: 'https://picsum.photos/seed/sleep1/300/300' },
-                    { id: 22, title: 'Streetlamps', artist: 'Dreamer', url: pubMusic[3], cover: 'https://picsum.photos/seed/sleep2/300/300' },
-                    { id: 23, title: 'Night Owl', artist: 'Lunar', url: pubMusic[4], cover: 'https://picsum.photos/seed/sleep3/300/300' },
-                    { id: 24, title: 'Dark Ambient', artist: 'Night Owl', url: pubMusic[5], cover: 'https://picsum.photos/seed/sleep4/300/300' },
-                    { id: 25, title: 'Lunar Lullaby', artist: 'Dreamer', url: pubMusic[6], cover: 'https://picsum.photos/seed/sleep5/300/300' },
-                    { id: 26, title: 'Stars Align', artist: 'Lunar', url: pubMusic[7], cover: 'https://picsum.photos/seed/sleep6/300/300' },
-                    { id: 27, title: 'Peaceful Night', artist: 'Night Owl', url: pubMusic[8], cover: 'https://picsum.photos/seed/sleep7/300/300' },
-                    { id: 28, title: 'Drifting Off', artist: 'Dreamer', url: pubMusic[9], cover: 'https://picsum.photos/seed/sleep8/300/300' },
-                    { id: 29, title: 'Silence', artist: 'Lunar', url: pubMusic[0], cover: 'https://picsum.photos/seed/sleep9/300/300' },
-                    { id: 30, title: 'Counting Sheep', artist: 'Night Owl', url: pubMusic[1], cover: 'https://picsum.photos/seed/sleep10/300/300' }
+                    { id: 21, title: '3 AM Thoughts', artist: 'Night Owl', url: pubMusic[4], cover: 'https://picsum.photos/seed/sleep1/300/300' },
+                    { id: 22, title: 'Streetlamps', artist: 'Dreamer', url: pubMusic[5], cover: 'https://picsum.photos/seed/sleep2/300/300' },
+                    { id: 23, title: 'Night Owl', artist: 'Lunar', url: pubMusic[6], cover: 'https://picsum.photos/seed/sleep3/300/300' },
+                    { id: 24, title: 'Dark Ambient', artist: 'Night Owl', url: pubMusic[7], cover: 'https://picsum.photos/seed/sleep4/300/300' },
+                    { id: 25, title: 'Lunar Lullaby', artist: 'Dreamer', url: pubMusic[8], cover: 'https://picsum.photos/seed/sleep5/300/300' },
+                    { id: 26, title: 'Stars Align', artist: 'Lunar', url: pubMusic[9], cover: 'https://picsum.photos/seed/sleep6/300/300' },
+                    { id: 27, title: 'Peaceful Night', artist: 'Night Owl', url: pubMusic[0], cover: 'https://picsum.photos/seed/sleep7/300/300' },
+                    { id: 28, title: 'Drifting Off', artist: 'Dreamer', url: pubMusic[1], cover: 'https://picsum.photos/seed/sleep8/300/300' },
+                    { id: 29, title: 'Silence', artist: 'Lunar', url: pubMusic[2], cover: 'https://picsum.photos/seed/sleep9/300/300' },
+                    { id: 30, title: 'Counting Sheep', artist: 'Night Owl', url: pubMusic[3], cover: 'https://picsum.photos/seed/sleep10/300/300' }
                 ]
             },
             { 
@@ -265,16 +265,16 @@
                 bg: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=2000&q=80', 
                 color: 'bg-gradient-to-br from-orange-900/40 to-amber-900/40',
                 tracks: [
-                    { id: 31, title: 'Early Bird', artist: 'Sun Chaser', url: pubMusic[3], cover: 'https://picsum.photos/seed/morning1/300/300' },
-                    { id: 32, title: 'First Sip', artist: 'Awaken', url: pubMusic[4], cover: 'https://picsum.photos/seed/morning2/300/300' },
-                    { id: 33, title: 'Morning Dew', artist: 'Early Bird', url: pubMusic[5], cover: 'https://picsum.photos/seed/morning3/300/300' },
-                    { id: 34, title: 'Sunrise Brew', artist: 'Sun Chaser', url: pubMusic[6], cover: 'https://picsum.photos/seed/morning4/300/300' },
-                    { id: 35, title: 'Morning Light', artist: 'Awaken', url: pubMusic[7], cover: 'https://picsum.photos/seed/morning5/300/300' },
-                    { id: 36, title: 'Fresh Start', artist: 'Early Bird', url: pubMusic[8], cover: 'https://picsum.photos/seed/morning6/300/300' },
-                    { id: 37, title: 'Dawn Chorus', artist: 'Sun Chaser', url: pubMusic[9], cover: 'https://picsum.photos/seed/morning7/300/300' },
-                    { id: 38, title: 'Bright Eyed', artist: 'Awaken', url: pubMusic[0], cover: 'https://picsum.photos/seed/morning8/300/300' },
-                    { id: 39, title: 'New Day', artist: 'Early Bird', url: pubMusic[1], cover: 'https://picsum.photos/seed/morning9/300/300' },
-                    { id: 40, title: 'Breakfast Beats', artist: 'Sun Chaser', url: pubMusic[2], cover: 'https://picsum.photos/seed/morning10/300/300' }
+                    { id: 31, title: 'Early Bird', artist: 'Sun Chaser', url: pubMusic[8], cover: 'https://picsum.photos/seed/morning1/300/300' },
+                    { id: 32, title: 'First Sip', artist: 'Awaken', url: pubMusic[7], cover: 'https://picsum.photos/seed/morning2/300/300' },
+                    { id: 33, title: 'Morning Dew', artist: 'Early Bird', url: pubMusic[6], cover: 'https://picsum.photos/seed/morning3/300/300' },
+                    { id: 34, title: 'Sunrise Brew', artist: 'Sun Chaser', url: pubMusic[5], cover: 'https://picsum.photos/seed/morning4/300/300' },
+                    { id: 35, title: 'Morning Light', artist: 'Awaken', url: pubMusic[4], cover: 'https://picsum.photos/seed/morning5/300/300' },
+                    { id: 36, title: 'Fresh Start', artist: 'Early Bird', url: pubMusic[3], cover: 'https://picsum.photos/seed/morning6/300/300' },
+                    { id: 37, title: 'Dawn Chorus', artist: 'Sun Chaser', url: pubMusic[2], cover: 'https://picsum.photos/seed/morning7/300/300' },
+                    { id: 38, title: 'Bright Eyed', artist: 'Awaken', url: pubMusic[1], cover: 'https://picsum.photos/seed/morning8/300/300' },
+                    { id: 39, title: 'New Day', artist: 'Early Bird', url: pubMusic[0], cover: 'https://picsum.photos/seed/morning9/300/300' },
+                    { id: 40, title: 'Breakfast Beats', artist: 'Sun Chaser', url: pubMusic[9], cover: 'https://picsum.photos/seed/morning10/300/300' }
                 ]
             },
             { 
