@@ -65,7 +65,7 @@
     <div class="absolute inset-0 z-0 bg-black/20"></div>
 
     <!-- Audio Element -->
-    <audio id="audio-player"></audio>
+    <audio id="audio-player" crossorigin="anonymous"></audio>
 
     <!-- Main Content Layout -->
     <div class="relative z-10 flex flex-col h-full">
@@ -178,7 +178,7 @@
 
     <!-- Application Logic -->
     <script>
-        // Array of reliable public sounds to mock a 40-track library without 404/CORS errors
+        // Array of reliable public sounds for the "Atmosphere" station
         const pubAudio = [
             'https://actions.google.com/sounds/v1/water/rain_on_roof.ogg',
             'https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg',
@@ -192,23 +192,37 @@
             'https://actions.google.com/sounds/v1/nature/wind_in_trees.ogg'
         ];
 
-        // --- MOCK DATA (40 Tracks total across 4 Stations) ---
+        // Array of actual public music tracks hosted on a reliable GitHub repository.
+        // This ensures real music plays for the first 4 playlists without needing local files!
+        const pubMusic = [
+            'https://raw.githubusercontent.com/muhammederdem/mini-player/master/mp3/1.mp3',
+            'https://raw.githubusercontent.com/muhammederdem/mini-player/master/mp3/2.mp3',
+            'https://raw.githubusercontent.com/muhammederdem/mini-player/master/mp3/3.mp3',
+            'https://raw.githubusercontent.com/muhammederdem/mini-player/master/mp3/4.mp3',
+            'https://raw.githubusercontent.com/muhammederdem/mini-player/master/mp3/5.mp3',
+            'https://raw.githubusercontent.com/muhammederdem/mini-player/master/mp3/6.mp3',
+            'https://raw.githubusercontent.com/muhammederdem/mini-player/master/mp3/7.mp3',
+            'https://raw.githubusercontent.com/muhammederdem/mini-player/master/mp3/8.mp3',
+            'https://raw.githubusercontent.com/muhammederdem/mini-player/master/mp3/9.mp3',
+        ];
+
+        // --- DATA (40 Music Tracks using real public music URLs, 10 Atmosphere tracks) ---
         const STATIONS = [
             { 
                 id: 'chill', name: 'Chill Vibes', icon: 'local_cafe', 
                 bg: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=2000&q=80', 
                 color: 'bg-gradient-to-br from-blue-900/40 to-indigo-900/40',
                 tracks: [
-                    { id: 1, title: 'Heat Waves (Lofi Mix)', artist: 'Glass Animals Cover', url: pubAudio[0], cover: 'https://picsum.photos/seed/chill1/300/300' },
-                    { id: 2, title: 'Sunflower (Chillhop)', artist: 'Post Malone Cover', url: pubAudio[1], cover: 'https://picsum.photos/seed/chill2/300/300' },
-                    { id: 3, title: 'As It Was (Instrumental)', artist: 'Harry Styles Cover', url: pubAudio[2], cover: 'https://picsum.photos/seed/chill3/300/300' },
-                    { id: 4, title: 'Peaches (Lofi Vibe)', artist: 'Justin Bieber Cover', url: pubAudio[3], cover: 'https://picsum.photos/seed/chill4/300/300' },
-                    { id: 5, title: 'Watermelon Sugar (Chill)', artist: 'Harry Styles Cover', url: pubAudio[4], cover: 'https://picsum.photos/seed/chill5/300/300' },
-                    { id: 6, title: 'Levitating (Lofi Beat)', artist: 'Dua Lipa Cover', url: pubAudio[5], cover: 'https://picsum.photos/seed/chill6/300/300' },
-                    { id: 7, title: 'Cruel Summer (Chill Mix)', artist: 'Taylor Swift Cover', url: pubAudio[6], cover: 'https://picsum.photos/seed/chill7/300/300' },
-                    { id: 8, title: 'Good Days (Instrumental)', artist: 'SZA Cover', url: pubAudio[7], cover: 'https://picsum.photos/seed/chill8/300/300' },
-                    { id: 9, title: 'Kill Bill (Lofi Cover)', artist: 'SZA Cover', url: pubAudio[8], cover: 'https://picsum.photos/seed/chill9/300/300' },
-                    { id: 10, title: 'Die For You (Chillhop)', artist: 'The Weeknd Cover', url: pubAudio[9], cover: 'https://picsum.photos/seed/chill10/300/300' }
+                    { id: 1, title: 'Heat Waves (Lofi Mix)', artist: 'Glass Animals Cover', url: pubMusic[0], cover: 'https://picsum.photos/seed/chill1/300/300' },
+                    { id: 2, title: 'Sunflower (Chillhop)', artist: 'Post Malone Cover', url: pubMusic[1], cover: 'https://picsum.photos/seed/chill2/300/300' },
+                    { id: 3, title: 'As It Was (Instrumental)', artist: 'Harry Styles Cover', url: pubMusic[2], cover: 'https://picsum.photos/seed/chill3/300/300' },
+                    { id: 4, title: 'Peaches (Lofi Vibe)', artist: 'Justin Bieber Cover', url: pubMusic[3], cover: 'https://picsum.photos/seed/chill4/300/300' },
+                    { id: 5, title: 'Watermelon Sugar (Chill)', artist: 'Harry Styles Cover', url: pubMusic[4], cover: 'https://picsum.photos/seed/chill5/300/300' },
+                    { id: 6, title: 'Levitating (Lofi Beat)', artist: 'Dua Lipa Cover', url: pubMusic[5], cover: 'https://picsum.photos/seed/chill6/300/300' },
+                    { id: 7, title: 'Cruel Summer (Chill Mix)', artist: 'Taylor Swift Cover', url: pubMusic[6], cover: 'https://picsum.photos/seed/chill7/300/300' },
+                    { id: 8, title: 'Good Days (Instrumental)', artist: 'SZA Cover', url: pubMusic[7], cover: 'https://picsum.photos/seed/chill8/300/300' },
+                    { id: 9, title: 'Kill Bill (Lofi Cover)', artist: 'SZA Cover', url: pubMusic[8], cover: 'https://picsum.photos/seed/chill9/300/300' },
+                    { id: 10, title: 'Die For You (Chillhop)', artist: 'The Weeknd Cover', url: pubMusic[0], cover: 'https://picsum.photos/seed/chill10/300/300' }
                 ]
             },
             { 
@@ -216,16 +230,16 @@
                 bg: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?auto=format&fit=crop&w=2000&q=80', 
                 color: 'bg-gradient-to-br from-emerald-900/40 to-teal-900/40',
                 tracks: [
-                    { id: 11, title: 'Starboy (Focus Lofi)', artist: 'The Weeknd Cover', url: pubAudio[3], cover: 'https://picsum.photos/seed/focus1/300/300' },
-                    { id: 12, title: 'Blinding Lights (Synth Lofi)', artist: 'The Weeknd Cover', url: pubAudio[4], cover: 'https://picsum.photos/seed/focus2/300/300' },
-                    { id: 13, title: 'Shape of You (Chill)', artist: 'Ed Sheeran Cover', url: pubAudio[5], cover: 'https://picsum.photos/seed/focus3/300/300' },
-                    { id: 14, title: 'Stay (Instrumental)', artist: 'The Kid LAROI Cover', url: pubAudio[6], cover: 'https://picsum.photos/seed/focus4/300/300' },
-                    { id: 15, title: 'Lucid Dreams (Lofi)', artist: 'Juice WRLD Cover', url: pubAudio[7], cover: 'https://picsum.photos/seed/focus5/300/300' },
-                    { id: 16, title: 'Bad Guy (Chill Mix)', artist: 'Billie Eilish Cover', url: pubAudio[8], cover: 'https://picsum.photos/seed/focus6/300/300' },
-                    { id: 17, title: 'Industry Baby (Focus)', artist: 'Lil Nas X Cover', url: pubAudio[9], cover: 'https://picsum.photos/seed/focus7/300/300' },
-                    { id: 18, title: 'SICKO MODE (Lofi Beat)', artist: 'Travis Scott Cover', url: pubAudio[0], cover: 'https://picsum.photos/seed/focus8/300/300' },
-                    { id: 19, title: 'Gods Plan (Chillhop)', artist: 'Drake Cover', url: pubAudio[1], cover: 'https://picsum.photos/seed/focus9/300/300' },
-                    { id: 20, title: 'Humble (Instrumental Lofi)', artist: 'Kendrick Lamar Cover', url: pubAudio[2], cover: 'https://picsum.photos/seed/focus10/300/300' }
+                    { id: 11, title: 'Starboy (Focus Lofi)', artist: 'The Weeknd Cover', url: pubMusic[1], cover: 'https://picsum.photos/seed/focus1/300/300' },
+                    { id: 12, title: 'Blinding Lights (Synth Lofi)', artist: 'The Weeknd Cover', url: pubMusic[2], cover: 'https://picsum.photos/seed/focus2/300/300' },
+                    { id: 13, title: 'Shape of You (Chill)', artist: 'Ed Sheeran Cover', url: pubMusic[3], cover: 'https://picsum.photos/seed/focus3/300/300' },
+                    { id: 14, title: 'Stay (Instrumental)', artist: 'The Kid LAROI Cover', url: pubMusic[4], cover: 'https://picsum.photos/seed/focus4/300/300' },
+                    { id: 15, title: 'Lucid Dreams (Lofi)', artist: 'Juice WRLD Cover', url: pubMusic[5], cover: 'https://picsum.photos/seed/focus5/300/300' },
+                    { id: 16, title: 'Bad Guy (Chill Mix)', artist: 'Billie Eilish Cover', url: pubMusic[6], cover: 'https://picsum.photos/seed/focus6/300/300' },
+                    { id: 17, title: 'Industry Baby (Focus)', artist: 'Lil Nas X Cover', url: pubMusic[7], cover: 'https://picsum.photos/seed/focus7/300/300' },
+                    { id: 18, title: 'SICKO MODE (Lofi Beat)', artist: 'Travis Scott Cover', url: pubMusic[8], cover: 'https://picsum.photos/seed/focus8/300/300' },
+                    { id: 19, title: 'Gods Plan (Chillhop)', artist: 'Drake Cover', url: pubMusic[0], cover: 'https://picsum.photos/seed/focus9/300/300' },
+                    { id: 20, title: 'Humble (Instrumental Lofi)', artist: 'Kendrick Lamar Cover', url: pubMusic[1], cover: 'https://picsum.photos/seed/focus10/300/300' }
                 ]
             },
             { 
@@ -233,16 +247,16 @@
                 bg: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=80', 
                 color: 'bg-gradient-to-br from-purple-900/40 to-slate-900/40',
                 tracks: [
-                    { id: 21, title: 'Sweater Weather (Slowed Lofi)', artist: 'The Neighbourhood Cover', url: pubAudio[8], cover: 'https://picsum.photos/seed/sleep1/300/300' },
-                    { id: 22, title: 'Creep (Midnight Lofi)', artist: 'Radiohead Cover', url: pubAudio[2], cover: 'https://picsum.photos/seed/sleep2/300/300' },
-                    { id: 23, title: 'Glimpse of Us (Lofi)', artist: 'Joji Cover', url: pubAudio[0], cover: 'https://picsum.photos/seed/sleep3/300/300' },
-                    { id: 24, title: 'Someone You Loved (Chill)', artist: 'Lewis Capaldi Cover', url: pubAudio[1], cover: 'https://picsum.photos/seed/sleep4/300/300' },
-                    { id: 25, title: 'Let It Happen (Lofi Mix)', artist: 'Tame Impala Cover', url: pubAudio[5], cover: 'https://picsum.photos/seed/sleep5/300/300' },
-                    { id: 26, title: 'Yellow (Acoustic Lofi)', artist: 'Coldplay Cover', url: pubAudio[6], cover: 'https://picsum.photos/seed/sleep6/300/300' },
-                    { id: 27, title: 'Fix You (Sleep Mix)', artist: 'Coldplay Cover', url: pubAudio[7], cover: 'https://picsum.photos/seed/sleep7/300/300' },
-                    { id: 28, title: 'Space Song (Lofi)', artist: 'Beach House Cover', url: pubAudio[4], cover: 'https://picsum.photos/seed/sleep8/300/300' },
-                    { id: 29, title: 'Apocalypse (Chillhop)', artist: 'Cigarettes After Sex Cover', url: pubAudio[9], cover: 'https://picsum.photos/seed/sleep9/300/300' },
-                    { id: 30, title: 'Chamber Of Reflection (Lofi)', artist: 'Mac DeMarco Cover', url: pubAudio[3], cover: 'https://picsum.photos/seed/sleep10/300/300' }
+                    { id: 21, title: 'Sweater Weather (Slowed Lofi)', artist: 'The Neighbourhood Cover', url: pubMusic[2], cover: 'https://picsum.photos/seed/sleep1/300/300' },
+                    { id: 22, title: 'Creep (Midnight Lofi)', artist: 'Radiohead Cover', url: pubMusic[3], cover: 'https://picsum.photos/seed/sleep2/300/300' },
+                    { id: 23, title: 'Glimpse of Us (Lofi)', artist: 'Joji Cover', url: pubMusic[4], cover: 'https://picsum.photos/seed/sleep3/300/300' },
+                    { id: 24, title: 'Someone You Loved (Chill)', artist: 'Lewis Capaldi Cover', url: pubMusic[5], cover: 'https://picsum.photos/seed/sleep4/300/300' },
+                    { id: 25, title: 'Let It Happen (Lofi Mix)', artist: 'Tame Impala Cover', url: pubMusic[6], cover: 'https://picsum.photos/seed/sleep5/300/300' },
+                    { id: 26, title: 'Yellow (Acoustic Lofi)', artist: 'Coldplay Cover', url: pubMusic[7], cover: 'https://picsum.photos/seed/sleep6/300/300' },
+                    { id: 27, title: 'Fix You (Sleep Mix)', artist: 'Coldplay Cover', url: pubMusic[8], cover: 'https://picsum.photos/seed/sleep7/300/300' },
+                    { id: 28, title: 'Space Song (Lofi)', artist: 'Beach House Cover', url: pubMusic[0], cover: 'https://picsum.photos/seed/sleep8/300/300' },
+                    { id: 29, title: 'Apocalypse (Chillhop)', artist: 'Cigarettes After Sex Cover', url: pubMusic[1], cover: 'https://picsum.photos/seed/sleep9/300/300' },
+                    { id: 30, title: 'Chamber Of Reflection (Lofi)', artist: 'Mac DeMarco Cover', url: pubMusic[2], cover: 'https://picsum.photos/seed/sleep10/300/300' }
                 ]
             },
             { 
@@ -250,16 +264,16 @@
                 bg: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=2000&q=80', 
                 color: 'bg-gradient-to-br from-orange-900/40 to-amber-900/40',
                 tracks: [
-                    { id: 31, title: 'Here Comes The Sun (Lofi)', artist: 'The Beatles Cover', url: pubAudio[1], cover: 'https://picsum.photos/seed/morning1/300/300' },
-                    { id: 32, title: 'Put Your Records On (Chill)', artist: 'Corinne Bailey Rae Cover', url: pubAudio[6], cover: 'https://picsum.photos/seed/morning2/300/300' },
-                    { id: 33, title: 'Sunday Morning (Lofi Mix)', artist: 'Maroon 5 Cover', url: pubAudio[7], cover: 'https://picsum.photos/seed/morning3/300/300' },
-                    { id: 34, title: 'Viva La Vida (Instrumental)', artist: 'Coldplay Cover', url: pubAudio[9], cover: 'https://picsum.photos/seed/morning4/300/300' },
-                    { id: 35, title: 'Dreams (Lofi Version)', artist: 'Fleetwood Mac Cover', url: pubAudio[0], cover: 'https://picsum.photos/seed/morning5/300/300' },
-                    { id: 36, title: 'Don\'t Stop Believin\' (Chill)', artist: 'Journey Cover', url: pubAudio[2], cover: 'https://picsum.photos/seed/morning6/300/300' },
-                    { id: 37, title: 'Take On Me (Lofi)', artist: 'a-ha Cover', url: pubAudio[4], cover: 'https://picsum.photos/seed/morning7/300/300' },
-                    { id: 38, title: 'Everybody Wants To Rule (Chill)', artist: 'Tears For Fears Cover', url: pubAudio[5], cover: 'https://picsum.photos/seed/morning8/300/300' },
-                    { id: 39, title: 'Africa (Lofi Beat)', artist: 'Toto Cover', url: pubAudio[8], cover: 'https://picsum.photos/seed/morning9/300/300' },
-                    { id: 40, title: 'Dancing Queen (Morning Mix)', artist: 'ABBA Cover', url: pubAudio[3], cover: 'https://picsum.photos/seed/morning10/300/300' }
+                    { id: 31, title: 'Here Comes The Sun (Lofi)', artist: 'The Beatles Cover', url: pubMusic[3], cover: 'https://picsum.photos/seed/morning1/300/300' },
+                    { id: 32, title: 'Put Your Records On (Chill)', artist: 'Corinne Bailey Rae Cover', url: pubMusic[4], cover: 'https://picsum.photos/seed/morning2/300/300' },
+                    { id: 33, title: 'Sunday Morning (Lofi Mix)', artist: 'Maroon 5 Cover', url: pubMusic[5], cover: 'https://picsum.photos/seed/morning3/300/300' },
+                    { id: 34, title: 'Viva La Vida (Instrumental)', artist: 'Coldplay Cover', url: pubMusic[6], cover: 'https://picsum.photos/seed/morning4/300/300' },
+                    { id: 35, title: 'Dreams (Lofi Version)', artist: 'Fleetwood Mac Cover', url: pubMusic[7], cover: 'https://picsum.photos/seed/morning5/300/300' },
+                    { id: 36, title: 'Don\'t Stop Believin\' (Chill)', artist: 'Journey Cover', url: pubMusic[8], cover: 'https://picsum.photos/seed/morning6/300/300' },
+                    { id: 37, title: 'Take On Me (Lofi)', artist: 'a-ha Cover', url: pubMusic[0], cover: 'https://picsum.photos/seed/morning7/300/300' },
+                    { id: 38, title: 'Everybody Wants To Rule (Chill)', artist: 'Tears For Fears Cover', url: pubMusic[1], cover: 'https://picsum.photos/seed/morning8/300/300' },
+                    { id: 39, title: 'Africa (Lofi Beat)', artist: 'Toto Cover', url: pubMusic[2], cover: 'https://picsum.photos/seed/morning9/300/300' },
+                    { id: 40, title: 'Dancing Queen (Morning Mix)', artist: 'ABBA Cover', url: pubMusic[3], cover: 'https://picsum.photos/seed/morning10/300/300' }
                 ]
             },
             { 
@@ -328,7 +342,7 @@
             audio.addEventListener('error', (e) => {
                 const fileName = audio.src ? audio.src.split('/').pop() : 'Unknown File';
                 console.error("Audio File Not Found Error:", audio.src);
-                showToast(`Could not find the file "${fileName}". Check the spelling and uppercase/lowercase letters in GitHub!`);
+                showToast(`Could not load track. The public music link may be temporarily down.`);
                 isPlaying = false;
                 updatePlayStateUI();
             });
