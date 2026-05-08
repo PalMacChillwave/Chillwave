@@ -193,7 +193,6 @@
         ];
 
         // Array of actual public music tracks hosted on a reliable GitHub repository.
-        // This ensures real music plays for the first 4 playlists without needing local files!
         const pubMusic = [
             'https://raw.githubusercontent.com/muhammederdem/mini-player/master/mp3/1.mp3',
             'https://raw.githubusercontent.com/muhammederdem/mini-player/master/mp3/2.mp3',
@@ -206,7 +205,8 @@
             'https://raw.githubusercontent.com/muhammederdem/mini-player/master/mp3/9.mp3',
         ];
 
-        // --- DATA (40 Music Tracks using real public music URLs, 10 Atmosphere tracks) ---
+        // --- DATA ---
+        // Notice the double quotes used for the track "Don't Stop Believin'" to prevent syntax errors on GitHub Pages!
         const STATIONS = [
             { 
                 id: 'chill', name: 'Chill Vibes', icon: 'local_cafe', 
@@ -269,7 +269,7 @@
                     { id: 33, title: 'Sunday Morning (Lofi Mix)', artist: 'Maroon 5 Cover', url: pubMusic[5], cover: 'https://picsum.photos/seed/morning3/300/300' },
                     { id: 34, title: 'Viva La Vida (Instrumental)', artist: 'Coldplay Cover', url: pubMusic[6], cover: 'https://picsum.photos/seed/morning4/300/300' },
                     { id: 35, title: 'Dreams (Lofi Version)', artist: 'Fleetwood Mac Cover', url: pubMusic[7], cover: 'https://picsum.photos/seed/morning5/300/300' },
-                    { id: 36, title: 'Don\'t Stop Believin\' (Chill)', artist: 'Journey Cover', url: pubMusic[8], cover: 'https://picsum.photos/seed/morning6/300/300' },
+                    { id: 36, title: "Don't Stop Believin' (Chill)", artist: 'Journey Cover', url: pubMusic[8], cover: 'https://picsum.photos/seed/morning6/300/300' },
                     { id: 37, title: 'Take On Me (Lofi)', artist: 'a-ha Cover', url: pubMusic[0], cover: 'https://picsum.photos/seed/morning7/300/300' },
                     { id: 38, title: 'Everybody Wants To Rule (Chill)', artist: 'Tears For Fears Cover', url: pubMusic[1], cover: 'https://picsum.photos/seed/morning8/300/300' },
                     { id: 39, title: 'Africa (Lofi Beat)', artist: 'Toto Cover', url: pubMusic[2], cover: 'https://picsum.photos/seed/morning9/300/300' },
@@ -304,32 +304,38 @@
         let toastTimeout;
 
         // --- DOM ELEMENTS ---
-        const audio = document.getElementById('audio-player');
-        const bgImage = document.getElementById('bg-image');
-        const bgGradient = document.getElementById('bg-gradient');
-        const stationsContainer = document.getElementById('stations-container');
-        const tracksContainer = document.getElementById('tracks-container');
-        
-        const currentCover = document.getElementById('current-cover');
-        const currentCoverContainer = document.getElementById('current-cover-container');
-        const currentTitle = document.getElementById('current-title');
-        const currentArtist = document.getElementById('current-artist');
-        
-        const mainPlayIcon = document.getElementById('main-play-icon');
-        const timeCurrent = document.getElementById('time-current');
-        const timeTotal = document.getElementById('time-total');
-        const progressBar = document.getElementById('progress-bar');
-        const progressContainer = document.getElementById('progress-container');
-        
-        const volumeIcon = document.getElementById('volume-icon');
-        const volumeBar = document.getElementById('volume-bar');
-        const volumeSlider = document.getElementById('volume-slider');
-        
-        const playlistContainer = document.getElementById('playlist-container');
-        const playlistToggleBtn = document.getElementById('playlist-toggle-btn');
+        let audio, bgImage, bgGradient, stationsContainer, tracksContainer;
+        let currentCover, currentCoverContainer, currentTitle, currentArtist;
+        let mainPlayIcon, timeCurrent, timeTotal, progressBar, progressContainer;
+        let volumeIcon, volumeBar, volumeSlider, playlistContainer, playlistToggleBtn;
 
         // --- INITIALIZATION ---
         function init() {
+            // Assign DOM Elements inside init to guarantee DOM is loaded
+            audio = document.getElementById('audio-player');
+            bgImage = document.getElementById('bg-image');
+            bgGradient = document.getElementById('bg-gradient');
+            stationsContainer = document.getElementById('stations-container');
+            tracksContainer = document.getElementById('tracks-container');
+            
+            currentCover = document.getElementById('current-cover');
+            currentCoverContainer = document.getElementById('current-cover-container');
+            currentTitle = document.getElementById('current-title');
+            currentArtist = document.getElementById('current-artist');
+            
+            mainPlayIcon = document.getElementById('main-play-icon');
+            timeCurrent = document.getElementById('time-current');
+            timeTotal = document.getElementById('time-total');
+            progressBar = document.getElementById('progress-bar');
+            progressContainer = document.getElementById('progress-container');
+            
+            volumeIcon = document.getElementById('volume-icon');
+            volumeBar = document.getElementById('volume-bar');
+            volumeSlider = document.getElementById('volume-slider');
+            
+            playlistContainer = document.getElementById('playlist-container');
+            playlistToggleBtn = document.getElementById('playlist-toggle-btn');
+
             audio.volume = volume;
             loadStation(0); // This sets up the UI and loads track 0 of the first station
             
@@ -607,8 +613,8 @@
             return `${m}:${s.toString().padStart(2, '0')}`;
         }
 
-        // Start the app
-        init();
+        // Start the app safely once everything is loaded
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
