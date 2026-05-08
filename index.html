@@ -65,7 +65,7 @@
     <div class="absolute inset-0 z-0 bg-black/20"></div>
 
     <!-- Audio Element -->
-    <audio id="audio-player" crossorigin="anonymous"></audio>
+    <audio id="audio-player"></audio>
 
     <!-- Main Content Layout -->
     <div class="relative z-10 flex flex-col h-full">
@@ -192,7 +192,8 @@
             'https://actions.google.com/sounds/v1/nature/wind_in_trees.ogg'
         ];
 
-        // Array of actual public music tracks hosted on a reliable GitHub repository.
+        // Using reliable .mp3 links hosted on a GitHub repository instead of Wikimedia .ogg files.
+        // Browsers like Safari do not support .ogg natively, causing the Audio File Not Found errors.
         const pubMusic = [
             'https://raw.githubusercontent.com/muhammederdem/mini-player/master/mp3/1.mp3',
             'https://raw.githubusercontent.com/muhammederdem/mini-player/master/mp3/2.mp3',
@@ -203,10 +204,10 @@
             'https://raw.githubusercontent.com/muhammederdem/mini-player/master/mp3/7.mp3',
             'https://raw.githubusercontent.com/muhammederdem/mini-player/master/mp3/8.mp3',
             'https://raw.githubusercontent.com/muhammederdem/mini-player/master/mp3/9.mp3',
+            'https://raw.githubusercontent.com/muhammederdem/mini-player/master/mp3/1.mp3'
         ];
 
         // --- DATA ---
-        // Notice the double quotes used for the track "Don't Stop Believin'" to prevent syntax errors on GitHub Pages!
         const STATIONS = [
             { 
                 id: 'chill', name: 'Chill Vibes', icon: 'local_cafe', 
@@ -222,7 +223,7 @@
                     { id: 7, title: 'Cruel Summer (Chill Mix)', artist: 'Taylor Swift Cover', url: pubMusic[6], cover: 'https://picsum.photos/seed/chill7/300/300' },
                     { id: 8, title: 'Good Days (Instrumental)', artist: 'SZA Cover', url: pubMusic[7], cover: 'https://picsum.photos/seed/chill8/300/300' },
                     { id: 9, title: 'Kill Bill (Lofi Cover)', artist: 'SZA Cover', url: pubMusic[8], cover: 'https://picsum.photos/seed/chill9/300/300' },
-                    { id: 10, title: 'Die For You (Chillhop)', artist: 'The Weeknd Cover', url: pubMusic[0], cover: 'https://picsum.photos/seed/chill10/300/300' }
+                    { id: 10, title: 'Die For You (Chillhop)', artist: 'The Weeknd Cover', url: pubMusic[9], cover: 'https://picsum.photos/seed/chill10/300/300' }
                 ]
             },
             { 
@@ -238,8 +239,8 @@
                     { id: 16, title: 'Bad Guy (Chill Mix)', artist: 'Billie Eilish Cover', url: pubMusic[6], cover: 'https://picsum.photos/seed/focus6/300/300' },
                     { id: 17, title: 'Industry Baby (Focus)', artist: 'Lil Nas X Cover', url: pubMusic[7], cover: 'https://picsum.photos/seed/focus7/300/300' },
                     { id: 18, title: 'SICKO MODE (Lofi Beat)', artist: 'Travis Scott Cover', url: pubMusic[8], cover: 'https://picsum.photos/seed/focus8/300/300' },
-                    { id: 19, title: 'Gods Plan (Chillhop)', artist: 'Drake Cover', url: pubMusic[0], cover: 'https://picsum.photos/seed/focus9/300/300' },
-                    { id: 20, title: 'Humble (Instrumental Lofi)', artist: 'Kendrick Lamar Cover', url: pubMusic[1], cover: 'https://picsum.photos/seed/focus10/300/300' }
+                    { id: 19, title: 'Gods Plan (Chillhop)', artist: 'Drake Cover', url: pubMusic[9], cover: 'https://picsum.photos/seed/focus9/300/300' },
+                    { id: 20, title: 'Humble (Instrumental Lofi)', artist: 'Kendrick Lamar Cover', url: pubMusic[0], cover: 'https://picsum.photos/seed/focus10/300/300' }
                 ]
             },
             { 
@@ -254,9 +255,9 @@
                     { id: 25, title: 'Let It Happen (Lofi Mix)', artist: 'Tame Impala Cover', url: pubMusic[6], cover: 'https://picsum.photos/seed/sleep5/300/300' },
                     { id: 26, title: 'Yellow (Acoustic Lofi)', artist: 'Coldplay Cover', url: pubMusic[7], cover: 'https://picsum.photos/seed/sleep6/300/300' },
                     { id: 27, title: 'Fix You (Sleep Mix)', artist: 'Coldplay Cover', url: pubMusic[8], cover: 'https://picsum.photos/seed/sleep7/300/300' },
-                    { id: 28, title: 'Space Song (Lofi)', artist: 'Beach House Cover', url: pubMusic[0], cover: 'https://picsum.photos/seed/sleep8/300/300' },
-                    { id: 29, title: 'Apocalypse (Chillhop)', artist: 'Cigarettes After Sex Cover', url: pubMusic[1], cover: 'https://picsum.photos/seed/sleep9/300/300' },
-                    { id: 30, title: 'Chamber Of Reflection (Lofi)', artist: 'Mac DeMarco Cover', url: pubMusic[2], cover: 'https://picsum.photos/seed/sleep10/300/300' }
+                    { id: 28, title: 'Space Song (Lofi)', artist: 'Beach House Cover', url: pubMusic[9], cover: 'https://picsum.photos/seed/sleep8/300/300' },
+                    { id: 29, title: 'Apocalypse (Chillhop)', artist: 'Cigarettes After Sex Cover', url: pubMusic[0], cover: 'https://picsum.photos/seed/sleep9/300/300' },
+                    { id: 30, title: 'Chamber Of Reflection (Lofi)', artist: 'Mac DeMarco Cover', url: pubMusic[1], cover: 'https://picsum.photos/seed/sleep10/300/300' }
                 ]
             },
             { 
@@ -270,10 +271,10 @@
                     { id: 34, title: 'Viva La Vida (Instrumental)', artist: 'Coldplay Cover', url: pubMusic[6], cover: 'https://picsum.photos/seed/morning4/300/300' },
                     { id: 35, title: 'Dreams (Lofi Version)', artist: 'Fleetwood Mac Cover', url: pubMusic[7], cover: 'https://picsum.photos/seed/morning5/300/300' },
                     { id: 36, title: "Don't Stop Believin' (Chill)", artist: 'Journey Cover', url: pubMusic[8], cover: 'https://picsum.photos/seed/morning6/300/300' },
-                    { id: 37, title: 'Take On Me (Lofi)', artist: 'a-ha Cover', url: pubMusic[0], cover: 'https://picsum.photos/seed/morning7/300/300' },
-                    { id: 38, title: 'Everybody Wants To Rule (Chill)', artist: 'Tears For Fears Cover', url: pubMusic[1], cover: 'https://picsum.photos/seed/morning8/300/300' },
-                    { id: 39, title: 'Africa (Lofi Beat)', artist: 'Toto Cover', url: pubMusic[2], cover: 'https://picsum.photos/seed/morning9/300/300' },
-                    { id: 40, title: 'Dancing Queen (Morning Mix)', artist: 'ABBA Cover', url: pubMusic[3], cover: 'https://picsum.photos/seed/morning10/300/300' }
+                    { id: 37, title: 'Take On Me (Lofi)', artist: 'a-ha Cover', url: pubMusic[9], cover: 'https://picsum.photos/seed/morning7/300/300' },
+                    { id: 38, title: 'Everybody Wants To Rule (Chill)', artist: 'Tears For Fears Cover', url: pubMusic[0], cover: 'https://picsum.photos/seed/morning8/300/300' },
+                    { id: 39, title: 'Africa (Lofi Beat)', artist: 'Toto Cover', url: pubMusic[1], cover: 'https://picsum.photos/seed/morning9/300/300' },
+                    { id: 40, title: 'Dancing Queen (Morning Mix)', artist: 'ABBA Cover', url: pubMusic[2], cover: 'https://picsum.photos/seed/morning10/300/300' }
                 ]
             },
             { 
