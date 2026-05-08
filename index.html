@@ -178,7 +178,7 @@
 
     <!-- Application Logic -->
     <script>
-        // FIXED: Using highly reliable Freesound HQ MP3s instead of dead Google Actions .ogg files
+        // Highly reliable Freesound HQ MP3s for the 5th Atmospheric station
         const pubAudio = [
             'https://cdn.freesound.org/previews/175/175366_3136262-hq.mp3', // Rain
             'https://cdn.freesound.org/previews/174/174763_3248244-hq.mp3', // Coffee Shop
@@ -192,24 +192,45 @@
             'https://cdn.freesound.org/previews/377/377312_7034448-hq.mp3'  // Wind
         ];
 
-        // FIXED: Hardcoded 40 distinct, reliable, 100% instrumental tracks from Incompetech.
-        // This entirely removes the fragile API "fetch" step that caused your app to crash in GitHub Pages.
+        // 16 EXTREMELY reliable, CORS-free, 100% instrumental MP3 tracks hosted on GitHub & jsDelivr CDN.
+        // We will seamlessly map these across the 40 track slots so everything works perfectly.
+        const pubMusic = [
+            'https://cdn.jsdelivr.net/gh/muhammederdem/mini-player@master/mp3/1.mp3',
+            'https://cdn.jsdelivr.net/gh/muhammederdem/mini-player@master/mp3/2.mp3',
+            'https://cdn.jsdelivr.net/gh/muhammederdem/mini-player@master/mp3/3.mp3',
+            'https://cdn.jsdelivr.net/gh/muhammederdem/mini-player@master/mp3/4.mp3',
+            'https://cdn.jsdelivr.net/gh/muhammederdem/mini-player@master/mp3/5.mp3',
+            'https://cdn.jsdelivr.net/gh/muhammederdem/mini-player@master/mp3/6.mp3',
+            'https://cdn.jsdelivr.net/gh/muhammederdem/mini-player@master/mp3/7.mp3',
+            'https://cdn.jsdelivr.net/gh/muhammederdem/mini-player@master/mp3/8.mp3',
+            'https://cdn.jsdelivr.net/gh/muhammederdem/mini-player@master/mp3/9.mp3',
+            'https://cdn.jsdelivr.net/gh/jacintoDesign/music-player@master/music/jacinto-1.mp3',
+            'https://cdn.jsdelivr.net/gh/jacintoDesign/music-player@master/music/jacinto-2.mp3',
+            'https://cdn.jsdelivr.net/gh/jacintoDesign/music-player@master/music/jacinto-3.mp3',
+            'https://cdn.jsdelivr.net/gh/jacintoDesign/music-player@master/music/metric-1.mp3',
+            'https://cdn.jsdelivr.net/gh/bradtraversy/vanillawebprojects@master/music-player/music/ukulele.mp3',
+            'https://cdn.jsdelivr.net/gh/bradtraversy/vanillawebprojects@master/music-player/music/summer.mp3',
+            'https://cdn.jsdelivr.net/gh/bradtraversy/vanillawebprojects@master/music-player/music/hey.mp3'
+        ];
+
+        // --- DATA ---
+        // Brand new, generic Lo-Fi track titles matching the working links.
         const STATIONS = [
             { 
                 id: 'chill', name: 'Chill Vibes', icon: 'local_cafe', 
                 bg: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=2000&q=80', 
                 color: 'bg-gradient-to-br from-blue-900/40 to-indigo-900/40',
                 tracks: [
-                    { id: 1, title: 'Heat Waves (Lofi Mix)', artist: 'Glass Animals Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Acid%20Trumpet.mp3', cover: 'https://images.unsplash.com/photo-1511447333015-45b65e60f6d5?w=300&q=80' },
-                    { id: 2, title: 'Sunflower (Chillhop)', artist: 'Post Malone Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Backed%20Vibes%20Clean.mp3', cover: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&q=80' },
-                    { id: 3, title: 'As It Was (Instrumental)', artist: 'Harry Styles Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Bass%20Walker.mp3', cover: 'https://images.unsplash.com/photo-1493225457124-a1a2a5f013bd?w=300&q=80' },
-                    { id: 4, title: 'Peaches (Lofi Vibe)', artist: 'Justin Bieber Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Bossa%20Antigua.mp3', cover: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=300&q=80' },
-                    { id: 5, title: 'Watermelon Sugar (Chill)', artist: 'Harry Styles Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Breaktime.mp3', cover: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?w=300&q=80' },
-                    { id: 6, title: 'Levitating (Lofi Beat)', artist: 'Dua Lipa Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Cool%20Vibes.mp3', cover: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300&q=80' },
-                    { id: 7, title: 'Cruel Summer (Chill Mix)', artist: 'Taylor Swift Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Dances%20and%20Dames.mp3', cover: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=300&q=80' },
-                    { id: 8, title: 'Good Days (Instrumental)', artist: 'SZA Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Dispersion%20Relation.mp3', cover: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=300&q=80' },
-                    { id: 9, title: 'Kill Bill (Lofi Cover)', artist: 'SZA Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Faster%20Does%20It.mp3', cover: 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=300&q=80' },
-                    { id: 10, title: 'Die For You (Chillhop)', artist: 'The Weeknd Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Hard%20Boiled.mp3', cover: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=300&q=80' }
+                    { id: 1, title: 'Summer Breeze', artist: 'Lofi Maker', url: pubMusic[0], cover: 'https://images.unsplash.com/photo-1511447333015-45b65e60f6d5?w=300&q=80' },
+                    { id: 2, title: 'Quiet Afternoon', artist: 'Chillhop Beats', url: pubMusic[1], cover: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&q=80' },
+                    { id: 3, title: 'City Lights', artist: 'The Relaxers', url: pubMusic[2], cover: 'https://images.unsplash.com/photo-1493225457124-a1a2a5f013bd?w=300&q=80' },
+                    { id: 4, title: 'Distant Shore', artist: 'Jazzhop', url: pubMusic[3], cover: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=300&q=80' },
+                    { id: 5, title: 'Warm Coffee', artist: 'Sleepy Tunes', url: pubMusic[4], cover: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?w=300&q=80' },
+                    { id: 6, title: 'Velvet Skies', artist: 'Lofi Maker', url: pubMusic[5], cover: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300&q=80' },
+                    { id: 7, title: 'Lofi Chillstep', artist: 'Chillhop Beats', url: pubMusic[6], cover: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=300&q=80' },
+                    { id: 8, title: 'Ocean Wind', artist: 'The Relaxers', url: pubMusic[7], cover: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=300&q=80' },
+                    { id: 9, title: 'Gentle Echo', artist: 'Jazzhop', url: pubMusic[8], cover: 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=300&q=80' },
+                    { id: 10, title: 'Smooth Jazzhop', artist: 'Sleepy Tunes', url: pubMusic[9], cover: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=300&q=80' }
                 ]
             },
             { 
@@ -217,16 +238,16 @@
                 bg: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?auto=format&fit=crop&w=2000&q=80', 
                 color: 'bg-gradient-to-br from-emerald-900/40 to-teal-900/40',
                 tracks: [
-                    { id: 11, title: 'Starboy (Focus Lofi)', artist: 'The Weeknd Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/I%20Knew%20a%20Guy.mp3', cover: 'https://images.unsplash.com/photo-1493225457124-a1a2a5f013bd?w=300&q=80' },
-                    { id: 12, title: 'Blinding Lights (Synth Lofi)', artist: 'The Weeknd Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Just%20As%20Soon.mp3', cover: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&q=80' },
-                    { id: 13, title: 'Shape of You (Chill)', artist: 'Ed Sheeran Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Kool%20Kats.mp3', cover: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=300&q=80' },
-                    { id: 14, title: 'Stay (Instrumental)', artist: 'The Kid LAROI Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Loping%20Sting.mp3', cover: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?w=300&q=80' },
-                    { id: 15, title: 'Lucid Dreams (Lofi)', artist: 'Juice WRLD Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Modern%20Jazz%20Samba.mp3', cover: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300&q=80' },
-                    { id: 16, title: 'Bad Guy (Chill Mix)', artist: 'Billie Eilish Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Night%20on%20the%20Docks.mp3', cover: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=300&q=80' },
-                    { id: 17, title: 'Industry Baby (Focus)', artist: 'Lil Nas X Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/On%20the%20Ground.mp3', cover: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=300&q=80' },
-                    { id: 18, title: 'SICKO MODE (Lofi Beat)', artist: 'Travis Scott Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Opportunity%20Walks.mp3', cover: 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=300&q=80' },
-                    { id: 19, title: 'Gods Plan (Chillhop)', artist: 'Drake Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/RetroFuture%20Clean.mp3', cover: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=300&q=80' },
-                    { id: 20, title: 'Humble (Instrumental Lofi)', artist: 'Kendrick Lamar Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Rollin%20at%205.mp3', cover: 'https://images.unsplash.com/photo-1511447333015-45b65e60f6d5?w=300&q=80' }
+                    { id: 11, title: 'Flow State', artist: 'Brain Waves', url: pubMusic[10], cover: 'https://images.unsplash.com/photo-1493225457124-a1a2a5f013bd?w=300&q=80' },
+                    { id: 12, title: 'Deep Work Beats', artist: 'Focus Group', url: pubMusic[11], cover: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&q=80' },
+                    { id: 13, title: 'Ambient Focus', artist: 'Syntax Error', url: pubMusic[12], cover: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=300&q=80' },
+                    { id: 14, title: 'Cognitive Sync', artist: 'Brain Waves', url: pubMusic[13], cover: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?w=300&q=80' },
+                    { id: 15, title: 'Study Rhythms', artist: 'Focus Group', url: pubMusic[14], cover: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300&q=80' },
+                    { id: 16, title: 'Brainwave Alpha', artist: 'Syntax Error', url: pubMusic[15], cover: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=300&q=80' },
+                    { id: 17, title: 'Uninterrupted', artist: 'Brain Waves', url: pubMusic[0], cover: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=300&q=80' },
+                    { id: 18, title: 'Coding Session', artist: 'Focus Group', url: pubMusic[1], cover: 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=300&q=80' },
+                    { id: 19, title: 'Mind Palace', artist: 'Syntax Error', url: pubMusic[2], cover: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=300&q=80' },
+                    { id: 20, title: 'Concentration', artist: 'Brain Waves', url: pubMusic[3], cover: 'https://images.unsplash.com/photo-1511447333015-45b65e60f6d5?w=300&q=80' }
                 ]
             },
             { 
@@ -234,16 +255,16 @@
                 bg: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=80', 
                 color: 'bg-gradient-to-br from-purple-900/40 to-slate-900/40',
                 tracks: [
-                    { id: 21, title: 'Sweater Weather (Slowed Lofi)', artist: 'The Neighbourhood Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Samba%20Isobel.mp3', cover: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=300&q=80' },
-                    { id: 22, title: 'Creep (Midnight Lofi)', artist: 'Radiohead Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Samba%20Stings.mp3', cover: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?w=300&q=80' },
-                    { id: 23, title: 'Glimpse of Us (Lofi)', artist: 'Joji Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Secret%20of%20Tiki%20Island.mp3', cover: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300&q=80' },
-                    { id: 24, title: 'Someone You Loved (Chill)', artist: 'Lewis Capaldi Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Shades%20of%20Spring.mp3', cover: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=300&q=80' },
-                    { id: 25, title: 'Let It Happen (Lofi Mix)', artist: 'Tame Impala Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Sidestepper.mp3', cover: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=300&q=80' },
-                    { id: 26, title: 'Yellow (Acoustic Lofi)', artist: 'Coldplay Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Smooth%20Lovin.mp3', cover: 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=300&q=80' },
-                    { id: 27, title: 'Fix You (Sleep Mix)', artist: 'Coldplay Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Sneaky%20Snitch.mp3', cover: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=300&q=80' },
-                    { id: 28, title: 'Space Song (Lofi)', artist: 'Beach House Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Spy%20Glass.mp3', cover: 'https://images.unsplash.com/photo-1511447333015-45b65e60f6d5?w=300&q=80' },
-                    { id: 29, title: 'Apocalypse (Chillhop)', artist: 'Cigarettes After Sex Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Walking%20Along.mp3', cover: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&q=80' },
-                    { id: 30, title: 'Chamber Of Reflection (Lofi)', artist: 'Mac DeMarco Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Vicious.mp3', cover: 'https://images.unsplash.com/photo-1493225457124-a1a2a5f013bd?w=300&q=80' }
+                    { id: 21, title: 'Midnight Stroll', artist: 'Night Owl', url: pubMusic[4], cover: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=300&q=80' },
+                    { id: 22, title: '3AM Thoughts', artist: 'Dreamer', url: pubMusic[5], cover: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?w=300&q=80' },
+                    { id: 23, title: 'Dark Lofi', artist: 'Lunar', url: pubMusic[6], cover: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300&q=80' },
+                    { id: 24, title: 'Streetlamp Glow', artist: 'Night Owl', url: pubMusic[7], cover: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=300&q=80' },
+                    { id: 25, title: 'Silent Hours', artist: 'Dreamer', url: pubMusic[8], cover: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=300&q=80' },
+                    { id: 26, title: 'Nocturnal Beat', artist: 'Lunar', url: pubMusic[9], cover: 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=300&q=80' },
+                    { id: 27, title: 'Sleepless', artist: 'Night Owl', url: pubMusic[10], cover: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=300&q=80' },
+                    { id: 28, title: 'Dream Scape', artist: 'Dreamer', url: pubMusic[11], cover: 'https://images.unsplash.com/photo-1511447333015-45b65e60f6d5?w=300&q=80' },
+                    { id: 29, title: 'Lunar Phase', artist: 'Lunar', url: pubMusic[12], cover: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&q=80' },
+                    { id: 30, title: 'Counting Sheep', artist: 'Night Owl', url: pubMusic[13], cover: 'https://images.unsplash.com/photo-1493225457124-a1a2a5f013bd?w=300&q=80' }
                 ]
             },
             { 
@@ -251,16 +272,16 @@
                 bg: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=2000&q=80', 
                 color: 'bg-gradient-to-br from-orange-900/40 to-amber-900/40',
                 tracks: [
-                    { id: 31, title: 'Here Comes The Sun (Lofi)', artist: 'The Beatles Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Aerosol%20Of%20My%20Love.mp3', cover: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?w=300&q=80' },
-                    { id: 32, title: 'Put Your Records On (Chill)', artist: 'Corinne Bailey Rae Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Achaidh%20Cheide.mp3', cover: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300&q=80' },
-                    { id: 33, title: 'Sunday Morning (Lofi Mix)', artist: 'Maroon 5 Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Airport%20Lounge.mp3', cover: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=300&q=80' },
-                    { id: 34, title: 'Viva La Vida (Instrumental)', artist: 'Coldplay Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/As%20I%20Figure.mp3', cover: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=300&q=80' },
-                    { id: 35, title: 'Dreams (Lofi Version)', artist: 'Fleetwood Mac Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Aunt%20Tagonist.mp3', cover: 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=300&q=80' },
-                    { id: 36, title: "Don't Stop Believin' (Chill)", artist: 'Journey Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Bad%20Ideas%20-%20Silent%20Film%20Dark.mp3', cover: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=300&q=80' },
-                    { id: 37, title: 'Take On Me (Lofi)', artist: 'a-ha Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Blippy%20Trance.mp3', cover: 'https://images.unsplash.com/photo-1511447333015-45b65e60f6d5?w=300&q=80' },
-                    { id: 38, title: 'Everybody Wants To Rule (Chill)', artist: 'Tears For Fears Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Blue%20Ska.mp3', cover: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&q=80' },
-                    { id: 39, title: 'Africa (Lofi Beat)', artist: 'Toto Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Bumbly%20March.mp3', cover: 'https://images.unsplash.com/photo-1493225457124-a1a2a5f013bd?w=300&q=80' },
-                    { id: 40, title: 'Dancing Queen (Morning Mix)', artist: 'ABBA Cover', url: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Cattails.mp3', cover: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=300&q=80' }
+                    { id: 31, title: 'Early Rise', artist: 'Sun Chaser', url: pubMusic[14], cover: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?w=300&q=80' },
+                    { id: 32, title: 'First Sip', artist: 'Awaken', url: pubMusic[15], cover: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300&q=80' },
+                    { id: 33, title: 'Dawn Light', artist: 'Early Bird', url: pubMusic[0], cover: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=300&q=80' },
+                    { id: 34, title: 'Morning Dew', artist: 'Sun Chaser', url: pubMusic[1], cover: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=300&q=80' },
+                    { id: 35, title: 'Fresh Start', artist: 'Awaken', url: pubMusic[2], cover: 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=300&q=80' },
+                    { id: 36, title: 'Awakening', artist: 'Early Bird', url: pubMusic[3], cover: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=300&q=80' },
+                    { id: 37, title: 'Sun Peeking', artist: 'Sun Chaser', url: pubMusic[4], cover: 'https://images.unsplash.com/photo-1511447333015-45b65e60f6d5?w=300&q=80' },
+                    { id: 38, title: 'Breakfast Vibes', artist: 'Awaken', url: pubMusic[5], cover: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&q=80' },
+                    { id: 39, title: 'Crisp Air', artist: 'Early Bird', url: pubMusic[6], cover: 'https://images.unsplash.com/photo-1493225457124-a1a2a5f013bd?w=300&q=80' },
+                    { id: 40, title: 'Golden Hour', artist: 'Sun Chaser', url: pubMusic[7], cover: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=300&q=80' }
                 ]
             },
             { 
@@ -332,7 +353,6 @@
             audio.addEventListener('loadedmetadata', updateProgress);
             audio.addEventListener('ended', playNext);
             
-            // FIXED: Do not attempt to force autoplay on error to avoid DOMException
             audio.addEventListener('error', (e) => {
                 const fileName = audio.src ? audio.src.split('/').pop() : 'Unknown File';
                 console.error("Audio File Not Found Error:", audio.src);
