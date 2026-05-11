@@ -51,11 +51,44 @@
 <body class="relative w-full h-screen overflow-hidden font-sans text-white bg-gray-900 select-none">
 
     <!-- Toast Notification -->
-    <div id="toast" class="fixed top-4 right-4 max-w-sm bg-red-600/90 backdrop-blur-md text-white px-4 py-3 rounded-lg shadow-2xl transform transition-all duration-300 translate-x-[150%] opacity-0 z-50 flex items-start gap-3 border border-red-400/50">
-        <span class="material-symbols-rounded mt-0.5">error</span>
+    <div id="toast" class="fixed top-4 right-4 max-w-sm bg-indigo-600/90 backdrop-blur-md text-white px-4 py-3 rounded-lg shadow-2xl transform transition-all duration-300 translate-x-[150%] opacity-0 z-50 flex items-start gap-3 border border-indigo-400/50">
+        <span id="toast-icon" class="material-symbols-rounded mt-0.5">info</span>
         <div class="flex flex-col">
-            <span class="font-bold text-sm">Audio Error</span>
-            <span id="toast-message" class="text-xs text-white/90 leading-tight mt-1">An unknown error occurred with the audio playback.</span>
+            <span id="toast-title" class="font-bold text-sm">Notification</span>
+            <span id="toast-message" class="text-xs text-white/90 leading-tight mt-1">Message goes here.</span>
+        </div>
+    </div>
+
+    <!-- Suggestion Box Modal -->
+    <div id="suggestion-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black/60 backdrop-blur-sm transition-opacity">
+        <div class="bg-gray-800/90 p-8 rounded-2xl w-full max-w-md border border-white/10 shadow-2xl relative">
+            <button onclick="toggleSuggestionBox()" class="absolute top-4 right-4 text-white/50 hover:text-white transition-colors">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+            <h2 class="text-xl font-bold text-white mb-2 flex items-center gap-2">
+                <span class="material-symbols-rounded text-indigo-400">lightbulb</span>
+                Suggest a Song
+            </h2>
+            <p class="text-xs text-white/50 mb-6">Know a great instrumental track? Send it over and it might be added to the playlists!</p>
+            
+            <form id="suggestion-form" class="flex flex-col gap-4">
+                <div>
+                    <label class="block text-xs text-white/60 mb-1 ml-1 uppercase tracking-wider">Song Title *</label>
+                    <input type="text" name="Song Title" required class="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-indigo-500 transition-colors" placeholder="e.g. Midnight Coffee" />
+                </div>
+                <div>
+                    <label class="block text-xs text-white/60 mb-1 ml-1 uppercase tracking-wider">Artist *</label>
+                    <input type="text" name="Artist" required class="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-indigo-500 transition-colors" placeholder="e.g. Lofi Maker" />
+                </div>
+                <div>
+                    <label class="block text-xs text-white/60 mb-1 ml-1 uppercase tracking-wider">Link (Optional)</label>
+                    <input type="url" name="Link" class="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-indigo-500 transition-colors" placeholder="YouTube or Spotify link" />
+                </div>
+                <button type="submit" id="submit-btn" class="mt-4 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-lg transition-colors flex justify-center items-center gap-2">
+                    <span class="material-symbols-rounded" style="font-size: 20px;">send</span>
+                    Send Suggestion
+                </button>
+            </form>
         </div>
     </div>
 
@@ -64,7 +97,7 @@
     <div id="bg-gradient" class="absolute inset-0 z-0 opacity-80 mix-blend-multiply transition-all duration-1000"></div>
     <div class="absolute inset-0 z-0 bg-black/20"></div>
 
-    <!-- Audio Element (No crossorigin attribute, allows standard local streaming) -->
+    <!-- Audio Element -->
     <audio id="audio-player"></audio>
 
     <!-- Main Content Layout -->
@@ -82,6 +115,12 @@
             </div>
             
             <div class="flex items-center gap-4">
+                <!-- Suggestion Box Button -->
+                <button onclick="toggleSuggestionBox()" class="flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors border rounded-full bg-white/10 hover:bg-white/20 border-white/20 text-white/90 hover:text-white" title="Suggest a song">
+                    <span class="material-symbols-rounded" style="font-size: 18px;">lightbulb</span>
+                    Suggest Song
+                </button>
+                
                 <button onclick="toggleFullscreen()" class="p-2 transition-colors rounded-full hover:bg-white/10 text-white/80 hover:text-white" title="Fullscreen">
                     <span class="material-symbols-rounded">fullscreen</span>
                 </button>
@@ -179,14 +218,21 @@
     <!-- Application Logic -->
     <script>
         // --- DATA ---
-        // All tracks perfectly mapped to point to your internal GitHub folders: "music/" and "atmosphere/"
+        // Expected folder structure in GitHub:
+        // /music/chill-1.mp3 ... /music/chill-10.mp3
+        // /music/focus-1.mp3 ... /music/focus-10.mp3
+        // /music/sleep-1.mp3 ... /music/sleep-10.mp3
+        // /music/morning-1.mp3 ... /music/morning-10.mp3
+        // /atmosphere/atmos-1.mp3 ... /atmosphere/atmos-10.mp3
+        // /assets/chill-bg.gif, /assets/focus-bg.gif, /assets/sleep-bg.gif, /assets/morning-bg.gif, /assets/atmos-bg.gif
+        
         const STATIONS = [
             { 
                 id: 'chill', name: 'Chill Vibes', icon: 'local_cafe', 
-                bg: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=2000&q=80', 
-                color: 'bg-gradient-to-br from-blue-900/40 to-indigo-900/40',
+                bg: './assets/chill-bg.gif', 
+                color: 'bg-gradient-to-br from-blue-900/60 to-indigo-900/60',
                 tracks: [
-                    { id: 1, title: 'Retro Pulse', artist: 'Instrumental', url: './music/chill-1.mp3', cover: 'https://images.unsplash.com/photo-1511447333015-45b65e60f6d5?w=300&q=80' },
+                    { id: 1, title: 'Summer Breeze', artist: 'Instrumental', url: './music/chill-1.mp3', cover: 'https://images.unsplash.com/photo-1511447333015-45b65e60f6d5?w=300&q=80' },
                     { id: 2, title: 'Quiet Afternoon', artist: 'Instrumental', url: './music/chill-2.mp3', cover: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&q=80' },
                     { id: 3, title: 'Space Trash', artist: 'Instrumental', url: './music/chill-3.mp3', cover: 'https://images.unsplash.com/photo-1493225457124-a1a2a5f013bd?w=300&q=80' },
                     { id: 4, title: 'Goa Dreams', artist: 'Instrumental', url: './music/chill-4.mp3', cover: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=300&q=80' },
@@ -200,8 +246,8 @@
             },
             { 
                 id: 'focus', name: 'Deep Focus', icon: 'computer', 
-                bg: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?auto=format&fit=crop&w=2000&q=80', 
-                color: 'bg-gradient-to-br from-emerald-900/40 to-teal-900/40',
+                bg: './assets/focus-bg.gif', 
+                color: 'bg-gradient-to-br from-emerald-900/60 to-teal-900/60',
                 tracks: [
                     { id: 11, title: 'Dungeon Dive', artist: 'Instrumental', url: './music/focus-1.mp3', cover: 'https://images.unsplash.com/photo-1493225457124-a1a2a5f013bd?w=300&q=80' },
                     { id: 12, title: 'Doll Dance', artist: 'Instrumental', url: './music/focus-2.mp3', cover: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&q=80' },
@@ -217,8 +263,8 @@
             },
             { 
                 id: 'sleep', name: 'Late Night', icon: 'bedtime', 
-                bg: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=80', 
-                color: 'bg-gradient-to-br from-purple-900/40 to-slate-900/40',
+                bg: './assets/sleep-bg.gif', 
+                color: 'bg-gradient-to-br from-purple-900/60 to-slate-900/60',
                 tracks: [
                     { id: 21, title: 'Midnight Stroll', artist: 'Instrumental', url: './music/sleep-1.mp3', cover: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=300&q=80' },
                     { id: 22, title: 'Late Night Nova', artist: 'Instrumental', url: './music/sleep-2.mp3', cover: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?w=300&q=80' },
@@ -234,8 +280,8 @@
             },
             { 
                 id: 'morning', name: 'Morning Coffee', icon: 'wb_sunny', 
-                bg: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=2000&q=80', 
-                color: 'bg-gradient-to-br from-orange-900/40 to-amber-900/40',
+                bg: './assets/morning-bg.gif', 
+                color: 'bg-gradient-to-br from-orange-900/60 to-amber-900/60',
                 tracks: [
                     { id: 31, title: 'Bossa Rise', artist: 'Instrumental', url: './music/morning-1.mp3', cover: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?w=300&q=80' },
                     { id: 32, title: 'Jungle Sip', artist: 'Instrumental', url: './music/morning-2.mp3', cover: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300&q=80' },
@@ -251,8 +297,8 @@
             },
             { 
                 id: 'atmosphere', name: 'Atmosphere', icon: 'landscape', 
-                bg: 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=2000&q=80', 
-                color: 'bg-gradient-to-br from-green-900/40 to-stone-900/40',
+                bg: './assets/atmos-bg.gif', 
+                color: 'bg-gradient-to-br from-green-900/60 to-stone-900/60',
                 tracks: [
                     { id: 41, title: 'Rain on Tin Roof', artist: 'Nature Sounds', url: './atmosphere/atmos-1.mp3', cover: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=300&q=80' },
                     { id: 42, title: 'Bustling Coffee Shop', artist: 'City Ambience', url: './atmosphere/atmos-2.mp3', cover: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=300&q=80' },
@@ -281,6 +327,7 @@
         let currentCover, currentCoverContainer, currentTitle, currentArtist;
         let mainPlayIcon, timeCurrent, timeTotal, progressBar, progressContainer;
         let volumeIcon, volumeBar, volumeSlider, playlistContainer, playlistToggleBtn;
+        let suggestionModal, suggestionForm;
 
         // --- INITIALIZATION ---
         function init() {
@@ -307,6 +354,9 @@
             
             playlistContainer = document.getElementById('playlist-container');
             playlistToggleBtn = document.getElementById('playlist-toggle-btn');
+            
+            suggestionModal = document.getElementById('suggestion-modal');
+            suggestionForm = document.getElementById('suggestion-form');
 
             audio.volume = volume;
             
@@ -320,29 +370,80 @@
             
             audio.addEventListener('error', (e) => {
                 console.error("Audio playback error. The file might be missing from your GitHub folder:", audio.src);
-                showToast(`Missing file! Please make sure you uploaded the MP3s to your GitHub folders.`);
+                showToast("Error", `Missing file! Make sure you uploaded ${audio.src.split('/').pop()} to GitHub.`, "error");
                 isPlaying = false;
                 updatePlayStateUI();
+            });
+
+            // Form Submit Listener (AJAX)
+            suggestionForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                // IMPORTANT: Replace the URL below with your actual Formspree endpoint URL!
+                const formspreeEndpoint = 'https://formspree.io/f/YOUR_UNIQUE_FORM_ID'; 
+                
+                const submitBtn = document.getElementById('submit-btn');
+                const originalBtnText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<span class="material-symbols-rounded animate-spin">sync</span> Sending...';
+                submitBtn.disabled = true;
+
+                try {
+                    const formData = new FormData(suggestionForm);
+                    const response = await fetch(formspreeEndpoint, {
+                        method: 'POST',
+                        body: formData,
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    
+                    if (response.ok) {
+                        showToast("Success", "Your song suggestion was sent!", "check_circle");
+                        suggestionForm.reset();
+                        toggleSuggestionBox();
+                    } else {
+                        showToast("Error", "Oops! Ensure you replaced the Formspree URL in the code.", "error");
+                    }
+                } catch (error) {
+                    showToast("Error", "There was a problem sending your suggestion.", "error");
+                } finally {
+                    submitBtn.innerHTML = originalBtnText;
+                    submitBtn.disabled = false;
+                }
             });
         }
 
         // --- CORE FUNCTIONS ---
-        function showToast(message) {
+        function toggleSuggestionBox() {
+            suggestionModal.classList.toggle('hidden');
+        }
+
+        function showToast(title, message, icon = "info") {
             const toast = document.getElementById('toast');
+            const toastTitle = document.getElementById('toast-title');
             const toastMessage = document.getElementById('toast-message');
+            const toastIcon = document.getElementById('toast-icon');
             
-            if (message) toastMessage.textContent = message;
+            toastTitle.textContent = title;
+            toastMessage.textContent = message;
+            toastIcon.textContent = icon;
+            
+            // Swap colors based on error vs success
+            if (icon === 'error') {
+                toast.classList.replace('bg-indigo-600/90', 'bg-red-600/90');
+                toast.classList.replace('border-indigo-400/50', 'border-red-400/50');
+            } else {
+                toast.classList.replace('bg-red-600/90', 'bg-indigo-600/90');
+                toast.classList.replace('border-red-400/50', 'border-indigo-400/50');
+            }
             
             clearTimeout(toastTimeout);
             toast.classList.remove('translate-x-[150%]', 'opacity-0');
             
             toastTimeout = setTimeout(() => {
                 toast.classList.add('translate-x-[150%]', 'opacity-0');
-            }, 6000);
+            }, 5000);
         }
 
         function attemptPlay() {
-            // Prevent auto-play errors by ensuring user interaction
             const playPromise = audio.play();
             
             if (playPromise !== undefined) {
@@ -355,7 +456,7 @@
                     updatePlayStateUI();
                     
                     if(!audio.error) {
-                        showToast("Please click the Play button to start.");
+                        showToast("Notice", "Please click the Play button to start the music.", "info");
                     }
                 });
             }
@@ -408,11 +509,8 @@
             const currentStationTracks = STATIONS[currentStationIdx].tracks;
             let nextIdx = (currentTrackIdx + 1) % currentStationTracks.length;
             
-            // If we are auto-advancing (ended event) or user clicked next, we should try to play
-            // But only if we have had a user interaction already
             loadTrack(nextIdx);
             
-            // Attempt to play if it wasn't already playing (e.g. from an error or manual skip)
             if(!isPlaying) {
                  attemptPlay();
             }
@@ -431,7 +529,6 @@
         function playTrackFromPlaylist(idx) {
             loadTrack(idx);
             
-            // User explicitly clicked a track, definitely attempt to play
             if(!isPlaying) {
                  attemptPlay();
             }
