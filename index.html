@@ -5,10 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chillwave - Lo-Fi Player</title>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Google Material Symbols -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0&display=swap" rel="stylesheet" />
 
@@ -50,7 +48,6 @@
 </head>
 <body class="relative w-full h-screen overflow-hidden font-sans text-white bg-gray-900 select-none">
 
-    <!-- Toast Notification -->
     <div id="toast" class="fixed top-4 right-4 max-w-sm bg-indigo-600/90 backdrop-blur-md text-white px-4 py-3 rounded-lg shadow-2xl transform transition-all duration-300 translate-x-[150%] opacity-0 z-50 flex items-start gap-3 border border-indigo-400/50">
         <span id="toast-icon" class="material-symbols-rounded mt-0.5">info</span>
         <div class="flex flex-col">
@@ -59,7 +56,6 @@
         </div>
     </div>
 
-    <!-- Suggestion Box Modal -->
     <div id="suggestion-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black/60 backdrop-blur-sm transition-opacity">
         <div class="bg-gray-800/90 p-8 rounded-2xl w-full max-w-md border border-white/10 shadow-2xl relative">
             <button onclick="toggleSuggestionBox()" class="absolute top-4 right-4 text-white/50 hover:text-white transition-colors">
@@ -92,18 +88,14 @@
         </div>
     </div>
 
-    <!-- Background Layers -->
     <div id="bg-image" class="absolute inset-0 z-0 transition-all duration-1000 ease-in-out bg-center bg-cover"></div>
     <div id="bg-gradient" class="absolute inset-0 z-0 opacity-80 mix-blend-multiply transition-all duration-1000"></div>
     <div class="absolute inset-0 z-0 bg-black/20"></div>
 
-    <!-- Audio Element -->
     <audio id="audio-player"></audio>
 
-    <!-- Main Content Layout -->
     <div class="relative z-10 flex flex-col h-full">
         
-        <!-- Top Navbar -->
         <header class="flex items-center justify-between px-6 py-4">
             <div class="flex items-center gap-3">
                 <div class="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 backdrop-blur-md">
@@ -115,7 +107,6 @@
             </div>
             
             <div class="flex items-center gap-4">
-                <!-- Suggestion Box Button -->
                 <button onclick="toggleSuggestionBox()" class="flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors border rounded-full bg-white/10 hover:bg-white/20 border-white/20 text-white/90 hover:text-white" title="Suggest a song">
                     <span class="material-symbols-rounded" style="font-size: 18px;">lightbulb</span>
                     Suggest Song
@@ -127,35 +118,27 @@
             </div>
         </header>
 
-        <!-- Center Content Area -->
         <div class="flex flex-1 overflow-hidden">
             
-            <!-- Left Sidebar - Stations -->
             <div class="flex flex-col gap-2 p-6 w-72">
                 <h2 class="mb-2 text-xs font-semibold tracking-widest uppercase text-white/50">Stations</h2>
                 <div id="stations-container" class="flex flex-col gap-2">
-                    <!-- Stations injected here by JS -->
-                </div>
+                    </div>
             </div>
 
-            <!-- Spacer -->
             <div class="flex-1"></div>
 
-            <!-- Right Sidebar - Playlist Queue -->
             <div id="playlist-container" class="flex flex-col w-80 p-6 bg-black/20 backdrop-blur-xl border-l border-white/10 h-full transition-transform duration-300 translate-x-0">
                  <h2 class="mb-4 text-xs font-semibold tracking-widest uppercase text-white/50 flex items-center gap-2">
                      <span class="material-symbols-rounded" style="font-size: 18px;">queue_music</span> Up Next
                  </h2>
                  <div id="tracks-container" class="flex flex-col gap-3 overflow-y-auto pr-2 pb-24 scrollbar-thin">
-                     <!-- Tracks injected here by JS -->
-                 </div>
+                     </div>
             </div>
         </div>
 
-        <!-- Bottom Player Bar -->
         <div class="absolute bottom-0 w-full h-24 bg-black/40 backdrop-blur-2xl border-t border-white/10 flex items-center justify-between px-8 z-20">
             
-            <!-- Current Track Info -->
             <div class="flex items-center gap-4 w-1/4 min-w-[200px]">
                 <div id="current-cover-container" class="relative w-14 h-14 overflow-hidden rounded-lg shadow-lg">
                      <img id="current-cover" src="" alt="Cover" class="object-cover w-full h-full" />
@@ -167,10 +150,9 @@
                 </div>
             </div>
 
-            <!-- Controls -->
             <div class="flex flex-col items-center justify-center flex-1 max-w-2xl px-8 gap-2">
                 <div class="flex items-center gap-6">
-                    <button onclick="playPrev()" class="text-white/60 hover:text-white transition-colors">
+                    <button onclick="playPrev(true)" class="text-white/60 hover:text-white transition-colors">
                         <span class="material-symbols-rounded fill">skip_previous</span>
                     </button>
                     
@@ -178,12 +160,11 @@
                         <span id="main-play-icon" class="material-symbols-rounded fill">play_arrow</span>
                     </button>
                     
-                    <button onclick="playNext()" class="text-white/60 hover:text-white transition-colors">
+                    <button onclick="playNext(true)" class="text-white/60 hover:text-white transition-colors">
                         <span class="material-symbols-rounded fill">skip_next</span>
                     </button>
                 </div>
 
-                <!-- Progress Bar -->
                 <div class="flex items-center w-full gap-3 text-xs text-white/50 font-medium">
                     <span id="time-current">0:00</span>
                     <div id="progress-container" class="relative flex-1 h-1.5 bg-white/20 rounded-full cursor-pointer group" onclick="seekTrack(event)">
@@ -195,7 +176,6 @@
                 </div>
             </div>
 
-            <!-- Right Controls -->
             <div class="flex items-center justify-end gap-6 w-1/4 min-w-[200px]">
                 <div class="flex items-center gap-2 group">
                     <button onclick="toggleMute()" class="text-white/60 hover:text-white transition-colors">
@@ -215,20 +195,19 @@
         </div>
     </div>
 
-    <!-- Application Logic -->
     <script>
         // --- DATA ---
         // Expected folder structure in GitHub:
         // /music/chill-1.mp3 ... /music/chill-10.mp3
         // /music/focus-1.mp3 ... /music/focus-10.mp3
-        // /music/sleep-1.mp3 ... /music/sleep-10.mp3
+        // /music/party-1.mp3 ... /music/party-10.mp3
         // /music/morning-1.mp3 ... /music/morning-10.mp3
         // /atmosphere/atmos-1.mp3 ... /atmosphere/atmos-10.mp3
-        // /assets/chill-bg.gif, /assets/focus-bg.gif, /assets/sleep-bg.gif, /assets/morning-bg.gif, /assets/atmos-bg.gif
+        // /assets/chill-bg.gif, /assets/focus-bg.gif, /assets/party-bg.gif, /assets/morning-bg.gif, /assets/atmos-bg.gif
         
         const STATIONS = [
             { 
-                id: 'chill', name: 'Chill Vibes', icon: 'local_cafe', 
+                id: 'chill', name: 'Chill & Sleep', icon: 'local_cafe', 
                 bg: './assets/chill-bg.gif', 
                 color: 'bg-gradient-to-br from-blue-900/60 to-indigo-900/60',
                 tracks: [
@@ -262,20 +241,20 @@
                 ]
             },
             { 
-                id: 'sleep', name: 'Late Night', icon: 'bedtime', 
-                bg: './assets/sleep-bg.gif', 
-                color: 'bg-gradient-to-br from-purple-900/60 to-slate-900/60',
+                id: 'party', name: 'Night Out', icon: 'celebration', 
+                bg: './assets/party-bg.gif', 
+                color: 'bg-gradient-to-br from-fuchsia-900/60 to-rose-900/60',
                 tracks: [
-                    { id: 21, title: 'Midnight Stroll', artist: 'Instrumental', url: './music/sleep-1.mp3', cover: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=300&q=80' },
-                    { id: 22, title: 'Late Night Nova', artist: 'Instrumental', url: './music/sleep-2.mp3', cover: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?w=300&q=80' },
-                    { id: 23, title: 'Dark Cyber', artist: 'Instrumental', url: './music/sleep-3.mp3', cover: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300&q=80' },
-                    { id: 24, title: 'Streetlamp Glow', artist: 'Instrumental', url: './music/sleep-4.mp3', cover: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=300&q=80' },
-                    { id: 25, title: 'Silent Loop', artist: 'Instrumental', url: './music/sleep-5.mp3', cover: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=300&q=80' },
-                    { id: 26, title: 'Nocturnal Beat', artist: 'Instrumental', url: './music/sleep-6.mp3', cover: 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=300&q=80' },
-                    { id: 27, title: 'Sleepless Rasta', artist: 'Instrumental', url: './music/sleep-7.mp3', cover: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=300&q=80' },
-                    { id: 28, title: 'Dream Scape', artist: 'Instrumental', url: './music/sleep-8.mp3', cover: 'https://images.unsplash.com/photo-1511447333015-45b65e60f6d5?w=300&q=80' },
-                    { id: 29, title: 'Lunar Phase', artist: 'Instrumental', url: './music/sleep-9.mp3', cover: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&q=80' },
-                    { id: 30, title: 'Counting Sheep', artist: 'Instrumental', url: './music/sleep-10.mp3', cover: 'https://images.unsplash.com/photo-1493225457124-a1a2a5f013bd?w=300&q=80' }
+                    { id: 21, title: 'Neon Lights', artist: 'Dance Beats', url: './music/party-1.mp3', cover: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=300&q=80' },
+                    { id: 22, title: 'Midnight Groove', artist: 'Dance Beats', url: './music/party-2.mp3', cover: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?w=300&q=80' },
+                    { id: 23, title: 'House Party', artist: 'Dance Beats', url: './music/party-3.mp3', cover: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300&q=80' },
+                    { id: 24, title: 'Upbeat Pulse', artist: 'Dance Beats', url: './music/party-4.mp3', cover: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=300&q=80' },
+                    { id: 25, title: 'Rhythm & Bass', artist: 'Dance Beats', url: './music/party-5.mp3', cover: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=300&q=80' },
+                    { id: 26, title: 'Electric Slide', artist: 'Dance Beats', url: './music/party-6.mp3', cover: 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=300&q=80' },
+                    { id: 27, title: 'Nightclub', artist: 'Dance Beats', url: './music/party-7.mp3', cover: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=300&q=80' },
+                    { id: 28, title: 'Bass Drop', artist: 'Dance Beats', url: './music/party-8.mp3', cover: 'https://images.unsplash.com/photo-1511447333015-45b65e60f6d5?w=300&q=80' },
+                    { id: 29, title: 'Weekend Vibe', artist: 'Dance Beats', url: './music/party-9.mp3', cover: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&q=80' },
+                    { id: 30, title: 'Afterparty', artist: 'Dance Beats', url: './music/party-10.mp3', cover: 'https://images.unsplash.com/photo-1493225457124-a1a2a5f013bd?w=300&q=80' }
                 ]
             },
             { 
@@ -366,13 +345,19 @@
             // Audio Event Listeners
             audio.addEventListener('timeupdate', updateProgress);
             audio.addEventListener('loadedmetadata', updateProgress);
-            audio.addEventListener('ended', playNext);
+            audio.addEventListener('ended', () => playNext(true));
             
             audio.addEventListener('error', (e) => {
-                console.error("Audio playback error. The file might be missing from your GitHub folder:", audio.src);
-                showToast("Error", `Missing file! Make sure you uploaded ${audio.src.split('/').pop()} to GitHub.`, "error");
+                console.error("Audio playback error:", audio.src);
+                
+                // CRITICAL FIX: We stop playing immediately upon error.
+                // This breaks the infinite loop of DOMExceptions because the browser won't auto-skip
+                // to a missing file without the user clicking a button first.
                 isPlaying = false;
                 updatePlayStateUI();
+                
+                const fileName = audio.src.split('/').pop() || "Audio file";
+                showToast("Missing File", `Could not find ${fileName}. Remember to upload it to your GitHub!`, "error");
             });
 
             // Form Submit Listener (AJAX)
@@ -505,33 +490,35 @@
             }
         }
 
-        function playNext() {
+        function playNext(userInitiated = false) {
             const currentStationTracks = STATIONS[currentStationIdx].tracks;
             let nextIdx = (currentTrackIdx + 1) % currentStationTracks.length;
             
-            loadTrack(nextIdx);
-            
-            if(!isPlaying) {
-                 attemptPlay();
+            // Register interaction explicitly if the button was clicked
+            if (userInitiated) {
+                isPlaying = true;
             }
+            
+            loadTrack(nextIdx);
         }
 
-        function playPrev() {
+        function playPrev(userInitiated = false) {
             const currentStationTracks = STATIONS[currentStationIdx].tracks;
             let prevIdx = (currentTrackIdx - 1 + currentStationTracks.length) % currentStationTracks.length;
-            loadTrack(prevIdx);
             
-            if(!isPlaying) {
-                 attemptPlay();
+            if (userInitiated) {
+                isPlaying = true;
             }
+            
+            loadTrack(prevIdx);
         }
 
-        function playTrackFromPlaylist(idx) {
-            loadTrack(idx);
-            
-            if(!isPlaying) {
-                 attemptPlay();
+        function playTrackFromPlaylist(idx, userInitiated = false) {
+            if (userInitiated) {
+                isPlaying = true;
             }
+            
+            loadTrack(idx);
         }
 
         // --- UI UPDATES ---
@@ -665,7 +652,7 @@
 
                 return `
                     <div 
-                        onclick="playTrackFromPlaylist(${idx})"
+                        onclick="playTrackFromPlaylist(${idx}, true)"
                         class="flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all duration-200 group ${
                             isActive ? 'bg-white/10' : 'hover:bg-white/5'
                         }"
