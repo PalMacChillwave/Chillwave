@@ -88,7 +88,9 @@
         </div>
     </div>
 
-    <div id="bg-image" class="absolute inset-0 z-0 transition-all duration-1000 ease-in-out bg-center bg-cover"></div>
+    <!-- Added HTML Video Element for MP4 Backgrounds -->
+    <video id="bg-video" class="absolute inset-0 z-0 w-full h-full object-cover transition-opacity duration-1000 opacity-0" autoplay loop muted playsinline></video>
+    <div id="bg-image" class="absolute inset-0 z-0 transition-opacity duration-1000 ease-in-out bg-center bg-cover"></div>
     <div id="bg-gradient" class="absolute inset-0 z-0 opacity-80 mix-blend-multiply transition-all duration-1000"></div>
     <div class="absolute inset-0 z-0 bg-black/20"></div>
 
@@ -197,10 +199,13 @@
 
     <script>
         // --- DATA ---
-        // Your files are perfectly configured for your GitHub structure!
-        // We've added robust "fallbacks" so when you test this in the preview 
-        // window (which doesn't have your local files), it plays fallback audio 
-        // instead of throwing 404 errors.
+        // Expected folder structure in GitHub:
+        // /music/chill-1.mp3 ... /music/chill-10.mp3
+        // /music/focus-1.mp3 ... /music/focus-10.mp3
+        // /music/party-1.mp3 ... /music/party-10.mp3
+        // /music/morning-1.mp3 ... /music/morning-10.mp3
+        // /atmosphere/atmos-1.mp3 ... /atmosphere/atmos-10.mp3
+        // /assets/chill-bg.mp4, /assets/focus-bg.mp4, /assets/party-bg.mp4, /assets/morning-bg.mp4, /assets/atmos-bg.mp4
         
         const fallbackMusic = [
             'https://cdn.jsdelivr.net/gh/bradtraversy/vanillawebprojects@master/music-player/music/summer.mp3',
@@ -222,7 +227,7 @@
         const STATIONS = [
             { 
                 id: 'chill', name: 'Chill & Sleep', icon: 'local_cafe', 
-                bg: './assets/chill-bg.gif', 
+                bg: './assets/chill-bg.mp4', 
                 fallbackBg: 'https://media.giphy.com/media/L0qTl8hl84ce91wO6p/giphy.gif',
                 color: 'bg-gradient-to-br from-blue-900/60 to-indigo-900/60',
                 tracks: [
@@ -240,7 +245,7 @@
             },
             { 
                 id: 'focus', name: 'Deep Focus', icon: 'computer', 
-                bg: './assets/focus-bg.gif', 
+                bg: './assets/focus-bg.mp4', 
                 fallbackBg: 'https://media.giphy.com/media/11KzOet1ElBDz2/giphy.gif',
                 color: 'bg-gradient-to-br from-emerald-900/60 to-teal-900/60',
                 tracks: [
@@ -258,7 +263,7 @@
             },
             { 
                 id: 'party', name: 'Night Out', icon: 'celebration', 
-                bg: './assets/party-bg.gif', 
+                bg: './assets/party-bg.mp4', 
                 fallbackBg: 'https://media.giphy.com/media/l41Yh18f5TbiWcdzi/giphy.gif',
                 color: 'bg-gradient-to-br from-fuchsia-900/60 to-rose-900/60',
                 tracks: [
@@ -276,7 +281,7 @@
             },
             { 
                 id: 'morning', name: 'Morning Coffee', icon: 'wb_sunny', 
-                bg: './assets/morning-bg.gif', 
+                bg: './assets/morning-bg.mp4', 
                 fallbackBg: 'https://media.giphy.com/media/3o7aD2d7qc9qQBiqaw/giphy.gif',
                 color: 'bg-gradient-to-br from-orange-900/60 to-amber-900/60',
                 tracks: [
@@ -294,7 +299,7 @@
             },
             { 
                 id: 'atmosphere', name: 'Atmosphere', icon: 'landscape', 
-                bg: './assets/atmos-bg.gif', 
+                bg: './assets/atmos-bg.mp4', 
                 fallbackBg: 'https://media.giphy.com/media/ilzS01o2mZ7O0/giphy.gif',
                 color: 'bg-gradient-to-br from-green-900/60 to-stone-900/60',
                 tracks: [
@@ -322,7 +327,7 @@
         let usingFallback = false;
 
         // --- DOM ELEMENTS ---
-        let audio, bgImage, bgGradient, stationsContainer, tracksContainer;
+        let audio, bgVideo, bgImage, bgGradient, stationsContainer, tracksContainer;
         let currentCover, currentCoverContainer, currentTitle, currentArtist;
         let mainPlayIcon, timeCurrent, timeTotal, progressBar, progressContainer;
         let volumeIcon, volumeBar, volumeSlider, playlistContainer, playlistToggleBtn;
@@ -331,6 +336,7 @@
         // --- INITIALIZATION ---
         function init() {
             audio = document.getElementById('audio-player');
+            bgVideo = document.getElementById('bg-video');
             bgImage = document.getElementById('bg-image');
             bgGradient = document.getElementById('bg-gradient');
             stationsContainer = document.getElementById('stations-container');
@@ -487,16 +493,34 @@
             currentStationIdx = idx;
             const station = STATIONS[idx];
             
-            // Fallback Background Logic
-            const bgImg = new Image();
-            bgImg.onload = () => {
-                bgImage.style.backgroundImage = `url(${station.bg})`;
-            };
-            bgImg.onerror = () => {
-                console.warn(`Local background ${station.bg} not found. Falling back to preview GIF.`);
-                bgImage.style.backgroundImage = `url(${station.fallbackBg})`;
-            };
-            bgImg.src = station.bg;
+            // Background Logic: Dynamically handle MP4 Videos or GIF/JPG Images
+            if (station.bg.match(/\.(mp4|webm)$/i)) {
+                bgVideo.src = station.bg;
+                bgVideo.onloadeddata = () => {
+                    bgVideo.classList.remove('opacity-0');
+                    bgImage.classList.add('opacity-0');
+                };
+                bgVideo.onerror = () => {
+                    console.warn(`Local video ${station.bg} not found. Falling back to preview GIF.`);
+                    bgVideo.classList.add('opacity-0');
+                    bgImage.classList.remove('opacity-0');
+                    bgImage.style.backgroundImage = `url(${station.fallbackBg})`;
+                };
+            } else {
+                const bgImg = new Image();
+                bgImg.onload = () => {
+                    bgImage.style.backgroundImage = `url(${station.bg})`;
+                    bgImage.classList.remove('opacity-0');
+                    bgVideo.classList.add('opacity-0');
+                };
+                bgImg.onerror = () => {
+                    console.warn(`Local background ${station.bg} not found. Falling back to preview GIF.`);
+                    bgImage.classList.remove('opacity-0');
+                    bgVideo.classList.add('opacity-0');
+                    bgImage.style.backgroundImage = `url(${station.fallbackBg})`;
+                };
+                bgImg.src = station.bg;
+            }
             
             bgGradient.className = `absolute inset-0 z-0 opacity-80 mix-blend-multiply transition-all duration-1000 ${station.color}`;
             
