@@ -197,98 +197,117 @@
 
     <script>
         // --- DATA ---
-        // Expected folder structure in GitHub:
-        // /music/chill-1.mp3 ... /music/chill-10.mp3
-        // /music/focus-1.mp3 ... /music/focus-10.mp3
-        // /music/party-1.mp3 ... /music/party-10.mp3
-        // /music/morning-1.mp3 ... /music/morning-10.mp3
-        // /atmosphere/atmos-1.mp3 ... /atmosphere/atmos-10.mp3
-        // /assets/chill-bg.gif, /assets/focus-bg.gif, /assets/party-bg.gif, /assets/morning-bg.gif, /assets/atmos-bg.gif
+        // Your files are perfectly configured for your GitHub structure!
+        // We've added robust "fallbacks" so when you test this in the preview 
+        // window (which doesn't have your local files), it plays fallback audio 
+        // instead of throwing 404 errors.
         
+        const fallbackMusic = [
+            'https://cdn.jsdelivr.net/gh/bradtraversy/vanillawebprojects@master/music-player/music/summer.mp3',
+            'https://cdn.jsdelivr.net/gh/bradtraversy/vanillawebprojects@master/music-player/music/ukulele.mp3',
+            'https://cdn.jsdelivr.net/gh/bradtraversy/vanillawebprojects@master/music-player/music/hey.mp3',
+            'https://cdn.jsdelivr.net/gh/jacintoDesign/music-player@master/music/jacinto-1.mp3',
+            'https://cdn.jsdelivr.net/gh/jacintoDesign/music-player@master/music/jacinto-2.mp3',
+            'https://cdn.jsdelivr.net/gh/jacintoDesign/music-player@master/music/jacinto-3.mp3'
+        ];
+
+        const fallbackAtmosphere = [
+            'https://cdn.freesound.org/previews/175/175366_3136262-hq.mp3', 
+            'https://cdn.freesound.org/previews/174/174763_3248244-hq.mp3', 
+            'https://cdn.freesound.org/previews/102/102806_1762417-hq.mp3',
+            'https://cdn.freesound.org/previews/320/320141_5260872-hq.mp3',
+            'https://cdn.freesound.org/previews/400/400587_5121236-hq.mp3'
+        ];
+
         const STATIONS = [
             { 
                 id: 'chill', name: 'Chill & Sleep', icon: 'local_cafe', 
                 bg: './assets/chill-bg.gif', 
+                fallbackBg: 'https://media.giphy.com/media/L0qTl8hl84ce91wO6p/giphy.gif',
                 color: 'bg-gradient-to-br from-blue-900/60 to-indigo-900/60',
                 tracks: [
-                    { id: 1, title: 'Summer Breeze', artist: 'Instrumental', url: './music/chill-1.mp3', cover: 'https://images.unsplash.com/photo-1511447333015-45b65e60f6d5?w=300&q=80' },
-                    { id: 2, title: 'Quiet Afternoon', artist: 'Instrumental', url: './music/chill-2.mp3', cover: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&q=80' },
-                    { id: 3, title: 'Space Trash', artist: 'Instrumental', url: './music/chill-3.mp3', cover: 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=300&q=80' },
-                    { id: 4, title: 'Goa Dreams', artist: 'Instrumental', url: './music/chill-4.mp3', cover: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=300&q=80' },
-                    { id: 5, title: 'Warm Coffee', artist: 'Instrumental', url: './music/chill-5.mp3', cover: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?w=300&q=80' },
-                    { id: 6, title: 'Subway Chimes', artist: 'Instrumental', url: './music/chill-6.mp3', cover: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300&q=80' },
-                    { id: 7, title: 'Locked Room', artist: 'Instrumental', url: './music/chill-7.mp3', cover: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=300&q=80' },
-                    { id: 8, title: 'Sky Boy Loop', artist: 'Instrumental', url: './music/chill-8.mp3', cover: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=300&q=80' },
-                    { id: 9, title: 'Fighter Drift', artist: 'Instrumental', url: './music/chill-9.mp3', cover: 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=300&q=80' },
-                    { id: 10, title: 'Ninja Walk', artist: 'Instrumental', url: './music/chill-10.mp3', cover: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=300&q=80' }
+                    { id: 1, title: 'Summer Breeze', artist: 'Instrumental', url: './music/chill-1.mp3', cover: 'https://picsum.photos/seed/chill1/300/300' },
+                    { id: 2, title: 'Quiet Afternoon', artist: 'Instrumental', url: './music/chill-2.mp3', cover: 'https://picsum.photos/seed/chill2/300/300' },
+                    { id: 3, title: 'Space Trash', artist: 'Instrumental', url: './music/chill-3.mp3', cover: 'https://picsum.photos/seed/chill3/300/300' },
+                    { id: 4, title: 'Goa Dreams', artist: 'Instrumental', url: './music/chill-4.mp3', cover: 'https://picsum.photos/seed/chill4/300/300' },
+                    { id: 5, title: 'Warm Coffee', artist: 'Instrumental', url: './music/chill-5.mp3', cover: 'https://picsum.photos/seed/chill5/300/300' },
+                    { id: 6, title: 'Subway Chimes', artist: 'Instrumental', url: './music/chill-6.mp3', cover: 'https://picsum.photos/seed/chill6/300/300' },
+                    { id: 7, title: 'Locked Room', artist: 'Instrumental', url: './music/chill-7.mp3', cover: 'https://picsum.photos/seed/chill7/300/300' },
+                    { id: 8, title: 'Sky Boy Loop', artist: 'Instrumental', url: './music/chill-8.mp3', cover: 'https://picsum.photos/seed/chill8/300/300' },
+                    { id: 9, title: 'Fighter Drift', artist: 'Instrumental', url: './music/chill-9.mp3', cover: 'https://picsum.photos/seed/chill9/300/300' },
+                    { id: 10, title: 'Ninja Walk', artist: 'Instrumental', url: './music/chill-10.mp3', cover: 'https://picsum.photos/seed/chill10/300/300' }
                 ]
             },
             { 
                 id: 'focus', name: 'Deep Focus', icon: 'computer', 
                 bg: './assets/focus-bg.gif', 
+                fallbackBg: 'https://media.giphy.com/media/11KzOet1ElBDz2/giphy.gif',
                 color: 'bg-gradient-to-br from-emerald-900/60 to-teal-900/60',
                 tracks: [
-                    { id: 11, title: 'Dungeon Dive', artist: 'Instrumental', url: './music/focus-1.mp3', cover: 'https://images.unsplash.com/photo-1493225457124-a1a2a5f013bd?w=300&q=80' },
-                    { id: 12, title: 'Doll Dance', artist: 'Instrumental', url: './music/focus-2.mp3', cover: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&q=80' },
-                    { id: 13, title: 'Downtime', artist: 'Instrumental', url: './music/focus-3.mp3', cover: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=300&q=80' },
-                    { id: 14, title: 'Escape Velocity', artist: 'Instrumental', url: './music/focus-4.mp3', cover: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?w=300&q=80' },
-                    { id: 15, title: 'Excite Mode', artist: 'Instrumental', url: './music/focus-5.mp3', cover: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300&q=80' },
-                    { id: 16, title: 'Furious Focus', artist: 'Instrumental', url: './music/focus-6.mp3', cover: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=300&q=80' },
-                    { id: 17, title: 'Immortal Mind', artist: 'Instrumental', url: './music/focus-7.mp3', cover: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=300&q=80' },
-                    { id: 18, title: 'Kawaii Chill', artist: 'Instrumental', url: './music/focus-8.mp3', cover: 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=300&q=80' },
-                    { id: 19, title: 'Luna Stars', artist: 'Instrumental', url: './music/focus-9.mp3', cover: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=300&q=80' },
-                    { id: 20, title: 'Magical Keys', artist: 'Instrumental', url: './music/focus-10.mp3', cover: 'https://images.unsplash.com/photo-1511447333015-45b65e60f6d5?w=300&q=80' }
+                    { id: 11, title: 'Dungeon Dive', artist: 'Instrumental', url: './music/focus-1.mp3', cover: 'https://picsum.photos/seed/focus1/300/300' },
+                    { id: 12, title: 'Doll Dance', artist: 'Instrumental', url: './music/focus-2.mp3', cover: 'https://picsum.photos/seed/focus2/300/300' },
+                    { id: 13, title: 'Downtime', artist: 'Instrumental', url: './music/focus-3.mp3', cover: 'https://picsum.photos/seed/focus3/300/300' },
+                    { id: 14, title: 'Escape Velocity', artist: 'Instrumental', url: './music/focus-4.mp3', cover: 'https://picsum.photos/seed/focus4/300/300' },
+                    { id: 15, title: 'Excite Mode', artist: 'Instrumental', url: './music/focus-5.mp3', cover: 'https://picsum.photos/seed/focus5/300/300' },
+                    { id: 16, title: 'Furious Focus', artist: 'Instrumental', url: './music/focus-6.mp3', cover: 'https://picsum.photos/seed/focus6/300/300' },
+                    { id: 17, title: 'Immortal Mind', artist: 'Instrumental', url: './music/focus-7.mp3', cover: 'https://picsum.photos/seed/focus7/300/300' },
+                    { id: 18, title: 'Kawaii Chill', artist: 'Instrumental', url: './music/focus-8.mp3', cover: 'https://picsum.photos/seed/focus8/300/300' },
+                    { id: 19, title: 'Luna Stars', artist: 'Instrumental', url: './music/focus-9.mp3', cover: 'https://picsum.photos/seed/focus9/300/300' },
+                    { id: 20, title: 'Magical Keys', artist: 'Instrumental', url: './music/focus-10.mp3', cover: 'https://picsum.photos/seed/focus10/300/300' }
                 ]
             },
             { 
                 id: 'party', name: 'Night Out', icon: 'celebration', 
                 bg: './assets/party-bg.gif', 
+                fallbackBg: 'https://media.giphy.com/media/l41Yh18f5TbiWcdzi/giphy.gif',
                 color: 'bg-gradient-to-br from-fuchsia-900/60 to-rose-900/60',
                 tracks: [
-                    { id: 21, title: 'Neon Lights', artist: 'Dance Beats', url: './music/party-1.mp3', cover: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=300&q=80' },
-                    { id: 22, title: 'Midnight Groove', artist: 'Dance Beats', url: './music/party-2.mp3', cover: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?w=300&q=80' },
-                    { id: 23, title: 'House Party', artist: 'Dance Beats', url: './music/party-3.mp3', cover: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300&q=80' },
-                    { id: 24, title: 'Upbeat Pulse', artist: 'Dance Beats', url: './music/party-4.mp3', cover: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=300&q=80' },
-                    { id: 25, title: 'Rhythm & Bass', artist: 'Dance Beats', url: './music/party-5.mp3', cover: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=300&q=80' },
-                    { id: 26, title: 'Electric Slide', artist: 'Dance Beats', url: './music/party-6.mp3', cover: 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=300&q=80' },
-                    { id: 27, title: 'Nightclub', artist: 'Dance Beats', url: './music/party-7.mp3', cover: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=300&q=80' },
-                    { id: 28, title: 'Bass Drop', artist: 'Dance Beats', url: './music/party-8.mp3', cover: 'https://images.unsplash.com/photo-1511447333015-45b65e60f6d5?w=300&q=80' },
-                    { id: 29, title: 'Weekend Vibe', artist: 'Dance Beats', url: './music/party-9.mp3', cover: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&q=80' },
-                    { id: 30, title: 'Afterparty', artist: 'Dance Beats', url: './music/party-10.mp3', cover: 'https://images.unsplash.com/photo-1493225457124-a1a2a5f013bd?w=300&q=80' }
+                    { id: 21, title: 'Neon Lights', artist: 'Dance Beats', url: './music/party-1.mp3', cover: 'https://picsum.photos/seed/party1/300/300' },
+                    { id: 22, title: 'Midnight Groove', artist: 'Dance Beats', url: './music/party-2.mp3', cover: 'https://picsum.photos/seed/party2/300/300' },
+                    { id: 23, title: 'House Party', artist: 'Dance Beats', url: './music/party-3.mp3', cover: 'https://picsum.photos/seed/party3/300/300' },
+                    { id: 24, title: 'Upbeat Pulse', artist: 'Dance Beats', url: './music/party-4.mp3', cover: 'https://picsum.photos/seed/party4/300/300' },
+                    { id: 25, title: 'Rhythm & Bass', artist: 'Dance Beats', url: './music/party-5.mp3', cover: 'https://picsum.photos/seed/party5/300/300' },
+                    { id: 26, title: 'Electric Slide', artist: 'Dance Beats', url: './music/party-6.mp3', cover: 'https://picsum.photos/seed/party6/300/300' },
+                    { id: 27, title: 'Nightclub', artist: 'Dance Beats', url: './music/party-7.mp3', cover: 'https://picsum.photos/seed/party7/300/300' },
+                    { id: 28, title: 'Bass Drop', artist: 'Dance Beats', url: './music/party-8.mp3', cover: 'https://picsum.photos/seed/party8/300/300' },
+                    { id: 29, title: 'Weekend Vibe', artist: 'Dance Beats', url: './music/party-9.mp3', cover: 'https://picsum.photos/seed/party9/300/300' },
+                    { id: 30, title: 'Afterparty', artist: 'Dance Beats', url: './music/party-10.mp3', cover: 'https://picsum.photos/seed/party10/300/300' }
                 ]
             },
             { 
                 id: 'morning', name: 'Morning Coffee', icon: 'wb_sunny', 
                 bg: './assets/morning-bg.gif', 
+                fallbackBg: 'https://media.giphy.com/media/3o7aD2d7qc9qQBiqaw/giphy.gif',
                 color: 'bg-gradient-to-br from-orange-900/60 to-amber-900/60',
                 tracks: [
-                    { id: 31, title: 'Bossa Rise', artist: 'Instrumental', url: './music/morning-1.mp3', cover: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?w=300&q=80' },
-                    { id: 32, title: 'Jungle Sip', artist: 'Instrumental', url: './music/morning-2.mp3', cover: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300&q=80' },
-                    { id: 33, title: 'Magic Air', artist: 'Instrumental', url: './music/morning-3.mp3', cover: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=300&q=80' },
-                    { id: 34, title: 'Synth Wave One', artist: 'Instrumental', url: './music/morning-4.mp3', cover: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=300&q=80' },
-                    { id: 35, title: 'Synth Wave Two', artist: 'Instrumental', url: './music/morning-5.mp3', cover: 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=300&q=80' },
-                    { id: 36, title: 'Synth Wave Three', artist: 'Instrumental', url: './music/morning-6.mp3', cover: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=300&q=80' },
-                    { id: 37, title: 'Synth Wave Four', artist: 'Instrumental', url: './music/morning-7.mp3', cover: 'https://images.unsplash.com/photo-1511447333015-45b65e60f6d5?w=300&q=80' },
-                    { id: 38, title: 'Tech Pulse', artist: 'Instrumental', url: './music/morning-8.mp3', cover: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&q=80' },
-                    { id: 39, title: 'Theme Awakening', artist: 'Instrumental', url: './music/morning-9.mp3', cover: 'https://images.unsplash.com/photo-1493225457124-a1a2a5f013bd?w=300&q=80' },
-                    { id: 40, title: 'Golden Highscore', artist: 'Instrumental', url: './music/morning-10.mp3', cover: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=300&q=80' }
+                    { id: 31, title: 'Bossa Rise', artist: 'Instrumental', url: './music/morning-1.mp3', cover: 'https://picsum.photos/seed/morning1/300/300' },
+                    { id: 32, title: 'Jungle Sip', artist: 'Instrumental', url: './music/morning-2.mp3', cover: 'https://picsum.photos/seed/morning2/300/300' },
+                    { id: 33, title: 'Magic Air', artist: 'Instrumental', url: './music/morning-3.mp3', cover: 'https://picsum.photos/seed/morning3/300/300' },
+                    { id: 34, title: 'Synth Wave One', artist: 'Instrumental', url: './music/morning-4.mp3', cover: 'https://picsum.photos/seed/morning4/300/300' },
+                    { id: 35, title: 'Synth Wave Two', artist: 'Instrumental', url: './music/morning-5.mp3', cover: 'https://picsum.photos/seed/morning5/300/300' },
+                    { id: 36, title: 'Synth Wave Three', artist: 'Instrumental', url: './music/morning-6.mp3', cover: 'https://picsum.photos/seed/morning6/300/300' },
+                    { id: 37, title: 'Synth Wave Four', artist: 'Instrumental', url: './music/morning-7.mp3', cover: 'https://picsum.photos/seed/morning7/300/300' },
+                    { id: 38, title: 'Tech Pulse', artist: 'Instrumental', url: './music/morning-8.mp3', cover: 'https://picsum.photos/seed/morning8/300/300' },
+                    { id: 39, title: 'Theme Awakening', artist: 'Instrumental', url: './music/morning-9.mp3', cover: 'https://picsum.photos/seed/morning9/300/300' },
+                    { id: 40, title: 'Golden Highscore', artist: 'Instrumental', url: './music/morning-10.mp3', cover: 'https://picsum.photos/seed/morning10/300/300' }
                 ]
             },
             { 
                 id: 'atmosphere', name: 'Atmosphere', icon: 'landscape', 
                 bg: './assets/atmos-bg.gif', 
+                fallbackBg: 'https://media.giphy.com/media/ilzS01o2mZ7O0/giphy.gif',
                 color: 'bg-gradient-to-br from-green-900/60 to-stone-900/60',
                 tracks: [
-                    { id: 41, title: 'Rain on Tin Roof', artist: 'Nature Sounds', url: './atmosphere/atmos-1.mp3', cover: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?w=300&q=80' },
-                    { id: 42, title: 'Bustling Coffee Shop', artist: 'City Ambience', url: './atmosphere/atmos-2.mp3', cover: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=300&q=80' },
-                    { id: 43, title: 'Distant Thunder', artist: 'Weather Vibes', url: './atmosphere/atmos-3.mp3', cover: 'https://images.unsplash.com/photo-1493225457124-a1a2a5f013bd?w=300&q=80' },
-                    { id: 44, title: 'Mechanical Keyboard', artist: 'Focus Foley', url: './atmosphere/atmos-4.mp3', cover: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&q=80' },
-                    { id: 45, title: 'Crashing Waves', artist: 'Oceanic Sounds', url: './atmosphere/atmos-5.mp3', cover: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=300&q=80' },
-                    { id: 46, title: 'Campfire Crackle', artist: 'Nightfall', url: './atmosphere/atmos-6.mp3', cover: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300&q=80' },
-                    { id: 47, title: 'Summer Crickets', artist: 'Meadow Sounds', url: './atmosphere/atmos-7.mp3', cover: 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=300&q=80' },
-                    { id: 48, title: 'Babbling Brook', artist: 'Waterways', url: './atmosphere/atmos-8.mp3', cover: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?w=300&q=80' },
-                    { id: 49, title: 'Heavy Rainstorm', artist: 'Weather Vibes', url: './atmosphere/atmos-9.mp3', cover: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=300&q=80' },
-                    { id: 50, title: 'Wind Through Pines', artist: 'Forest', url: './atmosphere/atmos-10.mp3', cover: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=300&q=80' }
+                    { id: 41, title: 'Rain on Tin Roof', artist: 'Nature Sounds', url: './atmosphere/atmos-1.mp3', cover: 'https://picsum.photos/seed/atmos1/300/300' },
+                    { id: 42, title: 'Bustling Coffee Shop', artist: 'City Ambience', url: './atmosphere/atmos-2.mp3', cover: 'https://picsum.photos/seed/atmos2/300/300' },
+                    { id: 43, title: 'Distant Thunder', artist: 'Weather Vibes', url: './atmosphere/atmos-3.mp3', cover: 'https://picsum.photos/seed/atmos3/300/300' },
+                    { id: 44, title: 'Mechanical Keyboard', artist: 'Focus Foley', url: './atmosphere/atmos-4.mp3', cover: 'https://picsum.photos/seed/atmos4/300/300' },
+                    { id: 45, title: 'Crashing Waves', artist: 'Oceanic Sounds', url: './atmosphere/atmos-5.mp3', cover: 'https://picsum.photos/seed/atmos5/300/300' },
+                    { id: 46, title: 'Campfire Crackle', artist: 'Nightfall', url: './atmosphere/atmos-6.mp3', cover: 'https://picsum.photos/seed/atmos6/300/300' },
+                    { id: 47, title: 'Summer Crickets', artist: 'Meadow Sounds', url: './atmosphere/atmos-7.mp3', cover: 'https://picsum.photos/seed/atmos7/300/300' },
+                    { id: 48, title: 'Babbling Brook', artist: 'Waterways', url: './atmosphere/atmos-8.mp3', cover: 'https://picsum.photos/seed/atmos8/300/300' },
+                    { id: 49, title: 'Heavy Rainstorm', artist: 'Weather Vibes', url: './atmosphere/atmos-9.mp3', cover: 'https://picsum.photos/seed/atmos9/300/300' },
+                    { id: 50, title: 'Wind Through Pines', artist: 'Forest', url: './atmosphere/atmos-10.mp3', cover: 'https://picsum.photos/seed/atmos10/300/300' }
                 ]
             }
         ];
@@ -300,6 +319,7 @@
         let volume = 0.5;
         let showPlaylist = true;
         let toastTimeout;
+        let usingFallback = false;
 
         // --- DOM ELEMENTS ---
         let audio, bgImage, bgGradient, stationsContainer, tracksContainer;
@@ -348,16 +368,28 @@
             audio.addEventListener('ended', () => playNext(true));
             
             audio.addEventListener('error', (e) => {
+                const track = STATIONS[currentStationIdx].tracks[currentTrackIdx];
+                
+                // If local file is missing (like in the Canvas preview), silently fallback to a working CDN preview.
+                // This prevents 404 errors from breaking the entire player while you test it!
+                if (!usingFallback && track.fallbackSrc) {
+                    console.warn(`Local file ${track.url} not found in this environment. Falling back to preview track...`);
+                    usingFallback = true;
+                    audio.src = track.fallbackSrc;
+                    if (isPlaying) attemptPlay();
+                    return; 
+                }
+
                 console.error("Audio playback error:", audio.src);
                 
-                // CRITICAL FIX: We stop playing immediately upon error.
-                // This breaks the infinite loop of DOMExceptions because the browser won't auto-skip
-                // to a missing file without the user clicking a button first.
+                // CRITICAL FIX: Stop playing immediately upon unresolvable error to prevent infinite DOMException loop.
                 isPlaying = false;
                 updatePlayStateUI();
                 
                 const fileName = audio.src.split('/').pop() || "Audio file";
-                showToast("Missing File", `Could not find ${fileName}. Remember to upload it to your GitHub!`, "error");
+                showToast("Missing File", `Could not play ${fileName}. Skipping...`, "error");
+                
+                setTimeout(() => playNext(false), 2000);
             });
 
             // Form Submit Listener (AJAX)
@@ -429,6 +461,7 @@
         }
 
         function attemptPlay() {
+            if (!audio.src) return;
             const playPromise = audio.play();
             
             if (playPromise !== undefined) {
@@ -436,12 +469,14 @@
                     isPlaying = true;
                     updatePlayStateUI();
                 }).catch(error => {
-                    console.error("Audio playback prevented:", error);
                     isPlaying = false;
                     updatePlayStateUI();
                     
-                    if(!audio.error) {
-                        showToast("Notice", "Please click the Play button to start the music.", "info");
+                    // Gracefully suppress the "User didn't interact" DOMException spam
+                    if (error.name === 'NotAllowedError') {
+                        console.warn("Autoplay blocked by browser. User must click 'Play' first.");
+                    } else {
+                        console.error("Audio playback prevented:", error);
                     }
                 });
             }
@@ -452,7 +487,17 @@
             currentStationIdx = idx;
             const station = STATIONS[idx];
             
-            bgImage.style.backgroundImage = `url(${station.bg})`;
+            // Fallback Background Logic
+            const bgImg = new Image();
+            bgImg.onload = () => {
+                bgImage.style.backgroundImage = `url(${station.bg})`;
+            };
+            bgImg.onerror = () => {
+                console.warn(`Local background ${station.bg} not found. Falling back to preview GIF.`);
+                bgImage.style.backgroundImage = `url(${station.fallbackBg})`;
+            };
+            bgImg.src = station.bg;
+            
             bgGradient.className = `absolute inset-0 z-0 opacity-80 mix-blend-multiply transition-all duration-1000 ${station.color}`;
             
             if (isNewStation) {
@@ -467,12 +512,20 @@
             const currentStationTracks = STATIONS[currentStationIdx].tracks;
             const track = currentStationTracks[idx];
             
+            usingFallback = false;
+            
+            // Dynamically assign a fallback audio source based on the station
+            if (currentStationIdx === 4) { // Atmosphere Station
+                track.fallbackSrc = fallbackAtmosphere[idx % fallbackAtmosphere.length];
+            } else { // All Music Stations
+                track.fallbackSrc = fallbackMusic[idx % fallbackMusic.length];
+            }
+            
             audio.src = track.url;
             currentCover.src = track.cover;
             currentTitle.textContent = track.title;
             currentArtist.textContent = track.artist;
             
-            // Only try to auto-play if we are already playing
             if (isPlaying) {
                 attemptPlay();
             }
@@ -494,7 +547,6 @@
             const currentStationTracks = STATIONS[currentStationIdx].tracks;
             let nextIdx = (currentTrackIdx + 1) % currentStationTracks.length;
             
-            // Register interaction explicitly if the button was clicked
             if (userInitiated) {
                 isPlaying = true;
             }
