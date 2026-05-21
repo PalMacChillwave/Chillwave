@@ -134,12 +134,14 @@
                  <h2 class="mb-4 text-xs font-semibold tracking-widest uppercase text-white/50 flex items-center gap-2">
                      <span class="material-symbols-rounded" style="font-size: 18px;">queue_music</span> Up Next
                  </h2>
-                 <div id="tracks-container" class="flex flex-col gap-3 overflow-y-auto pr-2 pb-24 scrollbar-thin">
+                 <!-- Changed pb-24 to pb-4 so there isn't massive empty space at the bottom anymore -->
+                 <div id="tracks-container" class="flex flex-col gap-3 overflow-y-auto pr-2 pb-4 scrollbar-thin">
                      </div>
             </div>
         </div>
 
-        <div class="absolute bottom-0 w-full h-24 bg-black/40 backdrop-blur-2xl border-t border-white/10 flex items-center justify-between px-8 z-20">
+        <!-- Removed 'absolute bottom-0' and added 'relative shrink-0' so it pushes the playlist up -->
+        <div class="relative shrink-0 w-full h-24 bg-black/40 backdrop-blur-2xl border-t border-white/10 flex items-center justify-between px-8 z-20">
             
             <div class="flex items-center gap-4 w-1/4 min-w-[200px]">
                 <div id="current-cover-container" class="relative w-14 h-14 overflow-hidden rounded-lg shadow-lg">
@@ -207,13 +209,13 @@
         // /atmosphere/atmos-1.mp3 ... /atmosphere/atmos-10.mp3
         // /assets/chill-bg.mp4, /assets/focus-bg.mp4, /assets/party-bg.mp4, /assets/morning-bg.mp4, /assets/atmos-bg.mp4
         
+        // Switched fallbacks to highly reliable Freesound links which won't throw 404/Abort errors
         const fallbackMusic = [
-            'https://cdn.jsdelivr.net/gh/bradtraversy/vanillawebprojects@master/music-player/music/summer.mp3',
-            'https://cdn.jsdelivr.net/gh/bradtraversy/vanillawebprojects@master/music-player/music/ukulele.mp3',
-            'https://cdn.jsdelivr.net/gh/bradtraversy/vanillawebprojects@master/music-player/music/hey.mp3',
-            'https://cdn.jsdelivr.net/gh/jacintoDesign/music-player@master/music/jacinto-1.mp3',
-            'https://cdn.jsdelivr.net/gh/jacintoDesign/music-player@master/music/jacinto-2.mp3',
-            'https://cdn.jsdelivr.net/gh/jacintoDesign/music-player@master/music/jacinto-3.mp3'
+            'https://cdn.freesound.org/previews/665/665181_11861866-hq.mp3', 
+            'https://cdn.freesound.org/previews/607/607261_1648170-hq.mp3', 
+            'https://cdn.freesound.org/previews/538/538556_11861866-hq.mp3',
+            'https://cdn.freesound.org/previews/506/506053_10991815-hq.mp3',
+            'https://cdn.freesound.org/previews/410/410574_5121236-hq.mp3'
         ];
 
         const fallbackAtmosphere = [
@@ -325,6 +327,7 @@
         let showPlaylist = true;
         let toastTimeout;
         let usingFallback = false;
+        let consecutiveErrors = 0; // Tracks consecutive missing files
 
         // --- DOM ELEMENTS ---
         let audio, bgVideo, bgImage, bgGradient, stationsContainer, tracksContainer;
@@ -376,26 +379,34 @@
             audio.addEventListener('error', (e) => {
                 const track = STATIONS[currentStationIdx].tracks[currentTrackIdx];
                 
-                // If local file is missing (like in the Canvas preview), silently fallback to a working CDN preview.
-                // This prevents 404 errors from breaking the entire player while you test it!
+                // If local file is missing, fallback to a working preview track.
                 if (!usingFallback && track.fallbackSrc) {
-                    console.warn(`Local file ${track.url} not found in this environment. Falling back to preview track...`);
                     usingFallback = true;
+                    const wasPlaying = isPlaying;
                     audio.src = track.fallbackSrc;
-                    if (isPlaying) attemptPlay();
+                    if (wasPlaying) attemptPlay();
                     return; 
                 }
 
-                console.error("Audio playback error:", audio.src);
-                
-                // CRITICAL FIX: Stop playing immediately upon unresolvable error to prevent infinite DOMException loop.
+                // If even the fallback fails, handle the error safely
+                const wasPlayingBeforeError = isPlaying;
                 isPlaying = false;
                 updatePlayStateUI();
+                consecutiveErrors++;
                 
-                const fileName = audio.src.split('/').pop() || "Audio file";
-                showToast("Missing File", `Could not play ${fileName}. Skipping...`, "error");
+                const fileName = track.title || "Audio file";
                 
-                setTimeout(() => playNext(false), 2000);
+                // Limit skipping to prevent infinite loops if multiple files are missing
+                if (consecutiveErrors <= 3) {
+                    showToast("Missing File", `Could not play ${fileName}. Skipping...`, "error");
+                    setTimeout(() => {
+                        // If it was playing before it errored out, keep the momentum going
+                        if (wasPlayingBeforeError) isPlaying = true;
+                        playNext(wasPlayingBeforeError);
+                    }, 2000);
+                } else {
+                    showToast("Playback Paused", "Multiple files missing. Please check your GitHub uploads.", "error");
+                }
             });
 
             // Form Submit Listener (AJAX)
@@ -473,16 +484,17 @@
             if (playPromise !== undefined) {
                 playPromise.then(() => {
                     isPlaying = true;
+                    consecutiveErrors = 0; // Reset error counter on successful playback
                     updatePlayStateUI();
                 }).catch(error => {
+                    // Ignore DOM AbortErrors gracefully (happens during rapid track skipping)
+                    if (error.name === 'AbortError') return;
+                    
                     isPlaying = false;
                     updatePlayStateUI();
                     
-                    // Gracefully suppress the "User didn't interact" DOMException spam
-                    if (error.name === 'NotAllowedError') {
-                        console.warn("Autoplay blocked by browser. User must click 'Play' first.");
-                    } else {
-                        console.error("Audio playback prevented:", error);
+                    if(error.name === 'NotAllowedError') {
+                        showToast("Notice", "Please click the Play button to start the music.", "info");
                     }
                 });
             }
@@ -555,6 +567,14 @@
             }
             renderStations(); 
             renderPlaylist(); 
+
+            // Automatically scroll the playlist to show the newly loaded track
+            setTimeout(() => {
+                const activeTrackEl = document.getElementById('active-track');
+                if (activeTrackEl) {
+                    activeTrackEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }, 50);
         }
 
         function togglePlay() {
@@ -728,6 +748,7 @@
 
                 return `
                     <div 
+                        ${isActive ? 'id="active-track"' : ''}
                         onclick="playTrackFromPlaylist(${idx}, true)"
                         class="flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all duration-200 group ${
                             isActive ? 'bg-white/10' : 'hover:bg-white/5'
