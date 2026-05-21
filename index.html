@@ -52,6 +52,51 @@
 </head>
 <body class="relative w-full h-screen overflow-hidden font-sans text-white bg-gray-900 select-none">
 
+    <!-- Dim Mode Overlay -->
+    <div id="dim-overlay" class="fixed inset-0 bg-black/70 pointer-events-none opacity-0 transition-opacity duration-1000 z-[100]"></div>
+
+    <!-- Suggestion Box Modal -->
+    <div id="suggestion-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black/60 backdrop-blur-sm transition-opacity">
+        <div class="bg-gray-800/90 p-8 rounded-2xl w-full max-w-md border border-white/10 shadow-2xl relative">
+            <button onclick="toggleSuggestionBox()" class="absolute top-4 right-4 text-white/50 hover:text-white transition-colors">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+            <h2 class="text-xl font-bold text-white mb-2 flex items-center gap-2">
+                <span class="material-symbols-rounded text-indigo-400">lightbulb</span>
+                Suggest a Song
+            </h2>
+            <p class="text-xs text-white/50 mb-6">Know a great instrumental track? Send it over and it might be added to the playlists!</p>
+            
+            <form id="suggestion-form" class="flex flex-col gap-4">
+                <div>
+                    <label class="block text-xs text-white/60 mb-1 ml-1 uppercase tracking-wider">Song Title *</label>
+                    <input type="text" name="Song Title" required class="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-indigo-500 transition-colors" placeholder="e.g. Midnight Coffee" />
+                </div>
+                <div>
+                    <label class="block text-xs text-white/60 mb-1 ml-1 uppercase tracking-wider">Artist *</label>
+                    <input type="text" name="Artist" required class="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-indigo-500 transition-colors" placeholder="e.g. Lofi Maker" />
+                </div>
+                <div>
+                    <label class="block text-xs text-white/60 mb-1 ml-1 uppercase tracking-wider">Link (Optional)</label>
+                    <input type="url" name="Link" class="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-indigo-500 transition-colors" placeholder="YouTube or Spotify link" />
+                </div>
+                <button type="submit" id="submit-btn" class="mt-4 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-lg transition-colors flex justify-center items-center gap-2">
+                    <span class="material-symbols-rounded" style="font-size: 20px;">send</span>
+                    Send Suggestion
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-4 right-4 max-w-sm bg-indigo-600/90 backdrop-blur-md text-white px-4 py-3 rounded-lg shadow-2xl transform transition-all duration-300 translate-x-[150%] opacity-0 z-[110] flex items-start gap-3 border border-indigo-400/50">
+        <span id="toast-icon" class="material-symbols-rounded mt-0.5">info</span>
+        <div class="flex flex-col">
+            <span id="toast-title" class="font-bold text-sm">Notification</span>
+            <span id="toast-message" class="text-xs text-white/90 leading-tight mt-1">Message goes here.</span>
+        </div>
+    </div>
+
     <!-- Backgrounds -->
     <video id="bg-video" class="absolute inset-0 z-0 w-full h-full object-cover transition-opacity duration-1000 opacity-0" autoplay loop muted playsinline></video>
     <div id="bg-image" class="absolute inset-0 z-0 transition-opacity duration-1000 ease-in-out bg-center bg-cover"></div>
@@ -61,7 +106,7 @@
     <!-- Main Audio -->
     <audio id="audio-player"></audio>
     
-    <!-- Ambient SFX Audio (Now using your already-uploaded GitHub files!) -->
+    <!-- Ambient SFX Audio -->
     <audio id="sfx-rain" loop src="./atmosphere/atmos-9.mp3"></audio>
     <audio id="sfx-fire" loop src="./atmosphere/atmos-6.mp3"></audio>
     <audio id="sfx-cafe" loop src="./atmosphere/atmos-2.mp3"></audio>
@@ -74,22 +119,41 @@
                 <div class="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 backdrop-blur-md">
                     <span class="material-symbols-rounded">radio</span>
                 </div>
-                <h1 class="text-xl font-bold tracking-wider text-white drop-shadow-md">
+                <h1 class="text-xl font-bold tracking-wider text-white drop-shadow-md mr-2">
                     CHILL<span class="font-light text-white/70">WAVE</span>
                 </h1>
+                
+                <!-- Dim Lights Toggle (Moved to left side) -->
+                <button onclick="toggleDimMode()" class="p-2 transition-colors rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md flex items-center gap-2 px-4 ui-panel" title="Dim Lights">
+                    <span id="dim-icon" class="material-symbols-rounded" style="font-size: 18px;">dark_mode</span>
+                    <span class="text-sm font-medium hidden sm:block">Dim</span>
+                </button>
             </div>
             
-            <!-- NEW: Pomodoro Timer -->
-            <div class="absolute left-1/2 -translate-x-1/2 flex items-center gap-4 bg-black/40 backdrop-blur-md px-6 py-2 rounded-full border border-white/10 shadow-lg">
-                <button onclick="changeTimerMode('work')" id="btn-work" class="text-xs font-semibold uppercase tracking-wider text-indigo-300 transition-colors">Focus</button>
-                <div class="w-px h-4 bg-white/20"></div>
-                <button onclick="changeTimerMode('break')" id="btn-break" class="text-xs font-semibold uppercase tracking-wider text-white/50 hover:text-white transition-colors">Break</button>
-                <div class="flex items-center gap-2 ml-2">
-                    <span id="timer-display" class="font-mono font-bold text-xl tracking-widest w-16 text-center">25:00</span>
-                    <button onclick="toggleTimer()" class="hover:text-indigo-400 hover:scale-110 transition-all">
-                        <span id="timer-icon" class="material-symbols-rounded fill" style="font-size: 28px;">play_circle</span>
-                    </button>
+            <!-- Pomodoro Timer Unified Widget -->
+            <div class="absolute left-1/2 -translate-x-1/2 flex items-center bg-black/40 backdrop-blur-md pl-4 pr-2 py-1.5 rounded-full border border-white/10 shadow-lg ui-panel hover:bg-black/50 transition-colors">
+                
+                <div class="relative flex items-center group cursor-pointer mr-2" title="Change Timer">
+                    <!-- The time display itself now acts as the dropdown button -->
+                    <span id="timer-display" class="font-mono font-bold text-lg tracking-widest w-16 text-center text-white pointer-events-none">25:00</span>
+                    <span class="material-symbols-rounded text-white/40 group-hover:text-white transition-colors pointer-events-none -ml-1 mr-1" style="font-size: 18px;">expand_more</span>
+                    
+                    <!-- Invisible select element overlays the time -->
+                    <select id="timer-preset" onchange="changeTimerPreset(this.value)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                        <option value="5" class="bg-gray-800 text-white">5 Min</option>
+                        <option value="10" class="bg-gray-800 text-white">10 Min</option>
+                        <option value="15" class="bg-gray-800 text-white">15 Min</option>
+                        <option value="20" class="bg-gray-800 text-white">20 Min</option>
+                        <option value="25" class="bg-gray-800 text-white" selected>25 Min</option>
+                        <option value="30" class="bg-gray-800 text-white">30 Min</option>
+                    </select>
                 </div>
+                
+                <!-- Play button merged right next to the time -->
+                <button onclick="toggleTimer()" class="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 hover:bg-indigo-500 text-white transition-colors shadow-inner" title="Start/Pause Timer">
+                    <span id="timer-icon" class="material-symbols-rounded fill" style="font-size: 20px;">play_arrow</span>
+                </button>
+                
             </div>
 
             <div class="flex items-center gap-4">
@@ -99,7 +163,7 @@
                     <span class="text-sm font-medium hidden sm:block">Suggest</span>
                 </button>
 
-                <!-- NEW: Zen Mode Toggle -->
+                <!-- Zen Mode Toggle -->
                 <button onclick="toggleZenMode()" class="p-2 transition-colors rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md flex items-center gap-2 px-4" title="Zen Mode">
                     <span id="zen-icon" class="material-symbols-rounded" style="font-size: 18px;">visibility</span>
                     <span class="text-sm font-medium hidden sm:block">Zen Mode</span>
@@ -119,7 +183,7 @@
                 <h2 class="mb-2 text-xs font-semibold tracking-widest uppercase text-white/50">Stations</h2>
                 <div id="stations-container" class="flex flex-col gap-2"></div>
 
-                <!-- NEW: Ambient Mixer -->
+                <!-- Ambient Mixer -->
                 <h2 class="mt-8 mb-4 text-xs font-semibold tracking-widest uppercase text-white/50 flex items-center gap-2">
                     <span class="material-symbols-rounded" style="font-size: 16px;">tune</span> Ambient Mixer
                 </h2>
@@ -222,7 +286,6 @@
 
     <script>
         // --- DATA ---
-        // Atmosphere is now a mixer, so we reduced to the 4 core music stations
         const fallbackMusic = [
             'https://cdn.freesound.org/previews/665/665181_11861866-hq.mp3', 
             'https://cdn.freesound.org/previews/607/607261_1648170-hq.mp3', 
@@ -312,6 +375,7 @@
         let volume = 0.5;
         let showPlaylist = true;
         let zenModeActive = false;
+        let dimModeActive = false;
         let usingFallback = false;
         let consecutiveErrors = 0;
 
@@ -319,7 +383,6 @@
         let timerInterval;
         let timeLeft = 25 * 60; // 25 mins
         let isTimerRunning = false;
-        let timerMode = 'work'; // 'work' or 'break'
 
         // --- DOM ELEMENTS ---
         let audio, bgVideo, bgImage, bgGradient, stationsContainer, tracksContainer;
@@ -327,7 +390,6 @@
         let mainPlayIcon, timeCurrent, timeTotal, progressBar, progressContainer;
         let volumeIcon, volumeBar, volumeSlider, playlistContainer, playlistToggleBtn;
         let timerDisplay, timerIcon, btnWork, btnBreak;
-        
         let sfx = {};
 
         // --- INITIALIZATION ---
@@ -359,9 +421,8 @@
             
             timerDisplay = document.getElementById('timer-display');
             timerIcon = document.getElementById('timer-icon');
-            btnWork = document.getElementById('btn-work');
-            btnBreak = document.getElementById('btn-break');
-
+            
+            // Map the audio elements safely
             sfx = {
                 rain: document.getElementById('sfx-rain'),
                 fire: document.getElementById('sfx-fire'),
@@ -369,13 +430,13 @@
             };
 
             // Ensure SFX start completely muted to perfectly match the visual sliders
+            // Null check added to prevent errors if an HTML audio element is missing
             Object.values(sfx).forEach(sound => {
-                sound.volume = 0;
+                if (sound) sound.volume = 0;
             });
 
             audio.volume = volume;
             
-            // Attach listeners BEFORE loading the station to ensure we catch initial metadata
             setupEventListeners();
             loadStation(0); 
         }
@@ -410,9 +471,7 @@
 
             // Keyboard Shortcuts
             document.addEventListener('keydown', (e) => {
-                // Ignore if user is typing in an input
                 if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-                
                 if (e.code === 'Space') {
                     e.preventDefault();
                     togglePlay();
@@ -427,7 +486,7 @@
         // --- NEW FOCUS FEATURES ---
         
         function toggleSuggestionBox() {
-            suggestionModal.classList.toggle('hidden');
+            document.getElementById('suggestion-modal').classList.toggle('hidden');
         }
 
         function toggleZenMode() {
@@ -442,7 +501,21 @@
             }
         }
 
+        function toggleDimMode() {
+            dimModeActive = !dimModeActive;
+            const overlay = document.getElementById('dim-overlay');
+            const icon = document.getElementById('dim-icon');
+            if (dimModeActive) {
+                overlay.classList.remove('opacity-0');
+                icon.textContent = 'light_mode';
+            } else {
+                overlay.classList.add('opacity-0');
+                icon.textContent = 'dark_mode';
+            }
+        }
+
         function changeSfxVolume(type, val) {
+            if (!sfx[type]) return; // Safeguard
             const vol = parseFloat(val);
             sfx[type].volume = vol;
             document.getElementById(`bar-${type}`).style.width = `${vol * 100}%`;
@@ -466,32 +539,64 @@
             timerDisplay.textContent = formatTimer(timeLeft);
         }
 
-        function changeTimerMode(mode) {
-            timerMode = mode;
+        function changeTimerPreset(mins) {
             isTimerRunning = false;
             clearInterval(timerInterval);
-            timerIcon.textContent = 'play_circle';
-            
-            if (mode === 'work') {
-                timeLeft = 25 * 60;
-                btnWork.className = 'text-xs font-semibold uppercase tracking-wider text-indigo-300 transition-colors';
-                btnBreak.className = 'text-xs font-semibold uppercase tracking-wider text-white/50 hover:text-white transition-colors';
-            } else {
-                timeLeft = 5 * 60;
-                btnBreak.className = 'text-xs font-semibold uppercase tracking-wider text-emerald-300 transition-colors';
-                btnWork.className = 'text-xs font-semibold uppercase tracking-wider text-white/50 hover:text-white transition-colors';
-            }
+            timerIcon.textContent = 'play_arrow';
+            timeLeft = parseInt(mins) * 60;
             updateTimerDisplay();
+        }
+
+        function playTimerChime() {
+            // Capture current volumes before ducking, safely handling any missing elements
+            const originalVols = { 
+                main: audio.volume, 
+                rain: sfx.rain ? sfx.rain.volume : 0, 
+                fire: sfx.fire ? sfx.fire.volume : 0, 
+                cafe: sfx.cafe ? sfx.cafe.volume : 0 
+            };
+            
+            // Smoothly fade out to 10% volume
+            let steps = 10;
+            let fadeOut = setInterval(() => {
+                steps--;
+                audio.volume = originalVols.main * (0.1 + (0.9 * (steps/10)));
+                if (sfx.rain) sfx.rain.volume = originalVols.rain * (0.1 + (0.9 * (steps/10)));
+                if (sfx.fire) sfx.fire.volume = originalVols.fire * (0.1 + (0.9 * (steps/10)));
+                if (sfx.cafe) sfx.cafe.volume = originalVols.cafe * (0.1 + (0.9 * (steps/10)));
+                
+                if(steps <= 0) {
+                    clearInterval(fadeOut);
+                    
+                    // Play the chime clearly over the quieted music
+                    const chime = new Audio('https://cdn.freesound.org/previews/411/411088_5121236-hq.mp3');
+                    chime.volume = 0.8;
+                    chime.play();
+                    
+                    // Smoothly fade the music back in after the chime finishes (~3.5 seconds)
+                    setTimeout(() => {
+                        let inSteps = 0;
+                        let fadeIn = setInterval(() => {
+                            inSteps++;
+                            audio.volume = originalVols.main * (0.1 + (0.9 * (inSteps/10)));
+                            if (sfx.rain) sfx.rain.volume = originalVols.rain * (0.1 + (0.9 * (inSteps/10)));
+                            if (sfx.fire) sfx.fire.volume = originalVols.fire * (0.1 + (0.9 * (inSteps/10)));
+                            if (sfx.cafe) sfx.cafe.volume = originalVols.cafe * (0.1 + (0.9 * (inSteps/10)));
+                            if(inSteps >= 10) clearInterval(fadeIn);
+                        }, 100);
+                    }, 3500);
+                }
+            }, 50);
         }
 
         function toggleTimer() {
             if (isTimerRunning) {
                 clearInterval(timerInterval);
                 isTimerRunning = false;
-                timerIcon.textContent = 'play_circle';
+                timerIcon.textContent = 'play_arrow';
             } else {
                 isTimerRunning = true;
-                timerIcon.textContent = 'pause_circle';
+                timerIcon.textContent = 'pause';
                 timerInterval = setInterval(() => {
                     timeLeft--;
                     updateTimerDisplay();
@@ -499,16 +604,17 @@
                     if (timeLeft <= 0) {
                         clearInterval(timerInterval);
                         isTimerRunning = false;
-                        timerIcon.textContent = 'play_circle';
-                        // Play a gentle notification chime
-                        const chime = new Audio('https://cdn.freesound.org/previews/411/411088_5121236-hq.mp3');
-                        chime.volume = 0.5;
-                        chime.play();
+                        timerIcon.textContent = 'play_arrow';
+                        
+                        playTimerChime();
+                        
+                        const presetSelect = document.getElementById('timer-preset');
+                        timeLeft = parseInt(presetSelect.value) * 60;
+                        updateTimerDisplay();
                     }
                 }, 1000);
             }
         }
-
 
         // --- CORE MUSIC FUNCTIONS ---
 
@@ -522,9 +628,11 @@
                     consecutiveErrors = 0; 
                     updatePlayStateUI();
                     
-                    // Make sure SFX are playing if volume > 0
+                    // Make sure SFX are playing if volume > 0, with a safety null check
                     Object.keys(sfx).forEach(key => {
-                        if (sfx[key].volume > 0 && sfx[key].paused) sfx[key].play();
+                        if (sfx[key] && sfx[key].volume > 0 && sfx[key].paused) {
+                            sfx[key].play().catch(e => console.warn("SFX play prevented", e));
+                        }
                     });
 
                 }).catch(error => {
@@ -586,8 +694,7 @@
         function togglePlay() {
             if (isPlaying) {
                 audio.pause();
-                // Pause ambient sounds too
-                Object.values(sfx).forEach(sound => sound.pause());
+                Object.values(sfx).forEach(sound => { if (sound) sound.pause(); });
                 isPlaying = false;
                 updatePlayStateUI();
             } else {
@@ -629,7 +736,6 @@
             timeCurrent.textContent = formatTime(current);
             timeTotal.textContent = formatTime(total);
             
-            // isFinite check prevents the bar from breaking if the browser reports Infinity duration
             const percent = (total > 0 && isFinite(total)) ? (current / total) * 100 : 0;
             progressBar.style.width = `${percent}%`;
         }
@@ -715,9 +821,7 @@
             }).join('');
         }
 
-        // --- UTILS ---
         function formatTime(seconds) {
-            // Protects against missing audio metadata causing "Infinity:NaN" to appear
             if (seconds === undefined || isNaN(seconds) || !isFinite(seconds)) return "0:00";
             const m = Math.floor(seconds / 60);
             const s = Math.floor(seconds % 60);
