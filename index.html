@@ -370,14 +370,15 @@
 
             audio.volume = volume;
             
-            loadStation(0); 
+            // Attach listeners BEFORE loading the station to ensure we catch initial metadata
             setupEventListeners();
+            loadStation(0); 
         }
 
         function setupEventListeners() {
             audio.addEventListener('timeupdate', updateProgress);
             audio.addEventListener('loadedmetadata', updateProgress);
-            audio.addEventListener('ended', () => playNext(true));
+            audio.addEventListener('durationchange', updateProgress);
             
             audio.addEventListener('error', (e) => {
                 const track = STATIONS[currentStationIdx].tracks[currentTrackIdx];
@@ -619,9 +620,12 @@
         function updateProgress() {
             const current = audio.currentTime || 0;
             const total = audio.duration || 0;
+            
             timeCurrent.textContent = formatTime(current);
             timeTotal.textContent = formatTime(total);
-            const percent = total > 0 ? (current / total) * 100 : 0;
+            
+            // isFinite check prevents the bar from breaking if the browser reports Infinity duration
+            const percent = (total > 0 && isFinite(total)) ? (current / total) * 100 : 0;
             progressBar.style.width = `${percent}%`;
         }
 
@@ -704,6 +708,15 @@
                     </div>
                 `;
             }).join('');
+        }
+
+        // --- UTILS ---
+        function formatTime(seconds) {
+            // Protects against missing audio metadata causing "Infinity:NaN" to appear
+            if (seconds === undefined || isNaN(seconds) || !isFinite(seconds)) return "0:00";
+            const m = Math.floor(seconds / 60);
+            const s = Math.floor(seconds % 60);
+            return `${m}:${s.toString().padStart(2, '0')}`;
         }
 
         document.addEventListener('DOMContentLoaded', init);
