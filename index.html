@@ -61,10 +61,10 @@
     <!-- Main Audio -->
     <audio id="audio-player"></audio>
     
-    <!-- Ambient SFX Audio -->
-    <audio id="sfx-rain" loop src="https://cdn.freesound.org/previews/175/175366_3136262-hq.mp3"></audio>
-    <audio id="sfx-fire" loop src="https://cdn.freesound.org/previews/435/435114_8904400-hq.mp3"></audio>
-    <audio id="sfx-cafe" loop src="https://cdn.freesound.org/previews/174/174763_3248244-hq.mp3"></audio>
+    <!-- Ambient SFX Audio (Now using your already-uploaded GitHub files!) -->
+    <audio id="sfx-rain" loop src="./atmosphere/atmos-9.mp3"></audio>
+    <audio id="sfx-fire" loop src="./atmosphere/atmos-6.mp3"></audio>
+    <audio id="sfx-cafe" loop src="./atmosphere/atmos-2.mp3"></audio>
 
     <div class="relative z-10 flex flex-col h-full">
         
@@ -367,6 +367,11 @@
                 fire: document.getElementById('sfx-fire'),
                 cafe: document.getElementById('sfx-cafe')
             };
+
+            // Ensure SFX start completely muted to perfectly match the visual sliders
+            Object.values(sfx).forEach(sound => {
+                sound.volume = 0;
+            });
 
             audio.volume = volume;
             
