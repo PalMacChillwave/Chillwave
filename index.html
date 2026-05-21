@@ -131,8 +131,15 @@
             </div>
             
             <!-- Pomodoro Timer Unified Widget -->
-            <div class="absolute left-1/2 -translate-x-1/2 flex items-center bg-black/40 backdrop-blur-md pl-4 pr-2 py-1.5 rounded-full border border-white/10 shadow-lg ui-panel hover:bg-black/50 transition-colors">
+            <div class="absolute left-1/2 -translate-x-1/2 flex items-center bg-black/40 backdrop-blur-md pl-6 pr-2 py-1.5 rounded-full border border-white/10 shadow-lg ui-panel hover:bg-black/50 transition-colors">
                 
+                <!-- Restored Focus & Break toggles -->
+                <button onclick="changeTimerMode('work')" id="btn-work" class="text-xs font-semibold uppercase tracking-wider text-indigo-300 transition-colors">Focus</button>
+                <div class="w-px h-4 bg-white/20 mx-3"></div>
+                <button onclick="changeTimerMode('break')" id="btn-break" class="text-xs font-semibold uppercase tracking-wider text-white/50 hover:text-white transition-colors">Break</button>
+                
+                <div class="w-px h-4 bg-white/20 mx-3"></div>
+
                 <div class="relative flex items-center group cursor-pointer mr-2" title="Change Timer">
                     <!-- The time display itself now acts as the dropdown button -->
                     <span id="timer-display" class="font-mono font-bold text-lg tracking-widest w-16 text-center text-white pointer-events-none">25:00</span>
@@ -383,6 +390,9 @@
         let timerInterval;
         let timeLeft = 25 * 60; // 25 mins
         let isTimerRunning = false;
+        let timerMode = 'work';
+        let focusPreset = 25; // Remembers your focus length
+        let breakPreset = 5;  // Remembers your break length
 
         // --- DOM ELEMENTS ---
         let audio, bgVideo, bgImage, bgGradient, stationsContainer, tracksContainer;
@@ -421,6 +431,8 @@
             
             timerDisplay = document.getElementById('timer-display');
             timerIcon = document.getElementById('timer-icon');
+            btnWork = document.getElementById('btn-work');
+            btnBreak = document.getElementById('btn-break');
             
             // Map the audio elements safely
             sfx = {
@@ -539,11 +551,61 @@
             timerDisplay.textContent = formatTimer(timeLeft);
         }
 
+        function changeTimerMode(mode) {
+            timerMode = mode;
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            timerIcon.textContent = 'play_arrow';
+            
+            const presetSelect = document.getElementById('timer-preset');
+            presetSelect.innerHTML = ''; // Clear out the old dropdown options
+            
+            if (mode === 'work') {
+                btnWork.className = 'text-xs font-semibold uppercase tracking-wider text-indigo-300 transition-colors';
+                btnBreak.className = 'text-xs font-semibold uppercase tracking-wider text-white/50 hover:text-white transition-colors';
+                
+                // Add Focus specific options
+                const options = [5, 10, 15, 20, 25, 30];
+                options.forEach(opt => {
+                    const option = document.createElement('option');
+                    option.value = opt;
+                    option.className = 'bg-gray-800 text-white';
+                    option.textContent = opt + ' Min';
+                    if (opt === focusPreset) option.selected = true;
+                    presetSelect.appendChild(option);
+                });
+                timeLeft = focusPreset * 60;
+                
+            } else {
+                btnBreak.className = 'text-xs font-semibold uppercase tracking-wider text-emerald-300 transition-colors';
+                btnWork.className = 'text-xs font-semibold uppercase tracking-wider text-white/50 hover:text-white transition-colors';
+                
+                // Add Break specific options
+                const options = [2, 5, 10];
+                options.forEach(opt => {
+                    const option = document.createElement('option');
+                    option.value = opt;
+                    option.className = 'bg-gray-800 text-white';
+                    option.textContent = opt + ' Min';
+                    if (opt === breakPreset) option.selected = true;
+                    presetSelect.appendChild(option);
+                });
+                timeLeft = breakPreset * 60;
+            }
+            updateTimerDisplay();
+        }
+
         function changeTimerPreset(mins) {
             isTimerRunning = false;
             clearInterval(timerInterval);
             timerIcon.textContent = 'play_arrow';
-            timeLeft = parseInt(mins) * 60;
+            
+            const m = parseInt(mins);
+            // Save the newly selected time to the correct mode so it remembers it
+            if (timerMode === 'work') focusPreset = m;
+            else breakPreset = m;
+            
+            timeLeft = m * 60;
             updateTimerDisplay();
         }
 
