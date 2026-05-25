@@ -48,6 +48,9 @@
 </head>
 <body class="relative w-full h-screen overflow-hidden font-sans text-white bg-gray-900 select-none">
 
+    <!-- Dim Mode Overlay -->
+    <div id="dim-overlay" class="fixed inset-0 bg-black/70 pointer-events-none opacity-0 transition-opacity duration-1000 z-[100]"></div>
+
     <div id="toast" class="fixed top-4 right-4 max-w-sm bg-indigo-600/90 backdrop-blur-md text-white px-4 py-3 rounded-lg shadow-2xl transform transition-all duration-300 translate-x-[150%] opacity-0 z-50 flex items-start gap-3 border border-indigo-400/50">
         <span id="toast-icon" class="material-symbols-rounded mt-0.5">info</span>
         <div class="flex flex-col">
@@ -108,9 +111,48 @@
                 <div class="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 backdrop-blur-md">
                     <span class="material-symbols-rounded">radio</span>
                 </div>
-                <h1 class="text-xl font-bold tracking-wider text-white drop-shadow-md">
+                <h1 class="text-xl font-bold tracking-wider text-white drop-shadow-md mr-2">
                     CHILL<span class="font-light text-white/70">WAVE</span>
                 </h1>
+                
+                <!-- Dim Lights Toggle -->
+                <button onclick="toggleDimMode()" class="p-2 transition-colors rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md flex items-center gap-2 px-4" title="Dim Lights">
+                    <span id="dim-icon" class="material-symbols-rounded" style="font-size: 18px;">dark_mode</span>
+                    <span class="text-sm font-medium hidden sm:block">Dim</span>
+                </button>
+            </div>
+            
+            <!-- Pomodoro Timer Unified Widget -->
+            <div class="absolute left-1/2 -translate-x-1/2 flex items-center bg-black/40 backdrop-blur-md pl-6 pr-2 py-1.5 rounded-full border border-white/10 shadow-lg hover:bg-black/50 transition-colors z-50">
+                
+                <!-- Focus & Break toggles -->
+                <button onclick="changeTimerMode('work')" id="btn-work" class="text-xs font-semibold uppercase tracking-wider text-indigo-300 transition-colors">Focus</button>
+                <div class="w-px h-4 bg-white/20 mx-3"></div>
+                <button onclick="changeTimerMode('break')" id="btn-break" class="text-xs font-semibold uppercase tracking-wider text-white/50 hover:text-white transition-colors">Break</button>
+                
+                <div class="w-px h-4 bg-white/20 mx-3"></div>
+
+                <div class="relative flex items-center group cursor-pointer mr-2" title="Change Timer">
+                    <!-- The time display itself now acts as the dropdown button -->
+                    <span id="timer-display" class="font-mono font-bold text-lg tracking-widest w-16 text-center text-white pointer-events-none">25:00</span>
+                    <span class="material-symbols-rounded text-white/40 group-hover:text-white transition-colors pointer-events-none -ml-1 mr-1" style="font-size: 18px;">expand_more</span>
+                    
+                    <!-- Invisible select element overlays the time -->
+                    <select id="timer-preset" onchange="changeTimerPreset(this.value)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                        <option value="5" class="bg-gray-800 text-white">5 Min</option>
+                        <option value="10" class="bg-gray-800 text-white">10 Min</option>
+                        <option value="15" class="bg-gray-800 text-white">15 Min</option>
+                        <option value="20" class="bg-gray-800 text-white">20 Min</option>
+                        <option value="25" class="bg-gray-800 text-white" selected>25 Min</option>
+                        <option value="30" class="bg-gray-800 text-white">30 Min</option>
+                    </select>
+                </div>
+                
+                <!-- Play button merged right next to the time -->
+                <button onclick="toggleTimer()" class="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 hover:bg-indigo-500 text-white transition-colors shadow-inner" title="Start/Pause Timer">
+                    <span id="timer-icon" class="material-symbols-rounded fill" style="font-size: 20px;">play_arrow</span>
+                </button>
+                
             </div>
             
             <div class="flex items-center gap-4">
@@ -338,6 +380,15 @@
         let toastTimeout;
         let usingFallback = false;
         let consecutiveErrors = 0; // Tracks consecutive missing files
+        let dimModeActive = false;
+
+        // Pomodoro State
+        let timerInterval;
+        let timeLeft = 25 * 60; // 25 mins
+        let isTimerRunning = false;
+        let timerMode = 'work';
+        let focusPreset = 25; // Remembers your focus length
+        let breakPreset = 5;  // Remembers your break length
 
         // --- DOM ELEMENTS ---
         let audio, bgVideo, bgImage, bgGradient, stationsContainer, tracksContainer;
@@ -345,6 +396,7 @@
         let mainPlayIcon, timeCurrent, timeTotal, progressBar, progressContainer;
         let volumeIcon, volumeBar, volumeSlider, playlistContainer, playlistToggleBtn;
         let suggestionModal, suggestionForm;
+        let timerDisplay, timerIcon, btnWork, btnBreak;
         let sfx = {};
 
         // --- INITIALIZATION ---
@@ -376,6 +428,11 @@
             
             suggestionModal = document.getElementById('suggestion-modal');
             suggestionForm = document.getElementById('suggestion-form');
+            
+            timerDisplay = document.getElementById('timer-display');
+            timerIcon = document.getElementById('timer-icon');
+            btnWork = document.getElementById('btn-work');
+            btnBreak = document.getElementById('btn-break');
 
             // Map the audio elements safely
             sfx = {
@@ -471,6 +528,150 @@
         // --- CORE FUNCTIONS ---
         function toggleSuggestionBox() {
             suggestionModal.classList.toggle('hidden');
+        }
+
+        // --- POMODORO TIMER & FOCUS MODES ---
+        function toggleDimMode() {
+            dimModeActive = !dimModeActive;
+            const overlay = document.getElementById('dim-overlay');
+            const icon = document.getElementById('dim-icon');
+            if (dimModeActive) {
+                overlay.classList.remove('opacity-0');
+                icon.textContent = 'light_mode';
+            } else {
+                overlay.classList.add('opacity-0');
+                icon.textContent = 'dark_mode';
+            }
+        }
+
+        function formatTimer(seconds) {
+            const m = Math.floor(seconds / 60);
+            const s = seconds % 60;
+            return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function updateTimerDisplay() {
+            timerDisplay.textContent = formatTimer(timeLeft);
+        }
+
+        function changeTimerMode(mode) {
+            timerMode = mode;
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            timerIcon.textContent = 'play_arrow';
+            
+            const presetSelect = document.getElementById('timer-preset');
+            presetSelect.innerHTML = ''; 
+            
+            if (mode === 'work') {
+                btnWork.className = 'text-xs font-semibold uppercase tracking-wider text-indigo-300 transition-colors';
+                btnBreak.className = 'text-xs font-semibold uppercase tracking-wider text-white/50 hover:text-white transition-colors';
+                
+                const options = [5, 10, 15, 20, 25, 30];
+                options.forEach(opt => {
+                    const option = document.createElement('option');
+                    option.value = opt;
+                    option.className = 'bg-gray-800 text-white';
+                    option.textContent = opt + ' Min';
+                    if (opt === focusPreset) option.selected = true;
+                    presetSelect.appendChild(option);
+                });
+                timeLeft = focusPreset * 60;
+                
+            } else {
+                btnBreak.className = 'text-xs font-semibold uppercase tracking-wider text-emerald-300 transition-colors';
+                btnWork.className = 'text-xs font-semibold uppercase tracking-wider text-white/50 hover:text-white transition-colors';
+                
+                const options = [2, 5, 10];
+                options.forEach(opt => {
+                    const option = document.createElement('option');
+                    option.value = opt;
+                    option.className = 'bg-gray-800 text-white';
+                    option.textContent = opt + ' Min';
+                    if (opt === breakPreset) option.selected = true;
+                    presetSelect.appendChild(option);
+                });
+                timeLeft = breakPreset * 60;
+            }
+            updateTimerDisplay();
+        }
+
+        function changeTimerPreset(mins) {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            timerIcon.textContent = 'play_arrow';
+            
+            const m = parseInt(mins);
+            if (timerMode === 'work') focusPreset = m;
+            else breakPreset = m;
+            
+            timeLeft = m * 60;
+            updateTimerDisplay();
+        }
+
+        function playTimerChime() {
+            const originalVols = { 
+                main: audio.volume, 
+                rain: sfx.rain ? sfx.rain.volume : 0, 
+                fire: sfx.fire ? sfx.fire.volume : 0, 
+                cafe: sfx.cafe ? sfx.cafe.volume : 0 
+            };
+            
+            let steps = 10;
+            let fadeOut = setInterval(() => {
+                steps--;
+                audio.volume = originalVols.main * (0.1 + (0.9 * (steps/10)));
+                if (sfx.rain) sfx.rain.volume = originalVols.rain * (0.1 + (0.9 * (steps/10)));
+                if (sfx.fire) sfx.fire.volume = originalVols.fire * (0.1 + (0.9 * (steps/10)));
+                if (sfx.cafe) sfx.cafe.volume = originalVols.cafe * (0.1 + (0.9 * (steps/10)));
+                
+                if(steps <= 0) {
+                    clearInterval(fadeOut);
+                    
+                    const chime = new Audio('https://cdn.freesound.org/previews/411/411088_5121236-hq.mp3');
+                    chime.volume = 0.8;
+                    chime.play();
+                    
+                    setTimeout(() => {
+                        let inSteps = 0;
+                        let fadeIn = setInterval(() => {
+                            inSteps++;
+                            audio.volume = originalVols.main * (0.1 + (0.9 * (inSteps/10)));
+                            if (sfx.rain) sfx.rain.volume = originalVols.rain * (0.1 + (0.9 * (inSteps/10)));
+                            if (sfx.fire) sfx.fire.volume = originalVols.fire * (0.1 + (0.9 * (inSteps/10)));
+                            if (sfx.cafe) sfx.cafe.volume = originalVols.cafe * (0.1 + (0.9 * (inSteps/10)));
+                            if(inSteps >= 10) clearInterval(fadeIn);
+                        }, 100);
+                    }, 3500);
+                }
+            }, 50);
+        }
+
+        function toggleTimer() {
+            if (isTimerRunning) {
+                clearInterval(timerInterval);
+                isTimerRunning = false;
+                timerIcon.textContent = 'play_arrow';
+            } else {
+                isTimerRunning = true;
+                timerIcon.textContent = 'pause';
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    updateTimerDisplay();
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        isTimerRunning = false;
+                        timerIcon.textContent = 'play_arrow';
+                        
+                        playTimerChime();
+                        
+                        const presetSelect = document.getElementById('timer-preset');
+                        timeLeft = parseInt(presetSelect.value) * 60;
+                        updateTimerDisplay();
+                    }
+                }, 1000);
+            }
         }
 
         function showToast(title, message, icon = "info") {
