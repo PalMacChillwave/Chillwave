@@ -95,6 +95,11 @@
     <div class="absolute inset-0 z-0 bg-black/20"></div>
 
     <audio id="audio-player"></audio>
+    
+    <!-- Ambient SFX Audio -->
+    <audio id="sfx-rain" loop src="./assets/rain.mp3"></audio>
+    <audio id="sfx-fire" loop src="./assets/fire.mp3"></audio>
+    <audio id="sfx-cafe" loop src="./assets/cafe.mp3"></audio>
 
     <div class="relative z-10 flex flex-col h-full">
         
@@ -126,6 +131,37 @@
                 <h2 class="mb-2 text-xs font-semibold tracking-widest uppercase text-white/50">Stations</h2>
                 <div id="stations-container" class="flex flex-col gap-2">
                     </div>
+                
+                <!-- Ambient Mixer -->
+                <h2 class="mt-8 mb-4 text-xs font-semibold tracking-widest uppercase text-white/50 flex items-center gap-2">
+                    <span class="material-symbols-rounded" style="font-size: 16px;">tune</span> Ambient Mixer
+                </h2>
+                <div class="flex flex-col gap-4 bg-black/20 p-4 rounded-xl border border-white/5 backdrop-blur-md">
+                    <!-- Rain Slider -->
+                    <div class="flex items-center gap-3 group">
+                        <span class="material-symbols-rounded text-white/50 group-hover:text-blue-300 transition-colors" style="font-size: 20px;">water_drop</span>
+                        <div class="flex-1 h-1.5 bg-white/10 rounded-full cursor-pointer relative flex items-center">
+                            <input type="range" min="0" max="1" step="0.01" value="0" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" oninput="changeSfxVolume('rain', this.value)" />
+                            <div id="bar-rain" class="h-full bg-blue-400 rounded-full pointer-events-none transition-all" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <!-- Fire Slider -->
+                    <div class="flex items-center gap-3 group">
+                        <span class="material-symbols-rounded text-white/50 group-hover:text-orange-400 transition-colors" style="font-size: 20px;">local_fire_department</span>
+                        <div class="flex-1 h-1.5 bg-white/10 rounded-full cursor-pointer relative flex items-center">
+                            <input type="range" min="0" max="1" step="0.01" value="0" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" oninput="changeSfxVolume('fire', this.value)" />
+                            <div id="bar-fire" class="h-full bg-orange-400 rounded-full pointer-events-none transition-all" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <!-- Cafe Slider -->
+                    <div class="flex items-center gap-3 group">
+                        <span class="material-symbols-rounded text-white/50 group-hover:text-amber-200 transition-colors" style="font-size: 20px;">storefront</span>
+                        <div class="flex-1 h-1.5 bg-white/10 rounded-full cursor-pointer relative flex items-center">
+                            <input type="range" min="0" max="1" step="0.01" value="0" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" oninput="changeSfxVolume('cafe', this.value)" />
+                            <div id="bar-cafe" class="h-full bg-amber-200 rounded-full pointer-events-none transition-all" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="flex-1"></div>
@@ -206,8 +242,8 @@
         // /music/focus-1.mp3 ... /music/focus-10.mp3
         // /music/party-1.mp3 ... /music/party-10.mp3
         // /music/morning-1.mp3 ... /music/morning-10.mp3
-        // /atmosphere/atmos-1.mp3 ... /atmosphere/atmos-10.mp3
-        // /assets/chill-bg.mp4, /assets/focus-bg.mp4, /assets/party-bg.mp4, /assets/morning-bg.mp4, /assets/atmos-bg.mp4
+        // /assets/rain.mp3, /assets/fire.mp3, /assets/cafe.mp3
+        // /assets/chill-bg.mp4, /assets/focus-bg.mp4, /assets/party-bg.mp4, /assets/morning-bg.mp4
         
         // Switched fallbacks to highly reliable Freesound links which won't throw 404/Abort errors
         const fallbackMusic = [
@@ -216,14 +252,6 @@
             'https://cdn.freesound.org/previews/538/538556_11861866-hq.mp3',
             'https://cdn.freesound.org/previews/506/506053_10991815-hq.mp3',
             'https://cdn.freesound.org/previews/410/410574_5121236-hq.mp3'
-        ];
-
-        const fallbackAtmosphere = [
-            'https://cdn.freesound.org/previews/175/175366_3136262-hq.mp3', 
-            'https://cdn.freesound.org/previews/174/174763_3248244-hq.mp3', 
-            'https://cdn.freesound.org/previews/102/102806_1762417-hq.mp3',
-            'https://cdn.freesound.org/previews/320/320141_5260872-hq.mp3',
-            'https://cdn.freesound.org/previews/400/400587_5121236-hq.mp3'
         ];
 
         const STATIONS = [
@@ -298,33 +326,6 @@
                     { id: 39, title: 'Theme Awakening', artist: 'Instrumental', url: './music/morning-9.mp3', cover: 'https://picsum.photos/seed/morning9/300/300' },
                     { id: 40, title: 'Golden Highscore', artist: 'Instrumental', url: './music/morning-10.mp3', cover: 'https://picsum.photos/seed/morning10/300/300' }
                 ]
-            },
-            { 
-                id: 'atmosphere', name: 'Atmosphere', icon: 'landscape', 
-                bg: './assets/atmos-bg.mp4', 
-                fallbackBg: 'https://media.giphy.com/media/ilzS01o2mZ7O0/giphy.gif',
-                color: 'bg-gradient-to-br from-green-900/60 to-stone-900/60',
-                tracks: [
-                    { id: 41, title: 'Rain on Tin Roof', artist: 'Nature Sounds', url: './atmosphere/atmos-1.mp3', cover: 'https://picsum.photos/seed/atmos1/300/300' },
-                    
-                    // UPDATED: Now points to the newly named cafe.mp3 in the assets folder
-                    { id: 42, title: 'Bustling Coffee Shop', artist: 'City Ambience', url: './assets/cafe.mp3', cover: 'https://picsum.photos/seed/atmos2/300/300' },
-                    
-                    { id: 43, title: 'Distant Thunder', artist: 'Weather Vibes', url: './atmosphere/atmos-3.mp3', cover: 'https://picsum.photos/seed/atmos3/300/300' },
-                    { id: 44, title: 'Mechanical Keyboard', artist: 'Focus Foley', url: './atmosphere/atmos-4.mp3', cover: 'https://picsum.photos/seed/atmos4/300/300' },
-                    { id: 45, title: 'Crashing Waves', artist: 'Oceanic Sounds', url: './atmosphere/atmos-5.mp3', cover: 'https://picsum.photos/seed/atmos5/300/300' },
-                    
-                    // UPDATED: Now points to the newly named fire.mp3 in the assets folder
-                    { id: 46, title: 'Campfire Crackle', artist: 'Nightfall', url: './assets/fire.mp3', cover: 'https://picsum.photos/seed/atmos6/300/300' },
-                    
-                    { id: 47, title: 'Summer Crickets', artist: 'Meadow Sounds', url: './atmosphere/atmos-7.mp3', cover: 'https://picsum.photos/seed/atmos7/300/300' },
-                    { id: 48, title: 'Babbling Brook', artist: 'Waterways', url: './atmosphere/atmos-8.mp3', cover: 'https://picsum.photos/seed/atmos8/300/300' },
-                    
-                    // UPDATED: Now points to the newly named rain.mp3 in the assets folder
-                    { id: 49, title: 'Heavy Rainstorm', artist: 'Weather Vibes', url: './assets/rain.mp3', cover: 'https://picsum.photos/seed/atmos9/300/300' },
-                    
-                    { id: 50, title: 'Wind Through Pines', artist: 'Forest', url: './atmosphere/atmos-10.mp3', cover: 'https://picsum.photos/seed/atmos10/300/300' }
-                ]
             }
         ];
 
@@ -344,6 +345,7 @@
         let mainPlayIcon, timeCurrent, timeTotal, progressBar, progressContainer;
         let volumeIcon, volumeBar, volumeSlider, playlistContainer, playlistToggleBtn;
         let suggestionModal, suggestionForm;
+        let sfx = {};
 
         // --- INITIALIZATION ---
         function init() {
@@ -374,6 +376,18 @@
             
             suggestionModal = document.getElementById('suggestion-modal');
             suggestionForm = document.getElementById('suggestion-form');
+
+            // Map the audio elements safely
+            sfx = {
+                rain: document.getElementById('sfx-rain'),
+                fire: document.getElementById('sfx-fire'),
+                cafe: document.getElementById('sfx-cafe')
+            };
+
+            // Ensure SFX start completely muted to perfectly match the visual sliders
+            Object.values(sfx).forEach(sound => {
+                if (sound) sound.volume = 0;
+            });
 
             audio.volume = volume;
             
@@ -495,6 +509,13 @@
                     isPlaying = true;
                     consecutiveErrors = 0; // Reset error counter on successful playback
                     updatePlayStateUI();
+                    
+                    // Make sure SFX are playing if volume > 0, with a safety null check
+                    Object.keys(sfx).forEach(key => {
+                        if (sfx[key] && sfx[key].volume > 0 && sfx[key].paused) {
+                            sfx[key].play().catch(e => console.warn("SFX play prevented", e));
+                        }
+                    });
                 }).catch(error => {
                     // Ignore DOM AbortErrors gracefully (happens during rapid track skipping)
                     if (error.name === 'AbortError') return;
@@ -559,12 +580,7 @@
             
             usingFallback = false;
             
-            // Dynamically assign a fallback audio source based on the station
-            if (currentStationIdx === 4) { // Atmosphere Station
-                track.fallbackSrc = fallbackAtmosphere[idx % fallbackAtmosphere.length];
-            } else { // All Music Stations
-                track.fallbackSrc = fallbackMusic[idx % fallbackMusic.length];
-            }
+            track.fallbackSrc = fallbackMusic[idx % fallbackMusic.length];
             
             audio.src = track.url;
             currentCover.src = track.cover;
@@ -589,6 +605,7 @@
         function togglePlay() {
             if (isPlaying) {
                 audio.pause();
+                Object.values(sfx).forEach(sound => { if (sound) sound.pause(); });
                 isPlaying = false;
                 updatePlayStateUI();
             } else {
@@ -668,6 +685,19 @@
                 volumeIcon.textContent = 'volume_down';
             } else {
                 volumeIcon.textContent = 'volume_up';
+            }
+        }
+
+        function changeSfxVolume(type, val) {
+            if (!sfx[type]) return; // Safeguard
+            const vol = parseFloat(val);
+            sfx[type].volume = vol;
+            document.getElementById(`bar-${type}`).style.width = `${vol * 100}%`;
+            
+            if (vol > 0 && sfx[type].paused) {
+                sfx[type].play().catch(e => console.log("Auto-play prevented for SFX until interaction"));
+            } else if (vol === 0) {
+                sfx[type].pause();
             }
         }
 
