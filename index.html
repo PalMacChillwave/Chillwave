@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chillwave - Focus & Study Edition</title>
+    <title>Chillwave - Lo-Fi Player</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0&display=swap" rel="stylesheet" />
 
     <style>
+        /* Custom styles for Material Symbols and specific animations */
         .material-symbols-rounded {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
@@ -18,44 +19,43 @@
             font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
         
-        .scrollbar-thin::-webkit-scrollbar { width: 4px; }
-        .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
-        .scrollbar-thin::-webkit-scrollbar-thumb { background-color: rgba(255, 255, 255, 0.2); border-radius: 20px; }
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 4px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+        }
 
-        .spin-slow { animation: spin 20s linear infinite; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .spin-slow {
+            animation: spin 20s linear infinite;
+        }
 
         @keyframes bounce-eq {
             0%, 100% { height: 4px; }
             50% { height: 16px; }
         }
-        .eq-bar { animation: bounce-eq 1s ease-in-out infinite; }
+        .eq-bar {
+            animation: bounce-eq 1s ease-in-out infinite;
+        }
         .eq-bar:nth-child(1) { animation-delay: 0ms; }
         .eq-bar:nth-child(2) { animation-delay: 150ms; }
         .eq-bar:nth-child(3) { animation-delay: 300ms; }
-
-        /* Zen Mode Transitions */
-        .ui-panel {
-            transition: opacity 0.5s ease, transform 0.5s ease;
-        }
-        .zen-active .ui-panel {
-            opacity: 0;
-            pointer-events: none;
-            transform: translateY(10px);
-        }
-        .zen-active .bottom-player {
-            background: transparent !important;
-            border: none !important;
-            backdrop-filter: none !important;
-        }
     </style>
 </head>
 <body class="relative w-full h-screen overflow-hidden font-sans text-white bg-gray-900 select-none">
 
-    <!-- Dim Mode Overlay -->
-    <div id="dim-overlay" class="fixed inset-0 bg-black/70 pointer-events-none opacity-0 transition-opacity duration-1000 z-[100]"></div>
+    <div id="toast" class="fixed top-4 right-4 max-w-sm bg-indigo-600/90 backdrop-blur-md text-white px-4 py-3 rounded-lg shadow-2xl transform transition-all duration-300 translate-x-[150%] opacity-0 z-50 flex items-start gap-3 border border-indigo-400/50">
+        <span id="toast-icon" class="material-symbols-rounded mt-0.5">info</span>
+        <div class="flex flex-col">
+            <span id="toast-title" class="font-bold text-sm">Notification</span>
+            <span id="toast-message" class="text-xs text-white/90 leading-tight mt-1">Message goes here.</span>
+        </div>
+    </div>
 
-    <!-- Suggestion Box Modal -->
     <div id="suggestion-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black/60 backdrop-blur-sm transition-opacity">
         <div class="bg-gray-800/90 p-8 rounded-2xl w-full max-w-md border border-white/10 shadow-2xl relative">
             <button onclick="toggleSuggestionBox()" class="absolute top-4 right-4 text-white/50 hover:text-white transition-colors">
@@ -88,153 +88,60 @@
         </div>
     </div>
 
-    <!-- Toast Notification -->
-    <div id="toast" class="fixed top-4 right-4 max-w-sm bg-indigo-600/90 backdrop-blur-md text-white px-4 py-3 rounded-lg shadow-2xl transform transition-all duration-300 translate-x-[150%] opacity-0 z-[110] flex items-start gap-3 border border-indigo-400/50">
-        <span id="toast-icon" class="material-symbols-rounded mt-0.5">info</span>
-        <div class="flex flex-col">
-            <span id="toast-title" class="font-bold text-sm">Notification</span>
-            <span id="toast-message" class="text-xs text-white/90 leading-tight mt-1">Message goes here.</span>
-        </div>
-    </div>
-
-    <!-- Backgrounds -->
+    <!-- Added HTML Video Element for MP4 Backgrounds -->
     <video id="bg-video" class="absolute inset-0 z-0 w-full h-full object-cover transition-opacity duration-1000 opacity-0" autoplay loop muted playsinline></video>
     <div id="bg-image" class="absolute inset-0 z-0 transition-opacity duration-1000 ease-in-out bg-center bg-cover"></div>
     <div id="bg-gradient" class="absolute inset-0 z-0 opacity-80 mix-blend-multiply transition-all duration-1000"></div>
     <div class="absolute inset-0 z-0 bg-black/20"></div>
 
-    <!-- Main Audio -->
     <audio id="audio-player"></audio>
-    
-    <!-- Ambient SFX Audio -->
-    <audio id="sfx-rain" loop src="./atmosphere/atmos-9.mp3"></audio>
-    <audio id="sfx-fire" loop src="./atmosphere/atmos-6.mp3"></audio>
-    <audio id="sfx-cafe" loop src="./atmosphere/atmos-2.mp3"></audio>
 
     <div class="relative z-10 flex flex-col h-full">
         
-        <!-- Header -->
         <header class="flex items-center justify-between px-6 py-4">
             <div class="flex items-center gap-3">
                 <div class="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 backdrop-blur-md">
                     <span class="material-symbols-rounded">radio</span>
                 </div>
-                <h1 class="text-xl font-bold tracking-wider text-white drop-shadow-md mr-2">
+                <h1 class="text-xl font-bold tracking-wider text-white drop-shadow-md">
                     CHILL<span class="font-light text-white/70">WAVE</span>
                 </h1>
-                
-                <!-- Dim Lights Toggle (Moved to left side) -->
-                <button onclick="toggleDimMode()" class="p-2 transition-colors rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md flex items-center gap-2 px-4 ui-panel" title="Dim Lights">
-                    <span id="dim-icon" class="material-symbols-rounded" style="font-size: 18px;">dark_mode</span>
-                    <span class="text-sm font-medium hidden sm:block">Dim</span>
-                </button>
             </div>
             
-            <!-- Pomodoro Timer Unified Widget -->
-            <div class="absolute left-1/2 -translate-x-1/2 flex items-center bg-black/40 backdrop-blur-md pl-6 pr-2 py-1.5 rounded-full border border-white/10 shadow-lg ui-panel hover:bg-black/50 transition-colors">
-                
-                <!-- Restored Focus & Break toggles -->
-                <button onclick="changeTimerMode('work')" id="btn-work" class="text-xs font-semibold uppercase tracking-wider text-indigo-300 transition-colors">Focus</button>
-                <div class="w-px h-4 bg-white/20 mx-3"></div>
-                <button onclick="changeTimerMode('break')" id="btn-break" class="text-xs font-semibold uppercase tracking-wider text-white/50 hover:text-white transition-colors">Break</button>
-                
-                <div class="w-px h-4 bg-white/20 mx-3"></div>
-
-                <div class="relative flex items-center group cursor-pointer mr-2" title="Change Timer">
-                    <!-- The time display itself now acts as the dropdown button -->
-                    <span id="timer-display" class="font-mono font-bold text-lg tracking-widest w-16 text-center text-white pointer-events-none">25:00</span>
-                    <span class="material-symbols-rounded text-white/40 group-hover:text-white transition-colors pointer-events-none -ml-1 mr-1" style="font-size: 18px;">expand_more</span>
-                    
-                    <!-- Invisible select element overlays the time -->
-                    <select id="timer-preset" onchange="changeTimerPreset(this.value)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-                        <option value="5" class="bg-gray-800 text-white">5 Min</option>
-                        <option value="10" class="bg-gray-800 text-white">10 Min</option>
-                        <option value="15" class="bg-gray-800 text-white">15 Min</option>
-                        <option value="20" class="bg-gray-800 text-white">20 Min</option>
-                        <option value="25" class="bg-gray-800 text-white" selected>25 Min</option>
-                        <option value="30" class="bg-gray-800 text-white">30 Min</option>
-                    </select>
-                </div>
-                
-                <!-- Play button merged right next to the time -->
-                <button onclick="toggleTimer()" class="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 hover:bg-indigo-500 text-white transition-colors shadow-inner" title="Start/Pause Timer">
-                    <span id="timer-icon" class="material-symbols-rounded fill" style="font-size: 20px;">play_arrow</span>
-                </button>
-                
-            </div>
-
             <div class="flex items-center gap-4">
-                <!-- Suggest Song Button -->
-                <button onclick="toggleSuggestionBox()" class="p-2 transition-colors rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md flex items-center gap-2 px-4 ui-panel" title="Suggest a song">
+                <button onclick="toggleSuggestionBox()" class="flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors border rounded-full bg-white/10 hover:bg-white/20 border-white/20 text-white/90 hover:text-white" title="Suggest a song">
                     <span class="material-symbols-rounded" style="font-size: 18px;">lightbulb</span>
-                    <span class="text-sm font-medium hidden sm:block">Suggest</span>
-                </button>
-
-                <!-- Zen Mode Toggle -->
-                <button onclick="toggleZenMode()" class="p-2 transition-colors rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md flex items-center gap-2 px-4" title="Zen Mode">
-                    <span id="zen-icon" class="material-symbols-rounded" style="font-size: 18px;">visibility</span>
-                    <span class="text-sm font-medium hidden sm:block">Zen Mode</span>
+                    Suggest Song
                 </button>
                 
-                <button onclick="toggleFullscreen()" class="p-2 transition-colors rounded-full hover:bg-white/10 text-white/80 hover:text-white ui-panel" title="Fullscreen">
+                <button onclick="toggleFullscreen()" class="p-2 transition-colors rounded-full hover:bg-white/10 text-white/80 hover:text-white" title="Fullscreen">
                     <span class="material-symbols-rounded">fullscreen</span>
                 </button>
             </div>
         </header>
 
-        <!-- Center Content Area -->
         <div class="flex flex-1 overflow-hidden">
             
-            <!-- Left Sidebar -->
-            <div class="flex flex-col gap-2 p-6 w-72 ui-panel">
+            <div class="flex flex-col gap-2 p-6 w-72">
                 <h2 class="mb-2 text-xs font-semibold tracking-widest uppercase text-white/50">Stations</h2>
-                <div id="stations-container" class="flex flex-col gap-2"></div>
-
-                <!-- Ambient Mixer -->
-                <h2 class="mt-8 mb-4 text-xs font-semibold tracking-widest uppercase text-white/50 flex items-center gap-2">
-                    <span class="material-symbols-rounded" style="font-size: 16px;">tune</span> Ambient Mixer
-                </h2>
-                <div class="flex flex-col gap-4 bg-black/20 p-4 rounded-xl border border-white/5 backdrop-blur-md">
-                    <!-- Rain Slider -->
-                    <div class="flex items-center gap-3 group">
-                        <span class="material-symbols-rounded text-white/50 group-hover:text-blue-300 transition-colors" style="font-size: 20px;">water_drop</span>
-                        <div class="flex-1 h-1.5 bg-white/10 rounded-full cursor-pointer relative flex items-center">
-                            <input type="range" min="0" max="1" step="0.01" value="0" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" oninput="changeSfxVolume('rain', this.value)" />
-                            <div id="bar-rain" class="h-full bg-blue-400 rounded-full pointer-events-none transition-all" style="width: 0%"></div>
-                        </div>
+                <div id="stations-container" class="flex flex-col gap-2">
                     </div>
-                    <!-- Fire Slider -->
-                    <div class="flex items-center gap-3 group">
-                        <span class="material-symbols-rounded text-white/50 group-hover:text-orange-400 transition-colors" style="font-size: 20px;">local_fire_department</span>
-                        <div class="flex-1 h-1.5 bg-white/10 rounded-full cursor-pointer relative flex items-center">
-                            <input type="range" min="0" max="1" step="0.01" value="0" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" oninput="changeSfxVolume('fire', this.value)" />
-                            <div id="bar-fire" class="h-full bg-orange-400 rounded-full pointer-events-none transition-all" style="width: 0%"></div>
-                        </div>
-                    </div>
-                    <!-- Cafe Slider -->
-                    <div class="flex items-center gap-3 group">
-                        <span class="material-symbols-rounded text-white/50 group-hover:text-amber-200 transition-colors" style="font-size: 20px;">storefront</span>
-                        <div class="flex-1 h-1.5 bg-white/10 rounded-full cursor-pointer relative flex items-center">
-                            <input type="range" min="0" max="1" step="0.01" value="0" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" oninput="changeSfxVolume('cafe', this.value)" />
-                            <div id="bar-cafe" class="h-full bg-amber-200 rounded-full pointer-events-none transition-all" style="width: 0%"></div>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <div class="flex-1"></div>
 
-            <!-- Right Sidebar (Playlist) -->
-            <div id="playlist-container" class="flex flex-col w-80 p-6 bg-black/20 backdrop-blur-xl border-l border-white/10 h-full transition-transform duration-300 translate-x-0 ui-panel">
+            <div id="playlist-container" class="flex flex-col w-80 p-6 bg-black/20 backdrop-blur-xl border-l border-white/10 h-full transition-transform duration-300 translate-x-0">
                  <h2 class="mb-4 text-xs font-semibold tracking-widest uppercase text-white/50 flex items-center gap-2">
                      <span class="material-symbols-rounded" style="font-size: 18px;">queue_music</span> Up Next
                  </h2>
-                 <div id="tracks-container" class="flex flex-col gap-3 overflow-y-auto pr-2 pb-4 scrollbar-thin"></div>
+                 <!-- Changed pb-24 to pb-4 so there isn't massive empty space at the bottom anymore -->
+                 <div id="tracks-container" class="flex flex-col gap-3 overflow-y-auto pr-2 pb-4 scrollbar-thin">
+                     </div>
             </div>
         </div>
 
-        <!-- Bottom Player -->
-        <div class="bottom-player relative shrink-0 w-full h-24 bg-black/40 backdrop-blur-2xl border-t border-white/10 flex items-center justify-between px-8 z-20 transition-all duration-500">
+        <!-- Removed 'absolute bottom-0' and added 'relative shrink-0' so it pushes the playlist up -->
+        <div class="relative shrink-0 w-full h-24 bg-black/40 backdrop-blur-2xl border-t border-white/10 flex items-center justify-between px-8 z-20">
             
             <div class="flex items-center gap-4 w-1/4 min-w-[200px]">
                 <div id="current-cover-container" class="relative w-14 h-14 overflow-hidden rounded-lg shadow-lg">
@@ -273,7 +180,7 @@
                 </div>
             </div>
 
-            <div class="flex items-center justify-end gap-6 w-1/4 min-w-[200px] ui-panel">
+            <div class="flex items-center justify-end gap-6 w-1/4 min-w-[200px]">
                 <div class="flex items-center gap-2 group">
                     <button onclick="toggleMute()" class="text-white/60 hover:text-white transition-colors">
                         <span id="volume-icon" class="material-symbols-rounded">volume_up</span>
@@ -283,6 +190,7 @@
                         <div id="volume-bar" class="h-full bg-white rounded-full pointer-events-none group-hover:bg-indigo-400 transition-colors" style="width: 50%"></div>
                     </div>
                 </div>
+
                 <button onclick="togglePlaylist()" id="playlist-toggle-btn" class="p-2 rounded-lg transition-colors bg-white/20 text-white">
                     <span class="material-symbols-rounded">queue_music</span>
                 </button>
@@ -293,11 +201,29 @@
 
     <script>
         // --- DATA ---
+        // Expected folder structure in GitHub:
+        // /music/chill-1.mp3 ... /music/chill-10.mp3
+        // /music/focus-1.mp3 ... /music/focus-10.mp3
+        // /music/party-1.mp3 ... /music/party-10.mp3
+        // /music/morning-1.mp3 ... /music/morning-10.mp3
+        // /atmosphere/atmos-1.mp3 ... /atmosphere/atmos-10.mp3
+        // /assets/chill-bg.mp4, /assets/focus-bg.mp4, /assets/party-bg.mp4, /assets/morning-bg.mp4, /assets/atmos-bg.mp4
+        
+        // Switched fallbacks to highly reliable Freesound links which won't throw 404/Abort errors
         const fallbackMusic = [
             'https://cdn.freesound.org/previews/665/665181_11861866-hq.mp3', 
             'https://cdn.freesound.org/previews/607/607261_1648170-hq.mp3', 
             'https://cdn.freesound.org/previews/538/538556_11861866-hq.mp3',
-            'https://cdn.freesound.org/previews/506/506053_10991815-hq.mp3'
+            'https://cdn.freesound.org/previews/506/506053_10991815-hq.mp3',
+            'https://cdn.freesound.org/previews/410/410574_5121236-hq.mp3'
+        ];
+
+        const fallbackAtmosphere = [
+            'https://cdn.freesound.org/previews/175/175366_3136262-hq.mp3', 
+            'https://cdn.freesound.org/previews/174/174763_3248244-hq.mp3', 
+            'https://cdn.freesound.org/previews/102/102806_1762417-hq.mp3',
+            'https://cdn.freesound.org/previews/320/320141_5260872-hq.mp3',
+            'https://cdn.freesound.org/previews/400/400587_5121236-hq.mp3'
         ];
 
         const STATIONS = [
@@ -372,6 +298,33 @@
                     { id: 39, title: 'Theme Awakening', artist: 'Instrumental', url: './music/morning-9.mp3', cover: 'https://picsum.photos/seed/morning9/300/300' },
                     { id: 40, title: 'Golden Highscore', artist: 'Instrumental', url: './music/morning-10.mp3', cover: 'https://picsum.photos/seed/morning10/300/300' }
                 ]
+            },
+            { 
+                id: 'atmosphere', name: 'Atmosphere', icon: 'landscape', 
+                bg: './assets/atmos-bg.mp4', 
+                fallbackBg: 'https://media.giphy.com/media/ilzS01o2mZ7O0/giphy.gif',
+                color: 'bg-gradient-to-br from-green-900/60 to-stone-900/60',
+                tracks: [
+                    { id: 41, title: 'Rain on Tin Roof', artist: 'Nature Sounds', url: './atmosphere/atmos-1.mp3', cover: 'https://picsum.photos/seed/atmos1/300/300' },
+                    
+                    // UPDATED: Now points to the newly named cafe.mp3 in the assets folder
+                    { id: 42, title: 'Bustling Coffee Shop', artist: 'City Ambience', url: './assets/cafe.mp3', cover: 'https://picsum.photos/seed/atmos2/300/300' },
+                    
+                    { id: 43, title: 'Distant Thunder', artist: 'Weather Vibes', url: './atmosphere/atmos-3.mp3', cover: 'https://picsum.photos/seed/atmos3/300/300' },
+                    { id: 44, title: 'Mechanical Keyboard', artist: 'Focus Foley', url: './atmosphere/atmos-4.mp3', cover: 'https://picsum.photos/seed/atmos4/300/300' },
+                    { id: 45, title: 'Crashing Waves', artist: 'Oceanic Sounds', url: './atmosphere/atmos-5.mp3', cover: 'https://picsum.photos/seed/atmos5/300/300' },
+                    
+                    // UPDATED: Now points to the newly named fire.mp3 in the assets folder
+                    { id: 46, title: 'Campfire Crackle', artist: 'Nightfall', url: './assets/fire.mp3', cover: 'https://picsum.photos/seed/atmos6/300/300' },
+                    
+                    { id: 47, title: 'Summer Crickets', artist: 'Meadow Sounds', url: './atmosphere/atmos-7.mp3', cover: 'https://picsum.photos/seed/atmos7/300/300' },
+                    { id: 48, title: 'Babbling Brook', artist: 'Waterways', url: './atmosphere/atmos-8.mp3', cover: 'https://picsum.photos/seed/atmos8/300/300' },
+                    
+                    // UPDATED: Now points to the newly named rain.mp3 in the assets folder
+                    { id: 49, title: 'Heavy Rainstorm', artist: 'Weather Vibes', url: './assets/rain.mp3', cover: 'https://picsum.photos/seed/atmos9/300/300' },
+                    
+                    { id: 50, title: 'Wind Through Pines', artist: 'Forest', url: './atmosphere/atmos-10.mp3', cover: 'https://picsum.photos/seed/atmos10/300/300' }
+                ]
             }
         ];
 
@@ -381,26 +334,16 @@
         let isPlaying = false;
         let volume = 0.5;
         let showPlaylist = true;
-        let zenModeActive = false;
-        let dimModeActive = false;
+        let toastTimeout;
         let usingFallback = false;
-        let consecutiveErrors = 0;
-
-        // Pomodoro State
-        let timerInterval;
-        let timeLeft = 25 * 60; // 25 mins
-        let isTimerRunning = false;
-        let timerMode = 'work';
-        let focusPreset = 25; // Remembers your focus length
-        let breakPreset = 5;  // Remembers your break length
+        let consecutiveErrors = 0; // Tracks consecutive missing files
 
         // --- DOM ELEMENTS ---
         let audio, bgVideo, bgImage, bgGradient, stationsContainer, tracksContainer;
         let currentCover, currentCoverContainer, currentTitle, currentArtist;
         let mainPlayIcon, timeCurrent, timeTotal, progressBar, progressContainer;
         let volumeIcon, volumeBar, volumeSlider, playlistContainer, playlistToggleBtn;
-        let timerDisplay, timerIcon, btnWork, btnBreak;
-        let sfx = {};
+        let suggestionModal, suggestionForm;
 
         // --- INITIALIZATION ---
         function init() {
@@ -429,37 +372,23 @@
             playlistContainer = document.getElementById('playlist-container');
             playlistToggleBtn = document.getElementById('playlist-toggle-btn');
             
-            timerDisplay = document.getElementById('timer-display');
-            timerIcon = document.getElementById('timer-icon');
-            btnWork = document.getElementById('btn-work');
-            btnBreak = document.getElementById('btn-break');
-            
-            // Map the audio elements safely
-            sfx = {
-                rain: document.getElementById('sfx-rain'),
-                fire: document.getElementById('sfx-fire'),
-                cafe: document.getElementById('sfx-cafe')
-            };
-
-            // Ensure SFX start completely muted to perfectly match the visual sliders
-            // Null check added to prevent errors if an HTML audio element is missing
-            Object.values(sfx).forEach(sound => {
-                if (sound) sound.volume = 0;
-            });
+            suggestionModal = document.getElementById('suggestion-modal');
+            suggestionForm = document.getElementById('suggestion-form');
 
             audio.volume = volume;
             
-            setupEventListeners();
+            // Setup UI immediately
             loadStation(0); 
-        }
-
-        function setupEventListeners() {
+            
+            // Audio Event Listeners
             audio.addEventListener('timeupdate', updateProgress);
             audio.addEventListener('loadedmetadata', updateProgress);
-            audio.addEventListener('durationchange', updateProgress);
+            audio.addEventListener('ended', () => playNext(true));
             
             audio.addEventListener('error', (e) => {
                 const track = STATIONS[currentStationIdx].tracks[currentTrackIdx];
+                
+                // If local file is missing, fallback to a working preview track.
                 if (!usingFallback && track.fallbackSrc) {
                     usingFallback = true;
                     const wasPlaying = isPlaying;
@@ -468,217 +397,94 @@
                     return; 
                 }
 
+                // If even the fallback fails, handle the error safely
                 const wasPlayingBeforeError = isPlaying;
                 isPlaying = false;
                 updatePlayStateUI();
                 consecutiveErrors++;
                 
+                const fileName = track.title || "Audio file";
+                
+                // Limit skipping to prevent infinite loops if multiple files are missing
                 if (consecutiveErrors <= 3) {
+                    showToast("Missing File", `Could not play ${fileName}. Skipping...`, "error");
                     setTimeout(() => {
+                        // If it was playing before it errored out, keep the momentum going
                         if (wasPlayingBeforeError) isPlaying = true;
                         playNext(wasPlayingBeforeError);
                     }, 2000);
+                } else {
+                    showToast("Playback Paused", "Multiple files missing. Please check your GitHub uploads.", "error");
                 }
             });
 
-            // Keyboard Shortcuts
-            document.addEventListener('keydown', (e) => {
-                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-                if (e.code === 'Space') {
-                    e.preventDefault();
-                    togglePlay();
-                } else if (e.code === 'ArrowRight') {
-                    playNext(true);
-                } else if (e.code === 'ArrowLeft') {
-                    playPrev(true);
-                }
-            });
-        }
-
-        // --- NEW FOCUS FEATURES ---
-        
-        function toggleSuggestionBox() {
-            document.getElementById('suggestion-modal').classList.toggle('hidden');
-        }
-
-        function toggleZenMode() {
-            zenModeActive = !zenModeActive;
-            const icon = document.getElementById('zen-icon');
-            if (zenModeActive) {
-                document.body.classList.add('zen-active');
-                icon.textContent = 'visibility_off';
-            } else {
-                document.body.classList.remove('zen-active');
-                icon.textContent = 'visibility';
-            }
-        }
-
-        function toggleDimMode() {
-            dimModeActive = !dimModeActive;
-            const overlay = document.getElementById('dim-overlay');
-            const icon = document.getElementById('dim-icon');
-            if (dimModeActive) {
-                overlay.classList.remove('opacity-0');
-                icon.textContent = 'light_mode';
-            } else {
-                overlay.classList.add('opacity-0');
-                icon.textContent = 'dark_mode';
-            }
-        }
-
-        function changeSfxVolume(type, val) {
-            if (!sfx[type]) return; // Safeguard
-            const vol = parseFloat(val);
-            sfx[type].volume = vol;
-            document.getElementById(`bar-${type}`).style.width = `${vol * 100}%`;
-            
-            if (vol > 0 && sfx[type].paused) {
-                sfx[type].play().catch(e => console.log("Auto-play prevented for SFX until interaction"));
-            } else if (vol === 0) {
-                sfx[type].pause();
-            }
-        }
-
-        // --- POMODORO TIMER ---
-        
-        function formatTimer(seconds) {
-            const m = Math.floor(seconds / 60);
-            const s = seconds % 60;
-            return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-        }
-
-        function updateTimerDisplay() {
-            timerDisplay.textContent = formatTimer(timeLeft);
-        }
-
-        function changeTimerMode(mode) {
-            timerMode = mode;
-            isTimerRunning = false;
-            clearInterval(timerInterval);
-            timerIcon.textContent = 'play_arrow';
-            
-            const presetSelect = document.getElementById('timer-preset');
-            presetSelect.innerHTML = ''; // Clear out the old dropdown options
-            
-            if (mode === 'work') {
-                btnWork.className = 'text-xs font-semibold uppercase tracking-wider text-indigo-300 transition-colors';
-                btnBreak.className = 'text-xs font-semibold uppercase tracking-wider text-white/50 hover:text-white transition-colors';
+            // Form Submit Listener (AJAX)
+            suggestionForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
                 
-                // Add Focus specific options
-                const options = [5, 10, 15, 20, 25, 30];
-                options.forEach(opt => {
-                    const option = document.createElement('option');
-                    option.value = opt;
-                    option.className = 'bg-gray-800 text-white';
-                    option.textContent = opt + ' Min';
-                    if (opt === focusPreset) option.selected = true;
-                    presetSelect.appendChild(option);
-                });
-                timeLeft = focusPreset * 60;
+                // IMPORTANT: Replace the URL below with your actual Formspree endpoint URL!
+                const formspreeEndpoint = 'https://formspree.io/f/YOUR_UNIQUE_FORM_ID'; 
                 
-            } else {
-                btnBreak.className = 'text-xs font-semibold uppercase tracking-wider text-emerald-300 transition-colors';
-                btnWork.className = 'text-xs font-semibold uppercase tracking-wider text-white/50 hover:text-white transition-colors';
-                
-                // Add Break specific options
-                const options = [2, 5, 10];
-                options.forEach(opt => {
-                    const option = document.createElement('option');
-                    option.value = opt;
-                    option.className = 'bg-gray-800 text-white';
-                    option.textContent = opt + ' Min';
-                    if (opt === breakPreset) option.selected = true;
-                    presetSelect.appendChild(option);
-                });
-                timeLeft = breakPreset * 60;
-            }
-            updateTimerDisplay();
-        }
+                const submitBtn = document.getElementById('submit-btn');
+                const originalBtnText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<span class="material-symbols-rounded animate-spin">sync</span> Sending...';
+                submitBtn.disabled = true;
 
-        function changeTimerPreset(mins) {
-            isTimerRunning = false;
-            clearInterval(timerInterval);
-            timerIcon.textContent = 'play_arrow';
-            
-            const m = parseInt(mins);
-            // Save the newly selected time to the correct mode so it remembers it
-            if (timerMode === 'work') focusPreset = m;
-            else breakPreset = m;
-            
-            timeLeft = m * 60;
-            updateTimerDisplay();
-        }
-
-        function playTimerChime() {
-            // Capture current volumes before ducking, safely handling any missing elements
-            const originalVols = { 
-                main: audio.volume, 
-                rain: sfx.rain ? sfx.rain.volume : 0, 
-                fire: sfx.fire ? sfx.fire.volume : 0, 
-                cafe: sfx.cafe ? sfx.cafe.volume : 0 
-            };
-            
-            // Smoothly fade out to 10% volume
-            let steps = 10;
-            let fadeOut = setInterval(() => {
-                steps--;
-                audio.volume = originalVols.main * (0.1 + (0.9 * (steps/10)));
-                if (sfx.rain) sfx.rain.volume = originalVols.rain * (0.1 + (0.9 * (steps/10)));
-                if (sfx.fire) sfx.fire.volume = originalVols.fire * (0.1 + (0.9 * (steps/10)));
-                if (sfx.cafe) sfx.cafe.volume = originalVols.cafe * (0.1 + (0.9 * (steps/10)));
-                
-                if(steps <= 0) {
-                    clearInterval(fadeOut);
+                try {
+                    const formData = new FormData(suggestionForm);
+                    const response = await fetch(formspreeEndpoint, {
+                        method: 'POST',
+                        body: formData,
+                        headers: { 'Accept': 'application/json' }
+                    });
                     
-                    // Play the chime clearly over the quieted music
-                    const chime = new Audio('https://cdn.freesound.org/previews/411/411088_5121236-hq.mp3');
-                    chime.volume = 0.8;
-                    chime.play();
-                    
-                    // Smoothly fade the music back in after the chime finishes (~3.5 seconds)
-                    setTimeout(() => {
-                        let inSteps = 0;
-                        let fadeIn = setInterval(() => {
-                            inSteps++;
-                            audio.volume = originalVols.main * (0.1 + (0.9 * (inSteps/10)));
-                            if (sfx.rain) sfx.rain.volume = originalVols.rain * (0.1 + (0.9 * (inSteps/10)));
-                            if (sfx.fire) sfx.fire.volume = originalVols.fire * (0.1 + (0.9 * (inSteps/10)));
-                            if (sfx.cafe) sfx.cafe.volume = originalVols.cafe * (0.1 + (0.9 * (inSteps/10)));
-                            if(inSteps >= 10) clearInterval(fadeIn);
-                        }, 100);
-                    }, 3500);
-                }
-            }, 50);
-        }
-
-        function toggleTimer() {
-            if (isTimerRunning) {
-                clearInterval(timerInterval);
-                isTimerRunning = false;
-                timerIcon.textContent = 'play_arrow';
-            } else {
-                isTimerRunning = true;
-                timerIcon.textContent = 'pause';
-                timerInterval = setInterval(() => {
-                    timeLeft--;
-                    updateTimerDisplay();
-                    
-                    if (timeLeft <= 0) {
-                        clearInterval(timerInterval);
-                        isTimerRunning = false;
-                        timerIcon.textContent = 'play_arrow';
-                        
-                        playTimerChime();
-                        
-                        const presetSelect = document.getElementById('timer-preset');
-                        timeLeft = parseInt(presetSelect.value) * 60;
-                        updateTimerDisplay();
+                    if (response.ok) {
+                        showToast("Success", "Your song suggestion was sent!", "check_circle");
+                        suggestionForm.reset();
+                        toggleSuggestionBox();
+                    } else {
+                        showToast("Error", "Oops! Ensure you replaced the Formspree URL in the code.", "error");
                     }
-                }, 1000);
-            }
+                } catch (error) {
+                    showToast("Error", "There was a problem sending your suggestion.", "error");
+                } finally {
+                    submitBtn.innerHTML = originalBtnText;
+                    submitBtn.disabled = false;
+                }
+            });
         }
 
-        // --- CORE MUSIC FUNCTIONS ---
+        // --- CORE FUNCTIONS ---
+        function toggleSuggestionBox() {
+            suggestionModal.classList.toggle('hidden');
+        }
+
+        function showToast(title, message, icon = "info") {
+            const toast = document.getElementById('toast');
+            const toastTitle = document.getElementById('toast-title');
+            const toastMessage = document.getElementById('toast-message');
+            const toastIcon = document.getElementById('toast-icon');
+            
+            toastTitle.textContent = title;
+            toastMessage.textContent = message;
+            toastIcon.textContent = icon;
+            
+            // Swap colors based on error vs success
+            if (icon === 'error') {
+                toast.classList.replace('bg-indigo-600/90', 'bg-red-600/90');
+                toast.classList.replace('border-indigo-400/50', 'border-red-400/50');
+            } else {
+                toast.classList.replace('bg-red-600/90', 'bg-indigo-600/90');
+                toast.classList.replace('border-red-400/50', 'border-indigo-400/50');
+            }
+            
+            clearTimeout(toastTimeout);
+            toast.classList.remove('translate-x-[150%]', 'opacity-0');
+            
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('translate-x-[150%]', 'opacity-0');
+            }, 5000);
+        }
 
         function attemptPlay() {
             if (!audio.src) return;
@@ -687,20 +493,18 @@
             if (playPromise !== undefined) {
                 playPromise.then(() => {
                     isPlaying = true;
-                    consecutiveErrors = 0; 
+                    consecutiveErrors = 0; // Reset error counter on successful playback
                     updatePlayStateUI();
-                    
-                    // Make sure SFX are playing if volume > 0, with a safety null check
-                    Object.keys(sfx).forEach(key => {
-                        if (sfx[key] && sfx[key].volume > 0 && sfx[key].paused) {
-                            sfx[key].play().catch(e => console.warn("SFX play prevented", e));
-                        }
-                    });
-
                 }).catch(error => {
+                    // Ignore DOM AbortErrors gracefully (happens during rapid track skipping)
                     if (error.name === 'AbortError') return;
+                    
                     isPlaying = false;
                     updatePlayStateUI();
+                    
+                    if(error.name === 'NotAllowedError') {
+                        showToast("Notice", "Please click the Play button to start the music.", "info");
+                    }
                 });
             }
         }
@@ -710,14 +514,32 @@
             currentStationIdx = idx;
             const station = STATIONS[idx];
             
+            // Background Logic: Dynamically handle MP4 Videos or GIF/JPG Images
             if (station.bg.match(/\.(mp4|webm)$/i)) {
                 bgVideo.src = station.bg;
-                bgVideo.onloadeddata = () => { bgVideo.classList.remove('opacity-0'); bgImage.classList.add('opacity-0'); };
-                bgVideo.onerror = () => { bgVideo.classList.add('opacity-0'); bgImage.classList.remove('opacity-0'); bgImage.style.backgroundImage = `url(${station.fallbackBg})`; };
+                bgVideo.onloadeddata = () => {
+                    bgVideo.classList.remove('opacity-0');
+                    bgImage.classList.add('opacity-0');
+                };
+                bgVideo.onerror = () => {
+                    console.warn(`Local video ${station.bg} not found. Falling back to preview GIF.`);
+                    bgVideo.classList.add('opacity-0');
+                    bgImage.classList.remove('opacity-0');
+                    bgImage.style.backgroundImage = `url(${station.fallbackBg})`;
+                };
             } else {
                 const bgImg = new Image();
-                bgImg.onload = () => { bgImage.style.backgroundImage = `url(${station.bg})`; bgImage.classList.remove('opacity-0'); bgVideo.classList.add('opacity-0'); };
-                bgImg.onerror = () => { bgImage.classList.remove('opacity-0'); bgVideo.classList.add('opacity-0'); bgImage.style.backgroundImage = `url(${station.fallbackBg})`; };
+                bgImg.onload = () => {
+                    bgImage.style.backgroundImage = `url(${station.bg})`;
+                    bgImage.classList.remove('opacity-0');
+                    bgVideo.classList.add('opacity-0');
+                };
+                bgImg.onerror = () => {
+                    console.warn(`Local background ${station.bg} not found. Falling back to preview GIF.`);
+                    bgImage.classList.remove('opacity-0');
+                    bgVideo.classList.add('opacity-0');
+                    bgImage.style.backgroundImage = `url(${station.fallbackBg})`;
+                };
                 bgImg.src = station.bg;
             }
             
@@ -736,27 +558,37 @@
             const track = currentStationTracks[idx];
             
             usingFallback = false;
-            track.fallbackSrc = fallbackMusic[idx % fallbackMusic.length];
+            
+            // Dynamically assign a fallback audio source based on the station
+            if (currentStationIdx === 4) { // Atmosphere Station
+                track.fallbackSrc = fallbackAtmosphere[idx % fallbackAtmosphere.length];
+            } else { // All Music Stations
+                track.fallbackSrc = fallbackMusic[idx % fallbackMusic.length];
+            }
             
             audio.src = track.url;
             currentCover.src = track.cover;
             currentTitle.textContent = track.title;
             currentArtist.textContent = track.artist;
             
-            if (isPlaying) { attemptPlay(); }
+            if (isPlaying) {
+                attemptPlay();
+            }
             renderStations(); 
             renderPlaylist(); 
 
+            // Automatically scroll the playlist to show the newly loaded track
             setTimeout(() => {
                 const activeTrackEl = document.getElementById('active-track');
-                if (activeTrackEl) { activeTrackEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+                if (activeTrackEl) {
+                    activeTrackEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
             }, 50);
         }
 
         function togglePlay() {
             if (isPlaying) {
                 audio.pause();
-                Object.values(sfx).forEach(sound => { if (sound) sound.pause(); });
                 isPlaying = false;
                 updatePlayStateUI();
             } else {
@@ -767,26 +599,43 @@
         function playNext(userInitiated = false) {
             const currentStationTracks = STATIONS[currentStationIdx].tracks;
             let nextIdx = (currentTrackIdx + 1) % currentStationTracks.length;
-            if (userInitiated) { isPlaying = true; }
+            
+            if (userInitiated) {
+                isPlaying = true;
+            }
+            
             loadTrack(nextIdx);
         }
 
         function playPrev(userInitiated = false) {
             const currentStationTracks = STATIONS[currentStationIdx].tracks;
             let prevIdx = (currentTrackIdx - 1 + currentStationTracks.length) % currentStationTracks.length;
-            if (userInitiated) { isPlaying = true; }
+            
+            if (userInitiated) {
+                isPlaying = true;
+            }
+            
             loadTrack(prevIdx);
         }
 
         function playTrackFromPlaylist(idx, userInitiated = false) {
-            if (userInitiated) { isPlaying = true; }
+            if (userInitiated) {
+                isPlaying = true;
+            }
+            
             loadTrack(idx);
         }
 
-        // --- UI UPDATES & RENDERERS ---
+        // --- UI UPDATES ---
         function updatePlayStateUI() {
             mainPlayIcon.textContent = isPlaying ? 'pause' : 'play_arrow';
-            isPlaying ? currentCoverContainer.classList.add('spin-slow') : currentCoverContainer.classList.remove('spin-slow');
+            
+            if (isPlaying) {
+                currentCoverContainer.classList.add('spin-slow');
+            } else {
+                currentCoverContainer.classList.remove('spin-slow');
+            }
+            
             renderStations(); 
             renderPlaylist(); 
         }
@@ -798,7 +647,7 @@
             timeCurrent.textContent = formatTime(current);
             timeTotal.textContent = formatTime(total);
             
-            const percent = (total > 0 && isFinite(total)) ? (current / total) * 100 : 0;
+            const percent = total > 0 ? (current / total) * 100 : 0;
             progressBar.style.width = `${percent}%`;
         }
 
@@ -812,14 +661,24 @@
             volume = parseFloat(val);
             audio.volume = volume;
             volumeBar.style.width = `${volume * 100}%`;
-            if (volume === 0) { volumeIcon.textContent = 'volume_off'; } 
-            else if (volume < 0.5) { volumeIcon.textContent = 'volume_down'; } 
-            else { volumeIcon.textContent = 'volume_up'; }
+            
+            if (volume === 0) {
+                volumeIcon.textContent = 'volume_off';
+            } else if (volume < 0.5) {
+                volumeIcon.textContent = 'volume_down';
+            } else {
+                volumeIcon.textContent = 'volume_up';
+            }
         }
 
         function toggleMute() {
-            if (volume > 0) { volumeSlider.value = 0; changeVolume(0); } 
-            else { volumeSlider.value = 0.5; changeVolume(0.5); }
+            if (volume > 0) {
+                volumeSlider.value = 0;
+                changeVolume(0);
+            } else {
+                volumeSlider.value = 0.5;
+                changeVolume(0.5);
+            }
         }
 
         function togglePlaylist() {
@@ -836,13 +695,20 @@
         }
 
         function toggleFullscreen() {
-            if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); } 
-            else { document.exitFullscreen(); }
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.error(`Error enabling full-screen mode: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
         }
 
+        // --- RENDERERS ---
         function renderStations() {
             stationsContainer.innerHTML = STATIONS.map((station, idx) => {
                 const isActive = currentStationIdx === idx;
+                
                 let eqHtml = '';
                 if (isActive && isPlaying) {
                     eqHtml = `
@@ -853,8 +719,16 @@
                         </div>
                     `;
                 }
+
                 return `
-                    <button onclick="loadStation(${idx})" class="flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 backdrop-blur-md border ${isActive ? 'bg-white/20 border-white/30 text-white shadow-lg' : 'bg-white/5 border-transparent text-white/60 hover:bg-white/10 hover:text-white'}">
+                    <button
+                        onclick="loadStation(${idx})"
+                        class="flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 backdrop-blur-md border ${
+                            isActive 
+                            ? 'bg-white/20 border-white/30 text-white shadow-lg' 
+                            : 'bg-white/5 border-transparent text-white/60 hover:bg-white/10 hover:text-white'
+                        }"
+                    >
                         <span class="material-symbols-rounded" style="font-size: 20px;">${station.icon}</span>
                         <span class="font-medium text-sm">${station.name}</span>
                         ${eqHtml}
@@ -864,32 +738,57 @@
         }
 
         function renderPlaylist() {
+            // Get the tracks for the CURRENT station
             const currentStationTracks = STATIONS[currentStationIdx].tracks;
+            
             tracksContainer.innerHTML = currentStationTracks.map((track, idx) => {
                 const isActive = currentTrackIdx === idx;
-                let overlayIcon = isActive ? `<div class="absolute inset-0 flex items-center justify-center bg-black/40"><span class="material-symbols-rounded fill text-white" style="font-size: 20px;">${isPlaying ? 'pause' : 'play_arrow'}</span></div>` : '';
+                
+                let overlayIcon = '';
+                if (isActive) {
+                    overlayIcon = `
+                        <div class="absolute inset-0 flex items-center justify-center bg-black/40">
+                            <span class="material-symbols-rounded fill text-white" style="font-size: 20px;">
+                                ${isPlaying ? 'pause' : 'play_arrow'}
+                            </span>
+                        </div>
+                    `;
+                }
+
                 return `
-                    <div ${isActive ? 'id="active-track"' : ''} onclick="playTrackFromPlaylist(${idx}, true)" class="flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all duration-200 group ${isActive ? 'bg-white/10' : 'hover:bg-white/5'}">
+                    <div 
+                        ${isActive ? 'id="active-track"' : ''}
+                        onclick="playTrackFromPlaylist(${idx}, true)"
+                        class="flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all duration-200 group ${
+                            isActive ? 'bg-white/10' : 'hover:bg-white/5'
+                        }"
+                    >
                         <div class="relative w-12 h-12 overflow-hidden rounded-md shadow-sm shrink-0">
                             <img src="${track.cover}" alt="${track.title}" class="object-cover w-full h-full" />
                             ${overlayIcon}
                         </div>
                         <div class="flex flex-col overflow-hidden">
-                            <span class="text-sm font-medium truncate ${isActive ? 'text-white' : 'text-white/80 group-hover:text-white'}">${track.title}</span>
-                            <span class="text-xs text-white/50 truncate">${track.artist}</span>
+                            <span class="text-sm font-medium truncate ${isActive ? 'text-white' : 'text-white/80 group-hover:text-white'}">
+                                ${track.title}
+                            </span>
+                            <span class="text-xs text-white/50 truncate">
+                                ${track.artist}
+                            </span>
                         </div>
                     </div>
                 `;
             }).join('');
         }
 
+        // --- UTILS ---
         function formatTime(seconds) {
-            if (seconds === undefined || isNaN(seconds) || !isFinite(seconds)) return "0:00";
+            if (!seconds || isNaN(seconds)) return "0:00";
             const m = Math.floor(seconds / 60);
             const s = Math.floor(seconds % 60);
             return `${m}:${s.toString().padStart(2, '0')}`;
         }
 
+        // Start the app safely once everything is loaded
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
