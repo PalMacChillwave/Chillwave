@@ -44,6 +44,21 @@
         .eq-bar:nth-child(1) { animation-delay: 0ms; }
         .eq-bar:nth-child(2) { animation-delay: 150ms; }
         .eq-bar:nth-child(3) { animation-delay: 300ms; }
+
+        /* Zen Mode Transitions */
+        .ui-panel {
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .zen-active .ui-panel {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(10px);
+        }
+        .zen-active .bottom-player {
+            background: transparent !important;
+            border: none !important;
+            backdrop-filter: none !important;
+        }
     </style>
 </head>
 <body class="relative w-full h-screen overflow-hidden font-sans text-white bg-gray-900 select-none">
@@ -116,14 +131,14 @@
                 </h1>
                 
                 <!-- Dim Lights Toggle -->
-                <button onclick="toggleDimMode()" class="p-2 transition-colors rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md flex items-center gap-2 px-4" title="Dim Lights">
+                <button onclick="toggleDimMode()" class="p-2 transition-colors rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md flex items-center gap-2 px-4 ui-panel" title="Dim Lights">
                     <span id="dim-icon" class="material-symbols-rounded" style="font-size: 18px;">dark_mode</span>
                     <span class="text-sm font-medium hidden sm:block">Dim</span>
                 </button>
             </div>
             
             <!-- Pomodoro Timer Unified Widget -->
-            <div class="absolute left-1/2 -translate-x-1/2 flex items-center bg-black/40 backdrop-blur-md pl-6 pr-2 py-1.5 rounded-full border border-white/10 shadow-lg hover:bg-black/50 transition-colors z-50">
+            <div class="absolute left-1/2 -translate-x-1/2 flex items-center bg-black/40 backdrop-blur-md pl-6 pr-2 py-1.5 rounded-full border border-white/10 shadow-lg hover:bg-black/50 transition-colors z-50 ui-panel">
                 
                 <!-- Focus & Break toggles -->
                 <button onclick="changeTimerMode('work')" id="btn-work" class="text-xs font-semibold uppercase tracking-wider text-indigo-300 transition-colors">Focus</button>
@@ -156,12 +171,18 @@
             </div>
             
             <div class="flex items-center gap-4">
-                <button onclick="toggleSuggestionBox()" class="flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors border rounded-full bg-white/10 hover:bg-white/20 border-white/20 text-white/90 hover:text-white" title="Suggest a song">
+                <button onclick="toggleSuggestionBox()" class="flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors border rounded-full bg-white/10 hover:bg-white/20 border-white/20 text-white/90 hover:text-white ui-panel" title="Suggest a song">
                     <span class="material-symbols-rounded" style="font-size: 18px;">lightbulb</span>
                     Suggest Song
                 </button>
+
+                <!-- Zen Mode Toggle -->
+                <button onclick="toggleZenMode()" class="p-2 transition-colors rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md flex items-center gap-2 px-4" title="Zen Mode">
+                    <span id="zen-icon" class="material-symbols-rounded" style="font-size: 18px;">visibility</span>
+                    <span class="text-sm font-medium hidden sm:block">Zen Mode</span>
+                </button>
                 
-                <button onclick="toggleFullscreen()" class="p-2 transition-colors rounded-full hover:bg-white/10 text-white/80 hover:text-white" title="Fullscreen">
+                <button onclick="toggleFullscreen()" class="p-2 transition-colors rounded-full hover:bg-white/10 text-white/80 hover:text-white ui-panel" title="Fullscreen">
                     <span class="material-symbols-rounded">fullscreen</span>
                 </button>
             </div>
@@ -169,7 +190,7 @@
 
         <div class="flex flex-1 overflow-hidden">
             
-            <div class="flex flex-col gap-2 p-6 w-72">
+            <div class="flex flex-col gap-2 p-6 w-72 ui-panel">
                 <h2 class="mb-2 text-xs font-semibold tracking-widest uppercase text-white/50">Stations</h2>
                 <div id="stations-container" class="flex flex-col gap-2">
                     </div>
@@ -208,7 +229,7 @@
 
             <div class="flex-1"></div>
 
-            <div id="playlist-container" class="flex flex-col w-80 p-6 bg-black/20 backdrop-blur-xl border-l border-white/10 h-full transition-transform duration-300 translate-x-0">
+            <div id="playlist-container" class="flex flex-col w-80 p-6 bg-black/20 backdrop-blur-xl border-l border-white/10 h-full transition-transform duration-300 translate-x-0 ui-panel">
                  <h2 class="mb-4 text-xs font-semibold tracking-widest uppercase text-white/50 flex items-center gap-2">
                      <span class="material-symbols-rounded" style="font-size: 18px;">queue_music</span> Up Next
                  </h2>
@@ -219,7 +240,7 @@
         </div>
 
         <!-- Removed 'absolute bottom-0' and added 'relative shrink-0' so it pushes the playlist up -->
-        <div class="relative shrink-0 w-full h-24 bg-black/40 backdrop-blur-2xl border-t border-white/10 flex items-center justify-between px-8 z-20">
+        <div class="bottom-player relative shrink-0 w-full h-24 bg-black/40 backdrop-blur-2xl border-t border-white/10 flex items-center justify-between px-8 z-20 transition-all duration-500">
             
             <div class="flex items-center gap-4 w-1/4 min-w-[200px]">
                 <div id="current-cover-container" class="relative w-14 h-14 overflow-hidden rounded-lg shadow-lg">
@@ -258,7 +279,7 @@
                 </div>
             </div>
 
-            <div class="flex items-center justify-end gap-6 w-1/4 min-w-[200px]">
+            <div class="flex items-center justify-end gap-6 w-1/4 min-w-[200px] ui-panel">
                 <div class="flex items-center gap-2 group">
                     <button onclick="toggleMute()" class="text-white/60 hover:text-white transition-colors">
                         <span id="volume-icon" class="material-symbols-rounded">volume_up</span>
@@ -298,7 +319,7 @@
 
         const STATIONS = [
             { 
-                id: 'chill', name: 'Chill & Sleep', icon: 'local_cafe', 
+                id: 'chill', name: 'Cozy Corner', icon: 'local_cafe', 
                 bg: './assets/chill-bg.mp4', 
                 fallbackBg: 'https://media.giphy.com/media/L0qTl8hl84ce91wO6p/giphy.gif',
                 color: 'bg-gradient-to-br from-blue-900/60 to-indigo-900/60',
@@ -334,7 +355,7 @@
                 ]
             },
             { 
-                id: 'party', name: 'Night Out', icon: 'celebration', 
+                id: 'party', name: 'Midnight Drive', icon: 'celebration', 
                 bg: './assets/party-bg.mp4', 
                 fallbackBg: 'https://media.giphy.com/media/l41Yh18f5TbiWcdzi/giphy.gif',
                 color: 'bg-gradient-to-br from-fuchsia-900/60 to-rose-900/60',
@@ -352,7 +373,7 @@
                 ]
             },
             { 
-                id: 'morning', name: 'Morning Coffee', icon: 'wb_sunny', 
+                id: 'morning', name: 'Sunrise Sips', icon: 'wb_sunny', 
                 bg: './assets/morning-bg.mp4', 
                 fallbackBg: 'https://media.giphy.com/media/3o7aD2d7qc9qQBiqaw/giphy.gif',
                 color: 'bg-gradient-to-br from-orange-900/60 to-amber-900/60',
@@ -381,6 +402,7 @@
         let usingFallback = false;
         let consecutiveErrors = 0; // Tracks consecutive missing files
         let dimModeActive = false;
+        let zenModeActive = false;
 
         // Pomodoro State
         let timerInterval;
@@ -531,6 +553,18 @@
         }
 
         // --- POMODORO TIMER & FOCUS MODES ---
+        function toggleZenMode() {
+            zenModeActive = !zenModeActive;
+            const icon = document.getElementById('zen-icon');
+            if (zenModeActive) {
+                document.body.classList.add('zen-active');
+                icon.textContent = 'visibility_off';
+            } else {
+                document.body.classList.remove('zen-active');
+                icon.textContent = 'visibility';
+            }
+        }
+
         function toggleDimMode() {
             dimModeActive = !dimModeActive;
             const overlay = document.getElementById('dim-overlay');
