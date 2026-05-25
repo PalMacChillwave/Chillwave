@@ -227,8 +227,8 @@
                 </div>
             </div>
 
-            <!-- Mobile spacer to ensure the aesthetic background is still visible on phones -->
-            <div class="flex-1 min-h-[35vh] md:min-h-0"></div>
+            <!-- Mobile spacer: order-last pushes it BELOW the playlist on mobile, keeping the background visible if you scroll past! -->
+            <div class="flex-1 min-h-[35vh] md:min-h-0 order-last md:order-none"></div>
 
             <div id="playlist-container" class="flex flex-col w-full md:w-80 p-4 md:p-6 bg-black/40 md:bg-black/20 backdrop-blur-xl border-t md:border-t-0 md:border-l border-white/10 h-auto md:h-full transition-transform duration-300 transform md:translate-x-0 ui-panel shrink-0">
                  <h2 class="mb-4 text-xs font-semibold tracking-widest uppercase text-white/50 flex items-center gap-2">
@@ -429,6 +429,9 @@
         let suggestionModal, suggestionForm;
         let timerDisplay, timerIcon, btnWork, btnBreak;
         let sfx = {};
+        
+        // ADDED: Track the logical volume for iOS bypass
+        let sfxVolumes = { rain: 0, fire: 0, cafe: 0 };
 
         // --- INITIALIZATION ---
         function init() {
@@ -754,9 +757,9 @@
                     consecutiveErrors = 0; // Reset error counter on successful playback
                     updatePlayStateUI();
                     
-                    // Make sure SFX are playing if volume > 0, with a safety null check
+                    // FIXED FOR iOS: Check our custom sfxVolumes variable instead of the blocked sfx[key].volume
                     Object.keys(sfx).forEach(key => {
-                        if (sfx[key] && sfx[key].volume > 0 && sfx[key].paused) {
+                        if (sfx[key] && sfxVolumes[key] > 0 && sfx[key].paused) {
                             sfx[key].play().catch(e => console.warn("SFX play prevented", e));
                         }
                     });
@@ -935,7 +938,11 @@
         function changeSfxVolume(type, val) {
             if (!sfx[type]) return; // Safeguard
             const vol = parseFloat(val);
+            
+            // Store logical volume in our variable to bypass iOS locks
+            sfxVolumes[type] = vol; 
             sfx[type].volume = vol;
+            
             document.getElementById(`bar-${type}`).style.width = `${vol * 100}%`;
             
             if (vol > 0 && sfx[type].paused) {
@@ -963,6 +970,13 @@
                     btn.classList.replace('text-white/60', 'text-white');
                     btn.classList.replace('hover:bg-white/10', 'bg-white/20');
                 });
+                
+                // Automatically scroll down to the playlist on mobile phones
+                if (window.innerWidth < 768) {
+                    setTimeout(() => {
+                        playlistContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 50);
+                }
             } else {
                 playlistContainer.classList.add('translate-x-full', 'hidden');
                 playlistToggleBtns.forEach(btn => {
