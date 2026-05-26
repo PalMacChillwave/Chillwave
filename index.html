@@ -3,7 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Primary Meta Tags -->
     <title>Chillwave - Lo-Fi Player</title>
+    <meta name="title" content="Chillwave - Lo-Fi Player">
+    <meta name="description" content="An aesthetic lo-fi music player with a built-in Pomodoro timer and ambient sound mixer. Perfect for studying and focus.">
+
+    <!-- Open Graph / Facebook / Discord -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://palmacchillwave.github.io/Chillwave/">
+    <meta property="og:title" content="Chillwave - Lo-Fi Player">
+    <meta property="og:description" content="An aesthetic lo-fi music player with a built-in Pomodoro timer and ambient sound mixer. Perfect for studying and focus.">
+    <meta property="og:image" content="https://palmacchillwave.github.io/Chillwave/icon.svg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://palmacchillwave.github.io/Chillwave/">
+    <meta property="twitter:title" content="Chillwave - Lo-Fi Player">
+    <meta property="twitter:description" content="An aesthetic lo-fi music player with a built-in Pomodoro timer and ambient sound mixer. Perfect for studying and focus.">
+    <meta property="twitter:image" content="https://palmacchillwave.github.io/Chillwave/icon.svg">
     
     <!-- App Icon / Favicon -->
     <link rel="icon" type="image/svg+xml" href="./icon.svg?v=2">
@@ -66,17 +84,6 @@
     </style>
 </head>
 <body class="relative w-full h-screen overflow-hidden font-sans text-white bg-gray-900 select-none">
-
-    <!-- Loading Screen -->
-    <div id="loading-screen" class="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-gray-900 transition-opacity duration-1000">
-        <div class="w-20 h-20 mb-6 animate-pulse">
-            <img src="./icon.svg" alt="Loading" class="w-full h-full drop-shadow-[0_0_20px_rgba(99,102,241,0.6)]">
-        </div>
-        <h1 class="text-xl font-bold tracking-wider text-white animate-pulse">
-            CHILL<span class="font-light text-white/70">WAVE</span>
-        </h1>
-        <p class="mt-2 text-xs font-medium tracking-widest text-white/40 uppercase">Loading Vibes...</p>
-    </div>
 
     <!-- Dim Mode Overlay -->
     <div id="dim-overlay" class="fixed inset-0 bg-black/70 pointer-events-none opacity-0 transition-opacity duration-1000 z-[100]"></div>
@@ -501,7 +508,9 @@
             });
             
             // Setup UI immediately
-            loadStation(currentStationIdx); 
+            let initialStation = currentStationIdx;
+            currentStationIdx = -1; // Force the station to be treated as "new" so the playlist renders
+            loadStation(initialStation); 
             changeTimerMode('work'); // Applies the saved focus timer preset
             
             // SET UP LOCK SCREEN CONTROLS (Media Session API)
@@ -577,13 +586,6 @@
                     submitBtn.disabled = false;
                 }
             });
-
-            // Fade out the loading screen gracefully once everything is set up
-            setTimeout(() => {
-                const loader = document.getElementById('loading-screen');
-                loader.classList.add('opacity-0');
-                setTimeout(() => loader.remove(), 1000);
-            }, 1200);
         }
 
         // --- LOCAL STORAGE (MEMORY) FUNCTIONS ---
