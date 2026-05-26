@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/> <!-- Slate 900 -->
+      <stop offset="100%" stop-color="#020617"/> <!-- Slate 950 -->
+    </linearGradient>
+
+    <!-- Wave Gradient -->
+    <linearGradient id="wave" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#6366f1"/> <!-- Indigo 500 -->
+      <stop offset="50%" stop-color="#a855f7"/> <!-- Purple 500 -->
+      <stop offset="100%" stop-color="#ec4899"/> <!-- Pink 500 -->
+    </linearGradient>
+
+    <!-- Sun Gradient -->
+    <linearGradient id="sun" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fde047" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#f97316" stop-opacity="0.9"/>
+    </linearGradient>
+  </defs>
+
+  <!-- App Icon Base -->
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  
+  <!-- Subtle border to make it pop against dark browser tabs -->
+  <rect width="512" height="512" rx="112" fill="none" stroke="#334155" stroke-width="8"/>
+
+  <!-- Retro Sun -->
+  <circle cx="256" cy="256" r="140" fill="url(#sun)"/>
+  
+  <!-- Sun Cutouts (Retro Aesthetic) -->
+  <rect x="100" y="270" width="312" height="8" fill="url(#bg)"/>
+  <rect x="100" y="295" width="312" height="12" fill="url(#bg)"/>
+  <rect x="100" y="325" width="312" height="16" fill="url(#bg)"/>
+  <rect x="100" y="360" width="312" height="24" fill="url(#bg)"/>
+
+  <!-- EQ / Soundwaves overlay -->
+  <g fill="url(#wave)">
+    <rect x="150" y="220" width="28" height="72" rx="14"/>
+    <rect x="196" y="160" width="28" height="132" rx="14"/>
+    <rect x="242" y="120" width="28" height="172" rx="14"/>
+    <rect x="288" y="180" width="28" height="112" rx="14"/>
+    <rect x="334" y="240" width="28" height="52" rx="14"/>
+  </g>
+</svg>
