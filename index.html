@@ -6,7 +6,7 @@
     <title>Chillwave - Lo-Fi Player</title>
     
     <!-- App Icon / Favicon -->
-    <link rel="icon" type="image/svg+xml" href="./icon.svg">
+    <link rel="icon" type="image/svg+xml" href="./icon.svg?v=2">
     
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -36,6 +36,7 @@
         .spin-slow {
             animation: spin 20s linear infinite;
         }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
 
         @keyframes bounce-eq {
             0%, 100% { height: 4px; }
@@ -66,9 +67,21 @@
 </head>
 <body class="relative w-full h-screen overflow-hidden font-sans text-white bg-gray-900 select-none">
 
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-gray-900 transition-opacity duration-1000">
+        <div class="w-20 h-20 mb-6 animate-pulse">
+            <img src="./icon.svg" alt="Loading" class="w-full h-full drop-shadow-[0_0_20px_rgba(99,102,241,0.6)]">
+        </div>
+        <h1 class="text-xl font-bold tracking-wider text-white animate-pulse">
+            CHILL<span class="font-light text-white/70">WAVE</span>
+        </h1>
+        <p class="mt-2 text-xs font-medium tracking-widest text-white/40 uppercase">Loading Vibes...</p>
+    </div>
+
     <!-- Dim Mode Overlay -->
     <div id="dim-overlay" class="fixed inset-0 bg-black/70 pointer-events-none opacity-0 transition-opacity duration-1000 z-[100]"></div>
 
+    <!-- Toast Notification -->
     <div id="toast" class="fixed top-4 right-4 max-w-sm bg-indigo-600/90 backdrop-blur-md text-white px-4 py-3 rounded-lg shadow-2xl transform transition-all duration-300 translate-x-[150%] opacity-0 z-50 flex items-start gap-3 border border-indigo-400/50">
         <span id="toast-icon" class="material-symbols-rounded mt-0.5">info</span>
         <div class="flex flex-col">
@@ -77,8 +90,9 @@
         </div>
     </div>
 
-    <div id="suggestion-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black/60 backdrop-blur-sm transition-opacity">
-        <div class="bg-gray-800/90 p-8 rounded-2xl w-full max-w-md border border-white/10 shadow-2xl relative">
+    <!-- Suggestion Modal -->
+    <div id="suggestion-modal" class="fixed inset-0 z-[150] flex items-center justify-center hidden bg-black/60 backdrop-blur-sm transition-opacity">
+        <div class="bg-gray-800/90 p-8 rounded-2xl w-full max-w-md border border-white/10 shadow-2xl relative mx-4">
             <button onclick="toggleSuggestionBox()" class="absolute top-4 right-4 text-white/50 hover:text-white transition-colors">
                 <span class="material-symbols-rounded">close</span>
             </button>
@@ -109,7 +123,7 @@
         </div>
     </div>
 
-    <!-- Added HTML Video Element for MP4 Backgrounds -->
+    <!-- Backgrounds -->
     <video id="bg-video" class="absolute inset-0 z-0 w-full h-full object-cover transition-opacity duration-1000 opacity-0" autoplay loop muted playsinline></video>
     <div id="bg-image" class="absolute inset-0 z-0 transition-opacity duration-1000 ease-in-out bg-center bg-cover"></div>
     <div id="bg-gradient" class="absolute inset-0 z-0 opacity-80 mix-blend-multiply transition-all duration-1000"></div>
@@ -124,6 +138,7 @@
 
     <div class="relative z-10 flex flex-col h-full">
         
+        <!-- Header: Responsive -->
         <header class="flex flex-wrap md:flex-nowrap items-center justify-between px-4 md:px-6 py-3 md:py-4 gap-y-4 shrink-0">
             <div class="flex items-center gap-3">
                 <div class="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/10 backdrop-blur-md">
@@ -196,7 +211,7 @@
             <div class="flex flex-col gap-2 p-4 md:p-6 w-full md:w-72 shrink-0 ui-panel">
                 <h2 class="mb-2 text-xs font-semibold tracking-widest uppercase text-white/50 hidden md:block">Stations</h2>
                 <div id="stations-container" class="flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-visible pb-2 md:pb-0 scrollbar-thin">
-                    </div>
+                </div>
                 
                 <!-- Ambient Mixer -->
                 <h2 class="mt-4 md:mt-8 mb-2 md:mb-4 text-xs font-semibold tracking-widest uppercase text-white/50 flex items-center gap-2">
@@ -230,7 +245,7 @@
                 </div>
             </div>
 
-            <!-- Mobile spacer: order-last pushes it BELOW the playlist on mobile, keeping the background visible if you scroll past! -->
+            <!-- Mobile spacer: pushes empty space BELOW the playlist on mobile -->
             <div class="flex-1 min-h-[35vh] md:min-h-0 order-last md:order-none"></div>
 
             <div id="playlist-container" class="flex flex-col w-full md:w-80 p-4 md:p-6 bg-black/40 md:bg-black/20 backdrop-blur-xl border-t md:border-t-0 md:border-l border-white/10 h-auto md:h-full transition-transform duration-300 transform md:translate-x-0 ui-panel shrink-0">
@@ -238,13 +253,13 @@
                      <span class="material-symbols-rounded" style="font-size: 18px;">queue_music</span> Up Next
                  </h2>
                  <div id="tracks-container" class="flex flex-col gap-3 overflow-y-auto pr-2 pb-4 scrollbar-thin max-h-64 md:max-h-none md:flex-1">
-                     </div>
+                 </div>
             </div>
         </div>
 
+        <!-- Bottom Player Controls -->
         <div class="bottom-player relative shrink-0 w-full h-auto md:h-24 bg-black/60 md:bg-black/40 backdrop-blur-2xl border-t border-white/10 flex flex-col md:flex-row items-center justify-between p-4 md:px-8 gap-4 md:gap-0 z-20 transition-all duration-500">
             
-            <!-- Mobile Top Row: Cover, Info, and Playlist Toggle -->
             <div class="flex items-center justify-between w-full md:w-1/4 md:min-w-[200px]">
                 <div class="flex items-center gap-3 md:gap-4">
                     <div id="current-cover-container" class="relative w-12 h-12 md:w-14 md:h-14 overflow-hidden rounded-lg shadow-lg shrink-0">
@@ -263,7 +278,6 @@
                 </button>
             </div>
 
-            <!-- Center Controls -->
             <div class="flex flex-col items-center justify-center w-full md:flex-1 max-w-2xl px-0 md:px-8 gap-2">
                 <div class="flex items-center gap-6">
                     <button onclick="playPrev(true)" class="text-white/60 hover:text-white transition-colors">
@@ -290,7 +304,6 @@
                 </div>
             </div>
 
-            <!-- Right Controls (Volume & Desktop Playlist Toggle) -->
             <div class="hidden md:flex items-center justify-end gap-6 w-1/4 min-w-[200px] ui-panel">
                 <div class="flex items-center gap-2 group">
                     <button onclick="toggleMute()" class="text-white/60 hover:text-white transition-colors">
@@ -312,15 +325,6 @@
 
     <script>
         // --- DATA ---
-        // Expected folder structure in GitHub:
-        // /music/chill-1.mp3 ... /music/chill-10.mp3
-        // /music/focus-1.mp3 ... /music/focus-10.mp3
-        // /music/party-1.mp3 ... /music/party-10.mp3
-        // /music/morning-1.mp3 ... /music/morning-10.mp3
-        // /music/rain.mp3, /music/fire.mp3, /music/cafe.mp3
-        // /assets/chill-bg.mp4, /assets/focus-bg.mp4, /assets/party-bg.mp4, /assets/morning-bg.mp4
-        
-        // Switched fallbacks to highly reliable Freesound links which won't throw 404/Abort errors
         const fallbackMusic = [
             'https://cdn.freesound.org/previews/665/665181_11861866-hq.mp3', 
             'https://cdn.freesound.org/previews/607/607261_1648170-hq.mp3', 
@@ -329,6 +333,7 @@
             'https://cdn.freesound.org/previews/410/410574_5121236-hq.mp3'
         ];
 
+        // Updated Station Names
         const STATIONS = [
             { 
                 id: 'chill', name: 'Cozy Corner', icon: 'local_cafe', 
@@ -405,24 +410,26 @@
         ];
 
         // --- STATE ---
-        let currentStationIdx = -1; 
+        let currentStationIdx = 0; // Default to 0, will be overwritten by memory
         let currentTrackIdx = 0;
         let isPlaying = false;
         let volume = 0.5;
         let showPlaylist = true;
         let toastTimeout;
         let usingFallback = false;
-        let consecutiveErrors = 0; // Tracks consecutive missing files
+        let consecutiveErrors = 0; 
         let dimModeActive = false;
         let zenModeActive = false;
 
         // Pomodoro State
         let timerInterval;
-        let timeLeft = 25 * 60; // 25 mins
+        let timeLeft = 25 * 60; 
         let isTimerRunning = false;
         let timerMode = 'work';
-        let focusPreset = 25; // Remembers your focus length
-        let breakPreset = 5;  // Remembers your break length
+        let focusPreset = 25; 
+        let breakPreset = 5;  
+        
+        let sfxVolumes = { rain: 0, fire: 0, cafe: 0 };
 
         // --- DOM ELEMENTS ---
         let audio, bgVideo, bgImage, bgGradient, stationsContainer, tracksContainer;
@@ -432,9 +439,6 @@
         let suggestionModal, suggestionForm;
         let timerDisplay, timerIcon, btnWork, btnBreak;
         let sfx = {};
-        
-        // ADDED: Track the logical volume for iOS bypass
-        let sfxVolumes = { rain: 0, fire: 0, cafe: 0 };
 
         // --- INITIALIZATION ---
         function init() {
@@ -471,23 +475,43 @@
             btnWork = document.getElementById('btn-work');
             btnBreak = document.getElementById('btn-break');
 
-            // Map the audio elements safely
             sfx = {
                 rain: document.getElementById('sfx-rain'),
                 fire: document.getElementById('sfx-fire'),
                 cafe: document.getElementById('sfx-cafe')
             };
 
-            // Ensure SFX start completely muted to perfectly match the visual sliders
+            // Ensure SFX start completely muted (to prevent autoplay blocking)
             Object.values(sfx).forEach(sound => {
                 if (sound) sound.volume = 0;
             });
 
+            // LOAD SAVED SETTINGS FROM MEMORY
+            loadSettings();
+
+            // Set initial DOM values based on loaded memory
             audio.volume = volume;
+            volumeSlider.value = volume;
+            volumeBar.style.width = `${volume * 100}%`;
+            
+            Object.keys(sfxVolumes).forEach(type => {
+                const slider = document.querySelector(`input[oninput*="changeSfxVolume('${type}'"]`);
+                if(slider) slider.value = sfxVolumes[type];
+                document.getElementById(`bar-${type}`).style.width = `${sfxVolumes[type] * 100}%`;
+            });
             
             // Setup UI immediately
-            loadStation(0); 
+            loadStation(currentStationIdx); 
+            changeTimerMode('work'); // Applies the saved focus timer preset
             
+            // SET UP LOCK SCREEN CONTROLS (Media Session API)
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.setActionHandler('play', () => { attemptPlay(); });
+                navigator.mediaSession.setActionHandler('pause', () => { togglePlay(); });
+                navigator.mediaSession.setActionHandler('previoustrack', () => { playPrev(true); });
+                navigator.mediaSession.setActionHandler('nexttrack', () => { playNext(true); });
+            }
+
             // Audio Event Listeners
             audio.addEventListener('timeupdate', updateProgress);
             audio.addEventListener('loadedmetadata', updateProgress);
@@ -495,8 +519,6 @@
             
             audio.addEventListener('error', (e) => {
                 const track = STATIONS[currentStationIdx].tracks[currentTrackIdx];
-                
-                // If local file is missing, fallback to a working preview track.
                 if (!usingFallback && track.fallbackSrc) {
                     usingFallback = true;
                     const wasPlaying = isPlaying;
@@ -505,19 +527,14 @@
                     return; 
                 }
 
-                // If even the fallback fails, handle the error safely
                 const wasPlayingBeforeError = isPlaying;
                 isPlaying = false;
                 updatePlayStateUI();
                 consecutiveErrors++;
                 
-                const fileName = track.title || "Audio file";
-                
-                // Limit skipping to prevent infinite loops if multiple files are missing
                 if (consecutiveErrors <= 3) {
-                    showToast("Missing File", `Could not play ${fileName}. Skipping...`, "error");
+                    showToast("Missing File", `Could not play ${track.title}. Skipping...`, "error");
                     setTimeout(() => {
-                        // If it was playing before it errored out, keep the momentum going
                         if (wasPlayingBeforeError) isPlaying = true;
                         playNext(wasPlayingBeforeError);
                     }, 2000);
@@ -526,11 +543,11 @@
                 }
             });
 
-            // Form Submit Listener (AJAX)
+            // Form Submit Listener (AJAX via Formspree)
             suggestionForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 
-                // IMPORTANT: Replace the URL below with your actual Formspree endpoint URL!
+                // IMPORTANT: Replace this URL with your Formspree Endpoint!
                 const formspreeEndpoint = 'https://formspree.io/f/YOUR_UNIQUE_FORM_ID'; 
                 
                 const submitBtn = document.getElementById('submit-btn');
@@ -560,11 +577,72 @@
                     submitBtn.disabled = false;
                 }
             });
+
+            // Fade out the loading screen gracefully once everything is set up
+            setTimeout(() => {
+                const loader = document.getElementById('loading-screen');
+                loader.classList.add('opacity-0');
+                setTimeout(() => loader.remove(), 1000);
+            }, 1200);
         }
 
-        // --- CORE FUNCTIONS ---
+        // --- LOCAL STORAGE (MEMORY) FUNCTIONS ---
+        function saveSettings() {
+            const settings = {
+                savedVolume: volume,
+                savedSfx: sfxVolumes,
+                savedFocus: focusPreset,
+                savedBreak: breakPreset,
+                savedStation: currentStationIdx
+            };
+            localStorage.setItem('chillwave_settings', JSON.stringify(settings));
+        }
+
+        function loadSettings() {
+            const saved = localStorage.getItem('chillwave_settings');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    if (parsed.savedVolume !== undefined) volume = parsed.savedVolume;
+                    if (parsed.savedSfx) sfxVolumes = parsed.savedSfx;
+                    if (parsed.savedFocus !== undefined) focusPreset = parsed.savedFocus;
+                    if (parsed.savedBreak !== undefined) breakPreset = parsed.savedBreak;
+                    if (parsed.savedStation !== undefined) currentStationIdx = parsed.savedStation;
+                } catch(e) {
+                    console.error("Could not load settings.");
+                }
+            }
+        }
+
+        // --- CORE UI FUNCTIONS ---
         function toggleSuggestionBox() {
             suggestionModal.classList.toggle('hidden');
+        }
+
+        function showToast(title, message, icon = "info") {
+            const toast = document.getElementById('toast');
+            const toastTitle = document.getElementById('toast-title');
+            const toastMessage = document.getElementById('toast-message');
+            const toastIcon = document.getElementById('toast-icon');
+            
+            toastTitle.textContent = title;
+            toastMessage.textContent = message;
+            toastIcon.textContent = icon;
+            
+            if (icon === 'error') {
+                toast.classList.replace('bg-indigo-600/90', 'bg-red-600/90');
+                toast.classList.replace('border-indigo-400/50', 'border-red-400/50');
+            } else {
+                toast.classList.replace('bg-red-600/90', 'bg-indigo-600/90');
+                toast.classList.replace('border-red-400/50', 'border-indigo-400/50');
+            }
+            
+            clearTimeout(toastTimeout);
+            toast.classList.remove('translate-x-[150%]', 'opacity-0');
+            
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('translate-x-[150%]', 'opacity-0');
+            }, 5000);
         }
 
         // --- POMODORO TIMER & FOCUS MODES ---
@@ -656,14 +734,15 @@
             
             timeLeft = m * 60;
             updateTimerDisplay();
+            saveSettings(); // Save preference when timer changes
         }
 
         function playTimerChime() {
             const originalVols = { 
                 main: audio.volume, 
-                rain: sfx.rain ? sfx.rain.volume : 0, 
-                fire: sfx.fire ? sfx.fire.volume : 0, 
-                cafe: sfx.cafe ? sfx.cafe.volume : 0 
+                rain: sfxVolumes.rain, 
+                fire: sfxVolumes.fire, 
+                cafe: sfxVolumes.cafe 
             };
             
             let steps = 10;
@@ -723,32 +802,7 @@
             }
         }
 
-        function showToast(title, message, icon = "info") {
-            const toast = document.getElementById('toast');
-            const toastTitle = document.getElementById('toast-title');
-            const toastMessage = document.getElementById('toast-message');
-            const toastIcon = document.getElementById('toast-icon');
-            
-            toastTitle.textContent = title;
-            toastMessage.textContent = message;
-            toastIcon.textContent = icon;
-            
-            // Swap colors based on error vs success
-            if (icon === 'error') {
-                toast.classList.replace('bg-indigo-600/90', 'bg-red-600/90');
-                toast.classList.replace('border-indigo-400/50', 'border-red-400/50');
-            } else {
-                toast.classList.replace('bg-red-600/90', 'bg-indigo-600/90');
-                toast.classList.replace('border-red-400/50', 'border-indigo-400/50');
-            }
-            
-            clearTimeout(toastTimeout);
-            toast.classList.remove('translate-x-[150%]', 'opacity-0');
-            
-            toastTimeout = setTimeout(() => {
-                toast.classList.add('translate-x-[150%]', 'opacity-0');
-            }, 5000);
-        }
+        // --- AUDIO CONTROLS ---
 
         function attemptPlay() {
             if (!audio.src) return;
@@ -757,22 +811,19 @@
             if (playPromise !== undefined) {
                 playPromise.then(() => {
                     isPlaying = true;
-                    consecutiveErrors = 0; // Reset error counter on successful playback
+                    consecutiveErrors = 0; 
                     updatePlayStateUI();
                     
-                    // FIXED FOR iOS: Check our custom sfxVolumes variable instead of the blocked sfx[key].volume
+                    // FIXED FOR iOS: Check logical volume to bypass iOS hardware volume locks
                     Object.keys(sfx).forEach(key => {
                         if (sfx[key] && sfxVolumes[key] > 0 && sfx[key].paused) {
                             sfx[key].play().catch(e => console.warn("SFX play prevented", e));
                         }
                     });
                 }).catch(error => {
-                    // Ignore DOM AbortErrors gracefully (happens during rapid track skipping)
                     if (error.name === 'AbortError') return;
-                    
                     isPlaying = false;
                     updatePlayStateUI();
-                    
                     if(error.name === 'NotAllowedError') {
                         showToast("Notice", "Please click the Play button to start the music.", "info");
                     }
@@ -785,6 +836,8 @@
             currentStationIdx = idx;
             const station = STATIONS[idx];
             
+            saveSettings(); // Save preference when station changes
+            
             // Background Logic: Dynamically handle MP4 Videos or GIF/JPG Images
             if (station.bg.match(/\.(mp4|webm)$/i)) {
                 bgVideo.src = station.bg;
@@ -793,7 +846,6 @@
                     bgImage.classList.add('opacity-0');
                 };
                 bgVideo.onerror = () => {
-                    console.warn(`Local video ${station.bg} not found. Falling back to preview GIF.`);
                     bgVideo.classList.add('opacity-0');
                     bgImage.classList.remove('opacity-0');
                     bgImage.style.backgroundImage = `url(${station.fallbackBg})`;
@@ -806,7 +858,6 @@
                     bgVideo.classList.add('opacity-0');
                 };
                 bgImg.onerror = () => {
-                    console.warn(`Local background ${station.bg} not found. Falling back to preview GIF.`);
                     bgImage.classList.remove('opacity-0');
                     bgVideo.classList.add('opacity-0');
                     bgImage.style.backgroundImage = `url(${station.fallbackBg})`;
@@ -829,7 +880,6 @@
             const track = currentStationTracks[idx];
             
             usingFallback = false;
-            
             track.fallbackSrc = fallbackMusic[idx % fallbackMusic.length];
             
             audio.src = track.url;
@@ -837,6 +887,19 @@
             currentTitle.textContent = track.title;
             currentArtist.textContent = track.artist;
             
+            // UPDATE MEDIA SESSION (Lock screen art & title)
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: track.title,
+                    artist: track.artist,
+                    album: STATIONS[currentStationIdx].name,
+                    artwork: [
+                        { src: track.cover, sizes: '300x300', type: 'image/jpeg' },
+                        { src: track.cover, sizes: '512x512', type: 'image/jpeg' }
+                    ]
+                });
+            }
+
             if (isPlaying) {
                 attemptPlay();
             }
@@ -866,43 +929,30 @@
         function playNext(userInitiated = false) {
             const currentStationTracks = STATIONS[currentStationIdx].tracks;
             let nextIdx = (currentTrackIdx + 1) % currentStationTracks.length;
-            
-            if (userInitiated) {
-                isPlaying = true;
-            }
-            
+            if (userInitiated) { isPlaying = true; }
             loadTrack(nextIdx);
         }
 
         function playPrev(userInitiated = false) {
             const currentStationTracks = STATIONS[currentStationIdx].tracks;
             let prevIdx = (currentTrackIdx - 1 + currentStationTracks.length) % currentStationTracks.length;
-            
-            if (userInitiated) {
-                isPlaying = true;
-            }
-            
+            if (userInitiated) { isPlaying = true; }
             loadTrack(prevIdx);
         }
 
         function playTrackFromPlaylist(idx, userInitiated = false) {
-            if (userInitiated) {
-                isPlaying = true;
-            }
-            
+            if (userInitiated) { isPlaying = true; }
             loadTrack(idx);
         }
 
-        // --- UI UPDATES ---
+        // --- UI UPDATES & SLIDERS ---
         function updatePlayStateUI() {
             mainPlayIcon.textContent = isPlaying ? 'pause' : 'play_arrow';
-            
             if (isPlaying) {
                 currentCoverContainer.classList.add('spin-slow');
             } else {
                 currentCoverContainer.classList.remove('spin-slow');
             }
-            
             renderStations(); 
             renderPlaylist(); 
         }
@@ -914,7 +964,7 @@
             timeCurrent.textContent = formatTime(current);
             timeTotal.textContent = formatTime(total);
             
-            const percent = total > 0 ? (current / total) * 100 : 0;
+            const percent = (total > 0 && isFinite(total)) ? (current / total) * 100 : 0;
             progressBar.style.width = `${percent}%`;
         }
 
@@ -936,14 +986,14 @@
             } else {
                 volumeIcon.textContent = 'volume_up';
             }
+            saveSettings(); // Save preference when main volume changes
         }
 
         function changeSfxVolume(type, val) {
-            if (!sfx[type]) return; // Safeguard
+            if (!sfx[type]) return; 
             const vol = parseFloat(val);
             
-            // Store logical volume in our variable to bypass iOS locks
-            sfxVolumes[type] = vol; 
+            sfxVolumes[type] = vol; // Track logically for iOS Bypass
             sfx[type].volume = vol;
             
             document.getElementById(`bar-${type}`).style.width = `${vol * 100}%`;
@@ -953,6 +1003,7 @@
             } else if (vol === 0) {
                 sfx[type].pause();
             }
+            saveSettings(); // Save preference when ambient volume changes
         }
 
         function toggleMute() {
@@ -1033,7 +1084,6 @@
         }
 
         function renderPlaylist() {
-            // Get the tracks for the CURRENT station
             const currentStationTracks = STATIONS[currentStationIdx].tracks;
             
             tracksContainer.innerHTML = currentStationTracks.map((track, idx) => {
@@ -1077,7 +1127,7 @@
 
         // --- UTILS ---
         function formatTime(seconds) {
-            if (!seconds || isNaN(seconds)) return "0:00";
+            if (seconds === undefined || isNaN(seconds) || !isFinite(seconds)) return "0:00";
             const m = Math.floor(seconds / 60);
             const s = Math.floor(seconds % 60);
             return `${m}:${s.toString().padStart(2, '0')}`;
