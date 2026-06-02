@@ -425,7 +425,10 @@
         let currentStationIdx = 0; // Default to 0, will be overwritten by memory
         let currentTrackIdx = 0;
         let isPlaying = false;
-        let volume = 0.5;
+        
+        // CHANGED: Default volume set to 15% (0.15) for a low, gentle start
+        let volume = 0.15; 
+        
         let showPlaylist = true;
         let toastTimeout;
         let usingFallback = false;
@@ -591,6 +594,11 @@
                     submitBtn.disabled = false;
                 }
             });
+
+            // ADDED: Attempt to auto-play the music gently once everything is loaded
+            setTimeout(() => {
+                attemptPlay();
+            }, 500);
         }
 
         // --- LOCAL STORAGE (MEMORY) FUNCTIONS ---
