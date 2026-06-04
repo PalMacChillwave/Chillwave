@@ -25,14 +25,14 @@
     <!-- Changed to .png for iMessage compatibility -->
     <meta property="twitter:image" content="https://palmacchillwave.github.io/Chillwave/icon.png">
     
-    <!-- App Icon / Favicon (Keep this as SVG for crisp tabs!) -->
+    <!-- App Icon / Favicon -->
     <link rel="icon" type="image/svg+xml" href="./icon.svg?v=2">
-    
-    <!-- ADDED: Apple's specific icon tag for iMessage and iOS Home Screens -->
     <link rel="apple-touch-icon" href="https://palmacchillwave.github.io/Chillwave/icon.png">
     
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- Google Material Symbols -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0&display=swap" rel="stylesheet" />
 
@@ -90,11 +90,22 @@
 </head>
 <body class="relative w-full h-screen overflow-hidden font-sans text-white bg-gray-900 select-none">
 
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-gray-900 transition-opacity duration-1000">
+        <div class="w-20 h-20 mb-6 animate-pulse">
+            <img src="./icon.svg" alt="Loading" class="w-full h-full drop-shadow-[0_0_20px_rgba(99,102,241,0.6)]">
+        </div>
+        <h1 class="text-xl font-bold tracking-wider text-white animate-pulse">
+            CHILL<span class="font-light text-white/70">WAVE</span>
+        </h1>
+        <p class="mt-2 text-xs font-medium tracking-widest text-white/40 uppercase">Loading Vibes...</p>
+    </div>
+
     <!-- Dim Mode Overlay -->
     <div id="dim-overlay" class="fixed inset-0 bg-black/70 pointer-events-none opacity-0 transition-opacity duration-1000 z-[100]"></div>
 
     <!-- Toast Notification -->
-    <div id="toast" class="fixed top-4 right-4 max-w-sm bg-indigo-600/90 backdrop-blur-md text-white px-4 py-3 rounded-lg shadow-2xl transform transition-all duration-300 translate-x-[150%] opacity-0 z-50 flex items-start gap-3 border border-indigo-400/50">
+    <div id="toast" class="fixed top-4 right-4 max-w-sm bg-indigo-600/90 backdrop-blur-md text-white px-4 py-3 rounded-lg shadow-2xl transform transition-all duration-300 translate-x-[150%] opacity-0 z-[150] flex items-start gap-3 border border-indigo-400/50">
         <span id="toast-icon" class="material-symbols-rounded mt-0.5">info</span>
         <div class="flex flex-col">
             <span id="toast-title" class="font-bold text-sm">Notification</span>
@@ -103,7 +114,7 @@
     </div>
 
     <!-- Suggestion Modal -->
-    <div id="suggestion-modal" class="fixed inset-0 z-[150] flex items-center justify-center hidden bg-black/60 backdrop-blur-sm transition-opacity">
+    <div id="suggestion-modal" class="fixed inset-0 z-[160] flex items-center justify-center hidden bg-black/60 backdrop-blur-sm transition-opacity">
         <div class="bg-gray-800/90 p-8 rounded-2xl w-full max-w-md border border-white/10 shadow-2xl relative mx-4">
             <button onclick="toggleSuggestionBox()" class="absolute top-4 right-4 text-white/50 hover:text-white transition-colors">
                 <span class="material-symbols-rounded">close</span>
@@ -141,9 +152,8 @@
     <div id="bg-gradient" class="absolute inset-0 z-0 opacity-80 mix-blend-multiply transition-all duration-1000"></div>
     <div class="absolute inset-0 z-0 bg-black/20"></div>
 
+    <!-- Audio Elements -->
     <audio id="audio-player"></audio>
-    
-    <!-- Ambient SFX Audio -->
     <audio id="sfx-rain" loop src="./music/rain.mp3"></audio>
     <audio id="sfx-fire" loop src="./music/fire.mp3"></audio>
     <audio id="sfx-cafe" loop src="./music/cafe.mp3"></audio>
@@ -153,9 +163,7 @@
         <!-- Header: Responsive -->
         <header class="flex flex-wrap md:flex-nowrap items-center justify-between px-4 md:px-6 py-3 md:py-4 gap-y-4 shrink-0">
             <div class="flex items-center gap-3">
-                <!-- Swapped the radio icon for your custom logo -->
                 <img src="./icon.svg" alt="Chillwave Logo" class="w-8 h-8 md:w-10 md:h-10 rounded-xl shadow-[0_0_15px_rgba(99,102,241,0.4)] border border-white/20" />
-                
                 <h1 class="text-lg md:text-xl font-bold tracking-wider text-white drop-shadow-md mr-1 md:mr-2">
                     CHILL<span class="font-light text-white/70">WAVE</span>
                 </h1>
@@ -220,7 +228,8 @@
 
         <div class="flex flex-col md:flex-row flex-1 overflow-x-hidden overflow-y-auto md:overflow-hidden relative">
             
-            <div class="flex flex-col gap-2 p-4 md:p-6 w-full md:w-72 shrink-0 ui-panel">
+            <!-- Left Sidebar -->
+            <div class="flex flex-col gap-2 p-4 md:p-6 w-full md:w-72 shrink-0 ui-panel z-10">
                 <h2 class="mb-2 text-xs font-semibold tracking-widest uppercase text-white/50 hidden md:block">Stations</h2>
                 <div id="stations-container" class="flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-visible pb-2 md:pb-0 scrollbar-thin">
                 </div>
@@ -258,9 +267,10 @@
             </div>
 
             <!-- Mobile spacer: pushes empty space BELOW the playlist on mobile -->
-            <div class="flex-1 min-h-[35vh] md:min-h-0 order-last md:order-none"></div>
+            <div class="flex-1 min-h-[35vh] md:min-h-0 order-last md:order-none pointer-events-none z-0"></div>
 
-            <div id="playlist-container" class="flex flex-col w-full md:w-80 p-4 md:p-6 bg-black/40 md:bg-black/20 backdrop-blur-xl border-t md:border-t-0 md:border-l border-white/10 h-auto md:h-full transition-transform duration-300 transform md:translate-x-0 ui-panel shrink-0">
+            <!-- Right Sidebar (Playlist) -->
+            <div id="playlist-container" class="flex flex-col w-full md:w-80 p-4 md:p-6 bg-black/40 md:bg-black/20 backdrop-blur-xl border-t md:border-t-0 md:border-l border-white/10 h-auto md:h-full transition-transform duration-300 transform md:translate-x-0 ui-panel shrink-0 z-10">
                  <h2 class="mb-4 text-xs font-semibold tracking-widest uppercase text-white/50 flex items-center gap-2">
                      <span class="material-symbols-rounded" style="font-size: 18px;">queue_music</span> Up Next
                  </h2>
@@ -345,7 +355,6 @@
             'https://cdn.freesound.org/previews/410/410574_5121236-hq.mp3'
         ];
 
-        // Updated Station Names
         const STATIONS = [
             { 
                 id: 'chill', name: 'Cozy Corner', icon: 'local_cafe', 
@@ -418,17 +427,91 @@
                     { id: 39, title: 'Theme Awakening', artist: 'Instrumental', url: './music/morning-9.mp3', cover: 'https://picsum.photos/seed/morning9/300/300' },
                     { id: 40, title: 'Golden Highscore', artist: 'Instrumental', url: './music/morning-10.mp3', cover: 'https://picsum.photos/seed/morning10/300/300' }
                 ]
+            },
+            { 
+                id: 'quiet', name: 'Quiet Hours', icon: 'desk', 
+                bg: './assets/quiet-bg.mp4', 
+                fallbackBg: 'https://media.giphy.com/media/xT5LMxdcX49k8W5n8c/giphy.gif',
+                color: 'bg-gradient-to-br from-indigo-900/80 to-purple-900/80',
+                tracks: [
+                    { id: 41, title: 'Midnight Hush', artist: 'Instrumental', url: './music/quiet-1.mp3', cover: 'https://picsum.photos/seed/quiet1/300/300' },
+                    { id: 42, title: 'Soft Shadows', artist: 'Instrumental', url: './music/quiet-2.mp3', cover: 'https://picsum.photos/seed/quiet2/300/300' },
+                    { id: 43, title: 'Moonlight Rest', artist: 'Instrumental', url: './music/quiet-3.mp3', cover: 'https://picsum.photos/seed/quiet3/300/300' },
+                    { id: 44, title: 'Sleepy City', artist: 'Instrumental', url: './music/quiet-4.mp3', cover: 'https://picsum.photos/seed/quiet4/300/300' },
+                    { id: 45, title: 'Distant Stars', artist: 'Instrumental', url: './music/quiet-5.mp3', cover: 'https://picsum.photos/seed/quiet5/300/300' },
+                    { id: 46, title: 'Night Breeze', artist: 'Instrumental', url: './music/quiet-6.mp3', cover: 'https://picsum.photos/seed/quiet6/300/300' },
+                    { id: 47, title: 'Calm Waters', artist: 'Instrumental', url: './music/quiet-7.mp3', cover: 'https://picsum.photos/seed/quiet7/300/300' },
+                    { id: 48, title: 'Silent Echoes', artist: 'Instrumental', url: './music/quiet-8.mp3', cover: 'https://picsum.photos/seed/quiet8/300/300' },
+                    { id: 49, title: 'Deep Slumber', artist: 'Instrumental', url: './music/quiet-9.mp3', cover: 'https://picsum.photos/seed/quiet9/300/300' },
+                    { id: 50, title: 'Gentle Glow', artist: 'Instrumental', url: './music/quiet-10.mp3', cover: 'https://picsum.photos/seed/quiet10/300/300' },
+                    { id: 51, title: 'Velvet Night', artist: 'Instrumental', url: './music/quiet-11.mp3', cover: 'https://picsum.photos/seed/quiet11/300/300' },
+                    { id: 52, title: 'Starry Blanket', artist: 'Instrumental', url: './music/quiet-12.mp3', cover: 'https://picsum.photos/seed/quiet12/300/300' },
+                    { id: 53, title: 'Dream State', artist: 'Instrumental', url: './music/quiet-13.mp3', cover: 'https://picsum.photos/seed/quiet13/300/300' },
+                    { id: 54, title: 'Quiet Moments', artist: 'Instrumental', url: './music/quiet-14.mp3', cover: 'https://picsum.photos/seed/quiet14/300/300' },
+                    { id: 55, title: 'Solitude', artist: 'Instrumental', url: './music/quiet-15.mp3', cover: 'https://picsum.photos/seed/quiet15/300/300' }
+                ]
+            },
+            { 
+                id: 'groove', name: 'Easy Groove', icon: 'headphones', 
+                bg: './assets/groove-bg.mp4', 
+                fallbackBg: 'https://media.giphy.com/media/26n6tPJiXl72L3w9i/giphy.gif',
+                color: 'bg-gradient-to-br from-emerald-900/60 to-green-900/60',
+                tracks: [
+                    { id: 56, title: 'Smooth Steps', artist: 'Instrumental', url: './music/groove-1.mp3', cover: 'https://picsum.photos/seed/groove1/300/300' },
+                    { id: 57, title: 'Sunday Stroll', artist: 'Instrumental', url: './music/groove-2.mp3', cover: 'https://picsum.photos/seed/groove2/300/300' },
+                    { id: 58, title: 'Mellow Mind', artist: 'Instrumental', url: './music/groove-3.mp3', cover: 'https://picsum.photos/seed/groove3/300/300' },
+                    { id: 59, title: 'Head Nod', artist: 'Instrumental', url: './music/groove-4.mp3', cover: 'https://picsum.photos/seed/groove4/300/300' },
+                    { id: 60, title: 'Pocket Rhythm', artist: 'Instrumental', url: './music/groove-5.mp3', cover: 'https://picsum.photos/seed/groove5/300/300' },
+                    { id: 61, title: 'Lowkey Bounce', artist: 'Instrumental', url: './music/groove-6.mp3', cover: 'https://picsum.photos/seed/groove6/300/300' },
+                    { id: 62, title: 'Chill Hop', artist: 'Instrumental', url: './music/groove-7.mp3', cover: 'https://picsum.photos/seed/groove7/300/300' },
+                    { id: 63, title: 'Jazz Cafe', artist: 'Instrumental', url: './music/groove-8.mp3', cover: 'https://picsum.photos/seed/groove8/300/300' },
+                    { id: 64, title: 'Weekend Drift', artist: 'Instrumental', url: './music/groove-9.mp3', cover: 'https://picsum.photos/seed/groove9/300/300' }
+                ]
+            },
+            { 
+                id: 'spark', name: 'Spark', icon: 'bolt', 
+                bg: './assets/spark-bg.mp4', 
+                fallbackBg: 'https://media.giphy.com/media/l41YcWb3q0tJ8Pcyc/giphy.gif',
+                color: 'bg-gradient-to-br from-yellow-900/60 to-orange-900/60',
+                tracks: [
+                    { id: 65, title: 'Ignite', artist: 'Instrumental', url: './music/spark-1.mp3', cover: 'https://picsum.photos/seed/spark1/300/300' },
+                    { id: 66, title: 'Creative Flow', artist: 'Instrumental', url: './music/spark-2.mp3', cover: 'https://picsum.photos/seed/spark2/300/300' },
+                    { id: 67, title: 'Idea Machine', artist: 'Instrumental', url: './music/spark-3.mp3', cover: 'https://picsum.photos/seed/spark3/300/300' },
+                    { id: 68, title: 'Electric Synapse', artist: 'Instrumental', url: './music/spark-4.mp3', cover: 'https://picsum.photos/seed/spark4/300/300' },
+                    { id: 69, title: 'Momentum', artist: 'Instrumental', url: './music/spark-5.mp3', cover: 'https://picsum.photos/seed/spark5/300/300' },
+                    { id: 70, title: 'Brainstorm', artist: 'Instrumental', url: './music/spark-6.mp3', cover: 'https://picsum.photos/seed/spark6/300/300' },
+                    { id: 71, title: 'Eureka', artist: 'Instrumental', url: './music/spark-7.mp3', cover: 'https://picsum.photos/seed/spark7/300/300' },
+                    { id: 72, title: 'Focus Pulse', artist: 'Instrumental', url: './music/spark-8.mp3', cover: 'https://picsum.photos/seed/spark8/300/300' },
+                    { id: 73, title: 'Neurodrive', artist: 'Instrumental', url: './music/spark-9.mp3', cover: 'https://picsum.photos/seed/spark9/300/300' },
+                    { id: 74, title: 'Flash of Genius', artist: 'Instrumental', url: './music/spark-10.mp3', cover: 'https://picsum.photos/seed/spark10/300/300' }
+                ]
+            },
+            { 
+                id: 'nightfall', name: 'Night Fall', icon: 'nights_stay', 
+                bg: './assets/nightfall-bg.mp4', 
+                fallbackBg: 'https://media.giphy.com/media/l3vR7zXw6mDmbxP3a/giphy.gif',
+                color: 'bg-gradient-to-br from-slate-900/80 to-black/80',
+                tracks: [
+                    { id: 75, title: 'Dusk Descends', artist: 'Instrumental', url: './music/nightfall-1.mp3', cover: 'https://picsum.photos/seed/nightfall1/300/300' },
+                    { id: 76, title: 'Streetlamp Glow', artist: 'Instrumental', url: './music/nightfall-2.mp3', cover: 'https://picsum.photos/seed/nightfall2/300/300' },
+                    { id: 77, title: 'Quiet Streets', artist: 'Instrumental', url: './music/nightfall-3.mp3', cover: 'https://picsum.photos/seed/nightfall3/300/300' },
+                    { id: 78, title: 'Late Night Code', artist: 'Instrumental', url: './music/nightfall-4.mp3', cover: 'https://picsum.photos/seed/nightfall4/300/300' },
+                    { id: 79, title: 'Fade to Black', artist: 'Instrumental', url: './music/nightfall-5.mp3', cover: 'https://picsum.photos/seed/nightfall5/300/300' },
+                    { id: 80, title: 'Midnight Drive', artist: 'Instrumental', url: './music/nightfall-6.mp3', cover: 'https://picsum.photos/seed/nightfall6/300/300' },
+                    { id: 81, title: 'Neon Reflections', artist: 'Instrumental', url: './music/nightfall-7.mp3', cover: 'https://picsum.photos/seed/nightfall7/300/300' },
+                    { id: 82, title: 'After Hours', artist: 'Instrumental', url: './music/nightfall-8.mp3', cover: 'https://picsum.photos/seed/nightfall8/300/300' },
+                    { id: 83, title: 'City Sleep', artist: 'Instrumental', url: './music/nightfall-9.mp3', cover: 'https://picsum.photos/seed/nightfall9/300/300' },
+                    { id: 84, title: 'Night Owl', artist: 'Instrumental', url: './music/nightfall-10.mp3', cover: 'https://picsum.photos/seed/nightfall10/300/300' },
+                    { id: 85, title: 'Twilight', artist: 'Instrumental', url: './music/nightfall-11.mp3', cover: 'https://picsum.photos/seed/nightfall11/300/300' }
+                ]
             }
         ];
 
         // --- STATE ---
-        let currentStationIdx = 0; // Default to 0, will be overwritten by memory
+        let currentStationIdx = 0; 
         let currentTrackIdx = 0;
         let isPlaying = false;
-        
-        // CHANGED: Default volume set to 15% (0.15) for a low, gentle start
-        let volume = 0.15; 
-        
+        let volume = 0.15; // Gentle low volume auto-start
         let showPlaylist = true;
         let toastTimeout;
         let usingFallback = false;
@@ -517,9 +600,9 @@
             
             // Setup UI immediately
             let initialStation = currentStationIdx;
-            currentStationIdx = -1; // Force the station to be treated as "new" so the playlist renders
+            currentStationIdx = -1; // Force new render
             loadStation(initialStation); 
-            changeTimerMode('work'); // Applies the saved focus timer preset
+            changeTimerMode('work'); 
             
             // SET UP LOCK SCREEN CONTROLS (Media Session API)
             if ('mediaSession' in navigator) {
@@ -564,7 +647,6 @@
             suggestionForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 
-                // IMPORTANT: Replace this URL with your Formspree Endpoint!
                 const formspreeEndpoint = 'https://formspree.io/f/YOUR_UNIQUE_FORM_ID'; 
                 
                 const submitBtn = document.getElementById('submit-btn');
@@ -595,7 +677,27 @@
                 }
             });
 
-            // ADDED: Attempt to auto-play the music gently once everything is loaded
+            // Keyboard Shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    togglePlay();
+                } else if (e.code === 'ArrowRight') {
+                    playNext(true);
+                } else if (e.code === 'ArrowLeft') {
+                    playPrev(true);
+                }
+            });
+
+            // Fade out the loading screen gracefully
+            setTimeout(() => {
+                const loader = document.getElementById('loading-screen');
+                loader.classList.add('opacity-0');
+                setTimeout(() => loader.remove(), 1000);
+            }, 1200);
+
+            // Attempt to gently auto-play
             setTimeout(() => {
                 attemptPlay();
             }, 500);
@@ -749,7 +851,7 @@
             
             timeLeft = m * 60;
             updateTimerDisplay();
-            saveSettings(); // Save preference when timer changes
+            saveSettings(); 
         }
 
         function playTimerChime() {
@@ -829,7 +931,6 @@
                     consecutiveErrors = 0; 
                     updatePlayStateUI();
                     
-                    // FIXED FOR iOS: Check logical volume to bypass iOS hardware volume locks
                     Object.keys(sfx).forEach(key => {
                         if (sfx[key] && sfxVolumes[key] > 0 && sfx[key].paused) {
                             sfx[key].play().catch(e => console.warn("SFX play prevented", e));
@@ -840,7 +941,8 @@
                     isPlaying = false;
                     updatePlayStateUI();
                     if(error.name === 'NotAllowedError') {
-                        showToast("Notice", "Please click the Play button to start the music.", "info");
+                        // User must interact first on this browser
+                        console.log("Autoplay paused by browser policy.");
                     }
                 });
             }
@@ -851,9 +953,8 @@
             currentStationIdx = idx;
             const station = STATIONS[idx];
             
-            saveSettings(); // Save preference when station changes
+            saveSettings();
             
-            // Background Logic: Dynamically handle MP4 Videos or GIF/JPG Images
             if (station.bg.match(/\.(mp4|webm)$/i)) {
                 bgVideo.src = station.bg;
                 bgVideo.onloadeddata = () => {
@@ -902,7 +1003,6 @@
             currentTitle.textContent = track.title;
             currentArtist.textContent = track.artist;
             
-            // UPDATE MEDIA SESSION (Lock screen art & title)
             if ('mediaSession' in navigator) {
                 navigator.mediaSession.metadata = new MediaMetadata({
                     title: track.title,
@@ -921,7 +1021,6 @@
             renderStations(); 
             renderPlaylist(); 
 
-            // Automatically scroll the playlist to show the newly loaded track
             setTimeout(() => {
                 const activeTrackEl = document.getElementById('active-track');
                 if (activeTrackEl) {
@@ -1001,14 +1100,14 @@
             } else {
                 volumeIcon.textContent = 'volume_up';
             }
-            saveSettings(); // Save preference when main volume changes
+            saveSettings(); 
         }
 
         function changeSfxVolume(type, val) {
             if (!sfx[type]) return; 
             const vol = parseFloat(val);
             
-            sfxVolumes[type] = vol; // Track logically for iOS Bypass
+            sfxVolumes[type] = vol; 
             sfx[type].volume = vol;
             
             document.getElementById(`bar-${type}`).style.width = `${vol * 100}%`;
@@ -1018,7 +1117,7 @@
             } else if (vol === 0) {
                 sfx[type].pause();
             }
-            saveSettings(); // Save preference when ambient volume changes
+            saveSettings(); 
         }
 
         function toggleMute() {
@@ -1040,7 +1139,6 @@
                     btn.classList.replace('hover:bg-white/10', 'bg-white/20');
                 });
                 
-                // Automatically scroll down to the playlist on mobile phones
                 if (window.innerWidth < 768) {
                     setTimeout(() => {
                         playlistContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
