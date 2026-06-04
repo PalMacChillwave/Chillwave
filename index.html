@@ -14,7 +14,6 @@
     <meta property="og:url" content="https://palmacchillwave.github.io/Chillwave/">
     <meta property="og:title" content="Chillwave - Lo-Fi Player">
     <meta property="og:description" content="An aesthetic lo-fi music player with a built-in Pomodoro timer and ambient sound mixer. Perfect for studying and focus.">
-    <!-- Changed to .png for iMessage compatibility -->
     <meta property="og:image" content="https://palmacchillwave.github.io/Chillwave/icon.png">
 
     <!-- Twitter -->
@@ -22,7 +21,6 @@
     <meta property="twitter:url" content="https://palmacchillwave.github.io/Chillwave/">
     <meta property="twitter:title" content="Chillwave - Lo-Fi Player">
     <meta property="twitter:description" content="An aesthetic lo-fi music player with a built-in Pomodoro timer and ambient sound mixer. Perfect for studying and focus.">
-    <!-- Changed to .png for iMessage compatibility -->
     <meta property="twitter:image" content="https://palmacchillwave.github.io/Chillwave/icon.png">
     
     <!-- App Icon / Favicon -->
@@ -90,17 +88,6 @@
 </head>
 <body class="relative w-full h-screen overflow-hidden font-sans text-white bg-gray-900 select-none">
 
-    <!-- Loading Screen -->
-    <div id="loading-screen" class="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-gray-900 transition-opacity duration-1000">
-        <div class="w-20 h-20 mb-6 animate-pulse">
-            <img src="./icon.svg" alt="Loading" class="w-full h-full drop-shadow-[0_0_20px_rgba(99,102,241,0.6)]">
-        </div>
-        <h1 class="text-xl font-bold tracking-wider text-white animate-pulse">
-            CHILL<span class="font-light text-white/70">WAVE</span>
-        </h1>
-        <p class="mt-2 text-xs font-medium tracking-widest text-white/40 uppercase">Loading Vibes...</p>
-    </div>
-
     <!-- Dim Mode Overlay -->
     <div id="dim-overlay" class="fixed inset-0 bg-black/70 pointer-events-none opacity-0 transition-opacity duration-1000 z-[100]"></div>
 
@@ -143,6 +130,35 @@
                     Send Suggestion
                 </button>
             </form>
+        </div>
+    </div>
+
+    <!-- Scenery Selection Modal -->
+    <div id="scenery-modal" class="fixed inset-0 z-[150] flex items-center justify-center hidden bg-black/60 backdrop-blur-sm transition-opacity overflow-y-auto py-10">
+        <div class="bg-gray-800/90 p-6 rounded-2xl w-full max-w-lg border border-white/10 shadow-2xl relative mx-4 mt-auto mb-auto">
+            <button onclick="toggleSceneryBox()" class="absolute top-4 right-4 text-white/50 hover:text-white transition-colors">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+            <h2 class="text-xl font-bold text-white mb-2 flex items-center gap-2">
+                <span class="material-symbols-rounded text-indigo-400">wallpaper</span>
+                Change Scenery
+            </h2>
+            <p class="text-xs text-white/50 mb-6">Pick a new background vibe. Changing stations will reset it to default.</p>
+            
+            <!-- Dynamic Grid for Station Backgrounds -->
+            <div id="scenery-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6 max-h-[40vh] overflow-y-auto pr-2 scrollbar-thin">
+                <!-- Injected via JS -->
+            </div>
+            
+            <div class="border-t border-white/10 pt-4">
+                <label class="block text-xs text-white/60 mb-1 ml-1 uppercase tracking-wider">Or Use Custom GIF/Image URL</label>
+                <form onsubmit="applyCustomUrl(event)" class="flex gap-2">
+                    <input type="url" id="custom-bg-input" required class="flex-1 bg-black/20 border border-white/10 rounded-lg px-4 py-2 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-indigo-500 transition-colors" placeholder="Paste image/gif link here..." />
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 rounded-lg transition-colors flex justify-center items-center">
+                        Apply
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -212,6 +228,12 @@
                 <button onclick="toggleSuggestionBox()" class="flex items-center gap-2 p-2 md:px-4 md:py-2 text-sm font-medium transition-colors border rounded-full bg-white/10 hover:bg-white/20 border-white/20 text-white/90 hover:text-white ui-panel" title="Suggest a song">
                     <span class="material-symbols-rounded" style="font-size: 18px;">lightbulb</span>
                     <span class="hidden md:block">Suggest</span>
+                </button>
+
+                <!-- Scenery Toggle -->
+                <button onclick="toggleSceneryBox()" class="p-2 transition-colors rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md flex items-center gap-2 md:px-4 ui-panel" title="Change Scenery">
+                    <span class="material-symbols-rounded" style="font-size: 18px;">wallpaper</span>
+                    <span class="text-sm font-medium hidden md:block">Scenery</span>
                 </button>
 
                 <!-- Zen Mode Toggle -->
@@ -372,7 +394,7 @@
             { 
                 id: 'chill', name: 'Cozy Corner', icon: 'local_cafe', 
                 bg: './assets/chill-bg.mp4', 
-                fallbackBg: 'https://media.giphy.com/media/L0qTl8hl84ce91wO6p/giphy.gif',
+                fallbackBg: './assets/chill-thumb.jpg',
                 color: 'bg-gradient-to-br from-blue-900/60 to-indigo-900/60',
                 tracks: [
                     { id: 1, title: 'Summer Breeze', artist: 'Instrumental', url: './music/chill-1.mp3', cover: 'https://picsum.photos/seed/chill1/300/300' },
@@ -390,7 +412,7 @@
             { 
                 id: 'focus', name: 'Deep Focus', icon: 'computer', 
                 bg: './assets/focus-bg.mp4', 
-                fallbackBg: 'https://media.giphy.com/media/11KzOet1ElBDz2/giphy.gif',
+                fallbackBg: './assets/focus-thumb.jpg',
                 color: 'bg-gradient-to-br from-emerald-900/60 to-teal-900/60',
                 tracks: [
                     { id: 11, title: 'Dungeon Dive', artist: 'Instrumental', url: './music/focus-1.mp3', cover: 'https://picsum.photos/seed/focus1/300/300' },
@@ -408,7 +430,7 @@
             { 
                 id: 'party', name: 'Midnight Drive', icon: 'celebration', 
                 bg: './assets/party-bg.mp4', 
-                fallbackBg: 'https://media.giphy.com/media/l41Yh18f5TbiWcdzi/giphy.gif',
+                fallbackBg: './assets/party-thumb.jpg',
                 color: 'bg-gradient-to-br from-fuchsia-900/60 to-rose-900/60',
                 tracks: [
                     { id: 21, title: 'Neon Lights', artist: 'Dance Beats', url: './music/party-1.mp3', cover: 'https://picsum.photos/seed/party1/300/300' },
@@ -426,7 +448,7 @@
             { 
                 id: 'morning', name: 'Sunrise Sips', icon: 'wb_sunny', 
                 bg: './assets/morning-bg.mp4', 
-                fallbackBg: 'https://media.giphy.com/media/3o7aD2d7qc9qQBiqaw/giphy.gif',
+                fallbackBg: './assets/morning-thumb.jpg',
                 color: 'bg-gradient-to-br from-orange-900/60 to-amber-900/60',
                 tracks: [
                     { id: 31, title: 'Bossa Rise', artist: 'Instrumental', url: './music/morning-1.mp3', cover: 'https://picsum.photos/seed/morning1/300/300' },
@@ -444,7 +466,7 @@
             { 
                 id: 'quiet', name: 'Quiet Hours', icon: 'desk', 
                 bg: './assets/quiet-bg.mp4', 
-                fallbackBg: 'https://media.giphy.com/media/xT5LMxdcX49k8W5n8c/giphy.gif',
+                fallbackBg: './assets/quiet-thumb.jpg',
                 color: 'bg-gradient-to-br from-indigo-900/80 to-purple-900/80',
                 tracks: [
                     { id: 41, title: 'Midnight Hush', artist: 'Instrumental', url: './music/quiet-1.mp3', cover: 'https://picsum.photos/seed/quiet1/300/300' },
@@ -467,7 +489,7 @@
             { 
                 id: 'groove', name: 'Easy Groove', icon: 'headphones', 
                 bg: './assets/groove-bg.mp4', 
-                fallbackBg: 'https://media.giphy.com/media/26n6tPJiXl72L3w9i/giphy.gif',
+                fallbackBg: './assets/groove-thumb.jpg',
                 color: 'bg-gradient-to-br from-emerald-900/60 to-green-900/60',
                 tracks: [
                     { id: 56, title: 'Smooth Steps', artist: 'Instrumental', url: './music/groove-1.mp3', cover: 'https://picsum.photos/seed/groove1/300/300' },
@@ -484,7 +506,7 @@
             { 
                 id: 'spark', name: 'Spark', icon: 'bolt', 
                 bg: './assets/spark-bg.mp4', 
-                fallbackBg: 'https://media.giphy.com/media/l41YcWb3q0tJ8Pcyc/giphy.gif',
+                fallbackBg: './assets/spark-thumb.jpg',
                 color: 'bg-gradient-to-br from-yellow-900/60 to-orange-900/60',
                 tracks: [
                     { id: 65, title: 'Ignite', artist: 'Instrumental', url: './music/spark-1.mp3', cover: 'https://picsum.photos/seed/spark1/300/300' },
@@ -502,7 +524,7 @@
             { 
                 id: 'nightfall', name: 'Night Fall', icon: 'nights_stay', 
                 bg: './assets/nightfall-bg.mp4', 
-                fallbackBg: 'https://media.giphy.com/media/l3vR7zXw6mDmbxP3a/giphy.gif',
+                fallbackBg: './assets/nightfall-thumb.jpg',
                 color: 'bg-gradient-to-br from-slate-900/80 to-black/80',
                 tracks: [
                     { id: 75, title: 'Dusk Descends', artist: 'Instrumental', url: './music/nightfall-1.mp3', cover: 'https://picsum.photos/seed/nightfall1/300/300' },
@@ -547,6 +569,7 @@
         let mainPlayIcon, timeCurrent, timeTotal, progressBar, progressContainer;
         let volumeIcon, volumeBar, volumeSlider;
         let suggestionModal, suggestionForm;
+        let sceneryModal;
         let timerDisplay, timerIcon, btnWork, btnBreak;
         let sfx = {};
 
@@ -577,6 +600,8 @@
             suggestionModal = document.getElementById('suggestion-modal');
             suggestionForm = document.getElementById('suggestion-form');
             
+            sceneryModal = document.getElementById('scenery-modal');
+            
             timerDisplay = document.getElementById('timer-display');
             timerIcon = document.getElementById('timer-icon');
             btnWork = document.getElementById('btn-work');
@@ -598,13 +623,16 @@
 
             // Set initial DOM values based on loaded memory
             audio.volume = volume;
-            volumeSlider.value = volume;
-            volumeBar.style.width = `${volume * 100}%`;
+            if(volumeSlider) {
+                volumeSlider.value = volume;
+                volumeBar.style.width = `${volume * 100}%`;
+            }
             
             Object.keys(sfxVolumes).forEach(type => {
                 const slider = document.querySelector(`input[oninput*="changeSfxVolume('${type}'"]`);
                 if(slider) slider.value = sfxVolumes[type];
-                document.getElementById(`bar-${type}`).style.width = `${sfxVolumes[type] * 100}%`;
+                const bar = document.getElementById(`bar-${type}`);
+                if(bar) bar.style.width = `${sfxVolumes[type] * 100}%`;
             });
             
             // Setup UI immediately
@@ -612,6 +640,7 @@
             currentStationIdx = -1; // Force new render
             loadStation(initialStation); 
             changeTimerMode('work'); 
+            renderSceneryGrid();
             
             // SET UP LOCK SCREEN CONTROLS (Media Session API)
             if ('mediaSession' in navigator) {
@@ -699,13 +728,6 @@
                 }
             });
 
-            // Fade out the loading screen gracefully
-            setTimeout(() => {
-                const loader = document.getElementById('loading-screen');
-                loader.classList.add('opacity-0');
-                setTimeout(() => loader.remove(), 1000);
-            }, 1200);
-
             // Attempt to gently auto-play
             setTimeout(() => {
                 attemptPlay();
@@ -756,6 +778,10 @@
 
         function toggleSuggestionBox() {
             suggestionModal.classList.toggle('hidden');
+        }
+
+        function toggleSceneryBox() {
+            sceneryModal.classList.toggle('hidden');
         }
 
         function showToast(title, message, icon = "info") {
@@ -963,7 +989,7 @@
                     isPlaying = false;
                     updatePlayStateUI();
                     if(error.name === 'NotAllowedError') {
-                        // User must interact first on this browser
+                        // Browser policy stopped auto-play
                         console.log("Autoplay paused by browser policy.");
                     }
                 });
@@ -1113,14 +1139,16 @@
         function changeVolume(val) {
             volume = parseFloat(val);
             audio.volume = volume;
-            volumeBar.style.width = `${volume * 100}%`;
+            if (volumeBar) volumeBar.style.width = `${volume * 100}%`;
             
-            if (volume === 0) {
-                volumeIcon.textContent = 'volume_off';
-            } else if (volume < 0.5) {
-                volumeIcon.textContent = 'volume_down';
-            } else {
-                volumeIcon.textContent = 'volume_up';
+            if (volumeIcon) {
+                if (volume === 0) {
+                    volumeIcon.textContent = 'volume_off';
+                } else if (volume < 0.5) {
+                    volumeIcon.textContent = 'volume_down';
+                } else {
+                    volumeIcon.textContent = 'volume_up';
+                }
             }
             saveSettings(); 
         }
@@ -1132,7 +1160,8 @@
             sfxVolumes[type] = vol; 
             sfx[type].volume = vol;
             
-            document.getElementById(`bar-${type}`).style.width = `${vol * 100}%`;
+            const bar = document.getElementById(`bar-${type}`);
+            if (bar) bar.style.width = `${vol * 100}%`;
             
             if (vol > 0 && sfx[type].paused) {
                 sfx[type].play().catch(e => console.log("Auto-play prevented for SFX until interaction"));
@@ -1144,10 +1173,10 @@
 
         function toggleMute() {
             if (volume > 0) {
-                volumeSlider.value = 0;
+                if (volumeSlider) volumeSlider.value = 0;
                 changeVolume(0);
             } else {
-                volumeSlider.value = 0.5;
+                if (volumeSlider) volumeSlider.value = 0.5;
                 changeVolume(0.5);
             }
         }
@@ -1163,6 +1192,41 @@
         }
 
         // --- RENDERERS ---
+        function renderSceneryGrid() {
+            const grid = document.getElementById('scenery-grid');
+            grid.innerHTML = STATIONS.map(station => `
+                <div onclick="setCustomBackground('${station.bg}', '${station.fallbackBg}')" class="cursor-pointer group relative rounded-lg overflow-hidden aspect-video border border-white/10 hover:border-indigo-400 transition-all shadow-md hover:shadow-[0_0_15px_rgba(99,102,241,0.5)]">
+                    <div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" style="background-image: url('${station.fallbackBg}')"></div>
+                    <div class="absolute inset-0 bg-black/50 group-hover:bg-black/10 transition-colors"></div>
+                    <span class="absolute bottom-2 left-2 text-xs font-bold text-white drop-shadow-md truncate w-full pr-2">${station.name}</span>
+                </div>
+            `).join('');
+        }
+
+        function setCustomBackground(bgSrc, fallbackSrc = bgSrc) {
+            if (bgSrc.match(/\.(mp4|webm)$/i)) {
+                bgVideo.src = bgSrc;
+                bgVideo.onloadeddata = () => { bgVideo.classList.remove('opacity-0'); bgImage.classList.add('opacity-0'); };
+                bgVideo.onerror = () => { bgVideo.classList.add('opacity-0'); bgImage.classList.remove('opacity-0'); bgImage.style.backgroundImage = `url(${fallbackSrc})`; };
+            } else {
+                const bgImg = new Image();
+                bgImg.onload = () => { bgImage.style.backgroundImage = `url(${bgSrc})`; bgImage.classList.remove('opacity-0'); bgVideo.classList.add('opacity-0'); };
+                bgImg.onerror = () => { bgImage.classList.remove('opacity-0'); bgVideo.classList.add('opacity-0'); bgImage.style.backgroundImage = `url(${fallbackSrc})`; };
+                bgImg.src = bgSrc;
+            }
+            toggleSceneryBox();
+            showToast("Scenery Updated", "Background changed successfully!", "wallpaper");
+        }
+
+        function applyCustomUrl(e) {
+            e.preventDefault();
+            const input = document.getElementById('custom-bg-input').value;
+            if(input) {
+                setCustomBackground(input);
+                document.getElementById('custom-bg-input').value = '';
+            }
+        }
+
         function renderStations() {
             stationsContainer.innerHTML = STATIONS.map((station, idx) => {
                 const isActive = currentStationIdx === idx;
