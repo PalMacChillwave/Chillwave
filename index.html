@@ -4,33 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- Primary Meta Tags -->
     <title>Chillwave - Lo-Fi Player</title>
     <meta name="title" content="Chillwave - Lo-Fi Player">
     <meta name="description" content="An aesthetic lo-fi music player with a built-in Pomodoro timer and ambient sound mixer. Perfect for studying and focus.">
 
-    <!-- Open Graph / Facebook / Discord -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://palmacchillwave.github.io/Chillwave/">
     <meta property="og:title" content="Chillwave - Lo-Fi Player">
     <meta property="og:description" content="An aesthetic lo-fi music player with a built-in Pomodoro timer and ambient sound mixer. Perfect for studying and focus.">
     <meta property="og:image" content="https://palmacchillwave.github.io/Chillwave/icon.png">
 
-    <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://palmacchillwave.github.io/Chillwave/">
     <meta property="twitter:title" content="Chillwave - Lo-Fi Player">
     <meta property="twitter:description" content="An aesthetic lo-fi music player with a built-in Pomodoro timer and ambient sound mixer. Perfect for studying and focus.">
     <meta property="twitter:image" content="https://palmacchillwave.github.io/Chillwave/icon.png">
     
-    <!-- App Icon / Favicon -->
     <link rel="icon" type="image/svg+xml" href="./icon.svg?v=2">
     <link rel="apple-touch-icon" href="https://palmacchillwave.github.io/Chillwave/icon.png">
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Google Material Symbols -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0&display=swap" rel="stylesheet" />
 
@@ -88,10 +82,8 @@
 </head>
 <body class="relative w-full h-screen overflow-hidden font-sans text-white bg-gray-900 select-none">
 
-    <!-- Dim Mode Overlay -->
-<div id="dim-overlay" class="fixed inset-0 bg-black/70 pointer-events-none opacity-0 z-[100]"></div>
-    
-    <!-- Toast Notification -->
+    <div id="dim-overlay" class="fixed inset-0 bg-black/70 pointer-events-none opacity-0 z-[100]"></div>
+
     <div id="toast" class="fixed top-4 right-4 max-w-sm bg-indigo-600/90 backdrop-blur-md text-white px-4 py-3 rounded-lg shadow-2xl transform transition-all duration-300 translate-x-[150%] opacity-0 z-[150] flex items-start gap-3 border border-indigo-400/50">
         <span id="toast-icon" class="material-symbols-rounded mt-0.5">info</span>
         <div class="flex flex-col">
@@ -100,40 +92,6 @@
         </div>
     </div>
 
-    <!-- Suggestion Modal -->
-    <div id="suggestion-modal" class="fixed inset-0 z-[160] flex items-center justify-center hidden bg-black/60 backdrop-blur-sm transition-opacity">
-        <div class="bg-gray-800/90 p-8 rounded-2xl w-full max-w-md border border-white/10 shadow-2xl relative mx-4">
-            <button onclick="toggleSuggestionBox()" class="absolute top-4 right-4 text-white/50 hover:text-white transition-colors">
-                <span class="material-symbols-rounded">close</span>
-            </button>
-            <h2 class="text-xl font-bold text-white mb-2 flex items-center gap-2">
-                <span class="material-symbols-rounded text-indigo-400">lightbulb</span>
-                Suggest a Song
-            </h2>
-            <p class="text-xs text-white/50 mb-6">Know a great instrumental track? Send it over and it might be added to the playlists!</p>
-            
-            <form id="suggestion-form" class="flex flex-col gap-4">
-                <div>
-                    <label class="block text-xs text-white/60 mb-1 ml-1 uppercase tracking-wider">Song Title *</label>
-                    <input type="text" name="Song Title" required class="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-indigo-500 transition-colors" placeholder="e.g. Midnight Coffee" />
-                </div>
-                <div>
-                    <label class="block text-xs text-white/60 mb-1 ml-1 uppercase tracking-wider">Artist *</label>
-                    <input type="text" name="Artist" required class="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-indigo-500 transition-colors" placeholder="e.g. Lofi Maker" />
-                </div>
-                <div>
-                    <label class="block text-xs text-white/60 mb-1 ml-1 uppercase tracking-wider">Link (Optional)</label>
-                    <input type="url" name="Link" class="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-indigo-500 transition-colors" placeholder="YouTube or Spotify link" />
-                </div>
-                <button type="submit" id="submit-btn" class="mt-4 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-lg transition-colors flex justify-center items-center gap-2">
-                    <span class="material-symbols-rounded" style="font-size: 20px;">send</span>
-                    Send Suggestion
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Scenery Selection Modal -->
     <div id="scenery-modal" class="fixed inset-0 z-[150] flex items-center justify-center hidden bg-black/60 backdrop-blur-sm transition-opacity overflow-y-auto py-10">
         <div class="bg-gray-800/90 p-6 rounded-2xl w-full max-w-lg border border-white/10 shadow-2xl relative mx-4 mt-auto mb-auto">
             <button onclick="toggleSceneryBox()" class="absolute top-4 right-4 text-white/50 hover:text-white transition-colors">
@@ -145,10 +103,8 @@
             </h2>
             <p class="text-xs text-white/50 mb-6">Pick a new background vibe. Changing stations will reset it to default.</p>
             
-            <!-- Dynamic Grid for Station Backgrounds -->
             <div id="scenery-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6 max-h-[40vh] overflow-y-auto pr-2 scrollbar-thin">
-                <!-- Injected via JS -->
-            </div>
+                </div>
             
             <div class="border-t border-white/10 pt-4">
                 <label class="block text-xs text-white/60 mb-1 ml-1 uppercase tracking-wider">Or Use Custom GIF/Image URL</label>
@@ -162,13 +118,11 @@
         </div>
     </div>
 
-    <!-- Backgrounds -->
     <video id="bg-video" class="absolute inset-0 z-0 w-full h-full object-cover opacity-0" autoplay loop muted playsinline></video>
     <div id="bg-image" class="absolute inset-0 z-0 bg-center bg-cover"></div>
     <div id="bg-gradient" class="absolute inset-0 z-0 opacity-80 mix-blend-multiply transition-all duration-1000"></div>
     <div class="absolute inset-0 z-0 bg-black/20"></div>
 
-    <!-- Audio Elements -->
     <audio id="audio-player"></audio>
     <audio id="sfx-rain" loop src="./music/rain.mp3"></audio>
     <audio id="sfx-fire" loop src="./music/fire.mp3"></audio>
@@ -176,7 +130,6 @@
 
     <div class="relative z-10 flex flex-col h-full">
         
-        <!-- Header: Responsive -->
         <header class="flex flex-wrap md:flex-nowrap items-center justify-between px-4 md:px-6 py-3 md:py-4 gap-y-4 shrink-0">
             <div class="flex items-center gap-3">
                 <img src="./icon.svg" alt="Chillwave Logo" class="w-8 h-8 md:w-10 md:h-10 rounded-xl shadow-[0_0_15px_rgba(99,102,241,0.4)] border border-white/20" />
@@ -184,17 +137,14 @@
                     CHILL<span class="font-light text-white/70">WAVE</span>
                 </h1>
                 
-                <!-- Dim Lights Toggle -->
                 <button onclick="toggleDimMode()" class="p-2 transition-colors rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md flex items-center gap-2 md:px-4 ui-panel" title="Dim Lights">
                     <span id="dim-icon" class="material-symbols-rounded" style="font-size: 18px;">dark_mode</span>
                     <span class="text-sm font-medium hidden md:block">Dim</span>
                 </button>
             </div>
             
-            <!-- Pomodoro Timer Unified Widget -->
             <div class="relative md:absolute left-0 md:left-1/2 md:-translate-x-1/2 flex items-center justify-center w-full md:w-auto order-3 md:order-none z-50 ui-panel">
                 <div class="flex items-center bg-black/40 backdrop-blur-md pl-6 pr-2 py-1.5 rounded-full border border-white/10 shadow-lg hover:bg-black/50 transition-colors">
-                    <!-- Focus & Break toggles -->
                     <button onclick="changeTimerMode('work')" id="btn-work" class="text-xs font-semibold uppercase tracking-wider text-indigo-300 transition-colors">Focus</button>
                     <div class="w-px h-4 bg-white/20 mx-3"></div>
                     <button onclick="changeTimerMode('break')" id="btn-break" class="text-xs font-semibold uppercase tracking-wider text-white/50 hover:text-white transition-colors">Break</button>
@@ -202,11 +152,9 @@
                     <div class="w-px h-4 bg-white/20 mx-3"></div>
 
                     <div class="relative flex items-center group cursor-pointer mr-2" title="Change Timer">
-                        <!-- The time display itself now acts as the dropdown button -->
                         <span id="timer-display" class="font-mono font-bold text-lg tracking-widest w-16 text-center text-white pointer-events-none">25:00</span>
                         <span class="material-symbols-rounded text-white/40 group-hover:text-white transition-colors pointer-events-none -ml-1 mr-1" style="font-size: 18px;">expand_more</span>
                         
-                        <!-- Invisible select element overlays the time -->
                         <select id="timer-preset" onchange="changeTimerPreset(this.value)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
                             <option value="5" class="bg-gray-800 text-white">5 Min</option>
                             <option value="10" class="bg-gray-800 text-white">10 Min</option>
@@ -217,7 +165,6 @@
                         </select>
                     </div>
                     
-                    <!-- Play button merged right next to the time -->
                     <button onclick="toggleTimer()" class="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 hover:bg-indigo-500 text-white transition-colors shadow-inner" title="Start/Pause Timer">
                         <span id="timer-icon" class="material-symbols-rounded fill" style="font-size: 20px;">play_arrow</span>
                     </button>
@@ -225,10 +172,11 @@
             </div>
             
             <div class="flex items-center gap-2 md:gap-4 order-2 md:order-none">
-                <button onclick="toggleSuggestionBox()" class="flex items-center gap-2 p-2 md:px-4 md:py-2 text-sm font-medium transition-colors border rounded-full bg-white/10 hover:bg-white/20 border-white/20 text-white/90 hover:text-white ui-panel" title="Suggest a song">
+                <!-- Direct Link to Google Form -->
+                <a href="https://docs.google.com/forms/d/1irHZlDMjLKFtAl78hosq9uZ94vx2_xDlpA1LNKCx8j8/viewform" target="_blank" class="flex items-center gap-2 p-2 md:px-4 md:py-2 text-sm font-medium transition-colors border rounded-full bg-white/10 hover:bg-white/20 border-white/20 text-white/90 hover:text-white ui-panel" title="Suggest a song">
                     <span class="material-symbols-rounded" style="font-size: 18px;">lightbulb</span>
                     <span class="hidden md:block">Suggest</span>
-                </button>
+                </a>
 
                 <!-- Scenery Toggle -->
                 <button onclick="toggleSceneryBox()" class="p-2 transition-colors rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md flex items-center gap-2 md:px-4 ui-panel" title="Change Scenery">
@@ -236,7 +184,6 @@
                     <span class="text-sm font-medium hidden md:block">Scenery</span>
                 </button>
 
-                <!-- Zen Mode Toggle -->
                 <button onclick="toggleZenMode()" class="p-2 transition-colors rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md flex items-center gap-2 md:px-4" title="Zen Mode">
                     <span id="zen-icon" class="material-symbols-rounded" style="font-size: 18px;">visibility</span>
                     <span class="text-sm font-medium hidden md:block">Zen Mode</span>
@@ -250,10 +197,8 @@
 
         <div class="flex flex-col md:flex-row flex-1 overflow-x-hidden overflow-y-auto md:overflow-hidden relative">
             
-            <!-- Left Sidebar -->
             <div class="flex flex-col gap-2 p-4 md:p-6 w-full md:w-72 shrink-0 ui-panel z-10 md:overflow-y-auto scrollbar-thin h-full">
                 
-                <!-- Stations Header (Collapsible on Desktop) -->
                 <h2 onclick="toggleSection('stations-wrapper', 'stations-chevron')" class="cursor-pointer mb-2 text-xs font-semibold tracking-widest uppercase text-white/50 hidden md:flex items-center justify-between hover:text-white transition-colors group select-none">
                     <span class="flex items-center gap-2">
                         <span class="material-symbols-rounded" style="font-size: 16px;">library_music</span>
@@ -267,7 +212,6 @@
                     </div>
                 </div>
                 
-                <!-- Ambient Mixer Header (Collapsible) -->
                 <h2 onclick="toggleSection('mixer-wrapper', 'mixer-chevron')" class="cursor-pointer mt-4 md:mt-6 mb-2 md:mb-4 text-xs font-semibold tracking-widest uppercase text-white/50 flex items-center justify-between hover:text-white transition-colors group select-none">
                     <span class="flex items-center gap-2">
                         <span class="material-symbols-rounded" style="font-size: 16px;">tune</span> Ambient Mixer
@@ -277,7 +221,6 @@
                 
                 <div id="mixer-wrapper">
                     <div class="flex flex-col gap-4 bg-black/20 p-4 rounded-xl border border-white/5 backdrop-blur-md">
-                        <!-- Rain Slider -->
                         <div class="flex items-center gap-3 group">
                             <span class="material-symbols-rounded text-white/50 group-hover:text-blue-300 transition-colors" style="font-size: 20px;">water_drop</span>
                             <div class="flex-1 h-1.5 bg-white/10 rounded-full cursor-pointer relative flex items-center">
@@ -285,7 +228,6 @@
                                 <div id="bar-rain" class="h-full bg-blue-400 rounded-full pointer-events-none transition-all" style="width: 0%"></div>
                             </div>
                         </div>
-                        <!-- Fire Slider -->
                         <div class="flex items-center gap-3 group">
                             <span class="material-symbols-rounded text-white/50 group-hover:text-orange-400 transition-colors" style="font-size: 20px;">local_fire_department</span>
                             <div class="flex-1 h-1.5 bg-white/10 rounded-full cursor-pointer relative flex items-center">
@@ -293,7 +235,6 @@
                                 <div id="bar-fire" class="h-full bg-orange-400 rounded-full pointer-events-none transition-all" style="width: 0%"></div>
                             </div>
                         </div>
-                        <!-- Cafe Slider -->
                         <div class="flex items-center gap-3 group">
                             <span class="material-symbols-rounded text-white/50 group-hover:text-amber-200 transition-colors" style="font-size: 20px;">storefront</span>
                             <div class="flex-1 h-1.5 bg-white/10 rounded-full cursor-pointer relative flex items-center">
@@ -305,10 +246,8 @@
                 </div>
             </div>
 
-            <!-- Mobile spacer: pushes empty space BELOW the playlist on mobile -->
             <div class="flex-1 min-h-[35vh] md:min-h-0 order-last md:order-none pointer-events-none z-0"></div>
 
-            <!-- Right Sidebar (Playlist) -->
             <div id="playlist-container" class="flex flex-col w-full md:w-80 p-4 md:p-6 bg-black/40 md:bg-black/20 backdrop-blur-xl border-t md:border-t-0 md:border-l border-white/10 h-auto md:h-full transition-transform duration-300 transform md:translate-x-0 ui-panel shrink-0 z-10">
                  <h2 onclick="toggleSection('tracks-wrapper', 'playlist-chevron')" class="cursor-pointer mb-4 text-xs font-semibold tracking-widest uppercase text-white/50 flex items-center justify-between hover:text-white transition-colors group select-none">
                      <span class="flex items-center gap-2">
@@ -323,7 +262,6 @@
             </div>
         </div>
 
-        <!-- Bottom Player Controls -->
         <div class="bottom-player relative shrink-0 w-full h-auto md:h-24 bg-black/60 md:bg-black/40 backdrop-blur-2xl border-t border-white/10 flex flex-col md:flex-row items-center justify-between p-4 md:px-8 gap-4 md:gap-0 z-20 transition-all duration-500">
             
             <div class="flex items-center justify-between w-full md:w-1/4 md:min-w-[200px]">
@@ -571,7 +509,6 @@
         let currentCover, currentCoverContainer, currentTitle, currentArtist;
         let mainPlayIcon, timeCurrent, timeTotal, progressBar, progressContainer;
         let volumeIcon, volumeBar, volumeSlider;
-        let suggestionModal, suggestionForm;
         let sceneryModal;
         let timerDisplay, timerIcon, btnWork, btnBreak;
         let sfx = {};
@@ -599,9 +536,6 @@
             volumeIcon = document.getElementById('volume-icon');
             volumeBar = document.getElementById('volume-bar');
             volumeSlider = document.getElementById('volume-slider');
-            
-            suggestionModal = document.getElementById('suggestion-modal');
-            suggestionForm = document.getElementById('suggestion-form');
             
             sceneryModal = document.getElementById('scenery-modal');
             
@@ -690,40 +624,6 @@
                 }
             });
 
-            // Form Submit Listener (AJAX via Formspree)
-            suggestionForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                
-                const formspreeEndpoint = 'https://formspree.io/f/xykvbygq'; 
-                
-                const submitBtn = document.getElementById('submit-btn');
-                const originalBtnText = submitBtn.innerHTML;
-                submitBtn.innerHTML = '<span class="material-symbols-rounded animate-spin">sync</span> Sending...';
-                submitBtn.disabled = true;
-
-                try {
-                    const formData = new FormData(suggestionForm);
-                    const response = await fetch(formspreeEndpoint, {
-                        method: 'POST',
-                        body: formData,
-                        headers: { 'Accept': 'application/json' }
-                    });
-                    
-                    if (response.ok) {
-                        showToast("Success", "Your song suggestion was sent!", "check_circle");
-                        suggestionForm.reset();
-                        toggleSuggestionBox();
-                    } else {
-                        showToast("Error", "Oops! Ensure you replaced the Formspree URL in the code.", "error");
-                    }
-                } catch (error) {
-                    showToast("Error", "There was a problem sending your suggestion.", "error");
-                } finally {
-                    submitBtn.innerHTML = originalBtnText;
-                    submitBtn.disabled = false;
-                }
-            });
-
             // Keyboard Shortcuts
             document.addEventListener('keydown', (e) => {
                 if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
@@ -783,10 +683,6 @@
                 wrapper.classList.add('hidden');
                 chevron.textContent = 'chevron_right';
             }
-        }
-
-        function toggleSuggestionBox() {
-            suggestionModal.classList.toggle('hidden');
         }
 
         function toggleSceneryBox() {
