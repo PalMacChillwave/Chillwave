@@ -89,8 +89,8 @@
 <body class="relative w-full h-screen overflow-hidden font-sans text-white bg-gray-900 select-none">
 
     <!-- Dim Mode Overlay -->
-    <div id="dim-overlay" class="fixed inset-0 bg-black/70 pointer-events-none opacity-0 transition-opacity duration-1000 z-[100]"></div>
-
+<div id="dim-overlay" class="fixed inset-0 bg-black/70 pointer-events-none opacity-0 z-[100]"></div>
+    
     <!-- Toast Notification -->
     <div id="toast" class="fixed top-4 right-4 max-w-sm bg-indigo-600/90 backdrop-blur-md text-white px-4 py-3 rounded-lg shadow-2xl transform transition-all duration-300 translate-x-[150%] opacity-0 z-[150] flex items-start gap-3 border border-indigo-400/50">
         <span id="toast-icon" class="material-symbols-rounded mt-0.5">info</span>
@@ -163,8 +163,8 @@
     </div>
 
     <!-- Backgrounds -->
-    <video id="bg-video" class="absolute inset-0 z-0 w-full h-full object-cover transition-opacity duration-1000 opacity-0" autoplay loop muted playsinline></video>
-    <div id="bg-image" class="absolute inset-0 z-0 transition-opacity duration-1000 ease-in-out bg-center bg-cover"></div>
+    <video id="bg-video" class="absolute inset-0 z-0 w-full h-full object-cover opacity-0" autoplay loop muted playsinline></video>
+    <div id="bg-image" class="absolute inset-0 z-0 bg-center bg-cover"></div>
     <div id="bg-gradient" class="absolute inset-0 z-0 opacity-80 mix-blend-multiply transition-all duration-1000"></div>
     <div class="absolute inset-0 z-0 bg-black/20"></div>
 
@@ -552,6 +552,9 @@
         let consecutiveErrors = 0; 
         let dimModeActive = false;
         let zenModeActive = false;
+        
+        // ADDED: Bulletproof background tracker
+        let activeBgSrc = ''; 
 
         // Pomodoro State
         let timerInterval;
@@ -1007,6 +1010,7 @@
             currentStationIdx = idx;
             const station = STATIONS[idx];
             
+            activeBgSrc = station.bg; // Track current background
             saveSettings();
             
             // Instantly show the static thumbnail to cover the video buffering
@@ -1016,16 +1020,13 @@
             
             if (station.bg.match(/\.(mp4|webm)$/i)) {
                 bgVideo.src = station.bg;
-                bgVideo.play().catch(e => {}); // Force browser to start playing the new video
+                bgVideo.play().catch(e => {}); 
                 bgVideo.onloadeddata = () => {
-                    bgVideo.classList.remove('opacity-0');
-                    // Smoothly fade out the thumbnail once the video is playing underneath
-                    setTimeout(() => {
-                        // FIXED: Use getAttribute to match the exact relative path
-                        if (bgVideo.getAttribute('src') === station.bg) {
-                            bgImage.classList.add('opacity-0');
-                        }
-                    }, 1000);
+                    if (activeBgSrc === station.bg) {
+                        bgVideo.classList.remove('opacity-0');
+                        // Drop the image immediately - the CSS transition will handle the smooth fade
+                        bgImage.classList.add('opacity-0');
+                    }
                 };
                 bgVideo.onerror = () => {
                     // Keep the thumbnail visible if the video is missing
@@ -1033,7 +1034,9 @@
             } else {
                 const bgImg = new Image();
                 bgImg.onload = () => {
-                    bgImage.style.backgroundImage = `url('${station.bg}')`;
+                    if (activeBgSrc === station.bg) {
+                        bgImage.style.backgroundImage = `url('${station.bg}')`;
+                    }
                 };
                 bgImg.src = station.bg;
             }
@@ -1213,6 +1216,8 @@
         }
 
         function setCustomBackground(bgSrc, fallbackSrc = bgSrc) {
+            activeBgSrc = bgSrc; // Track current background
+
             // Instantly show the fallback image to bridge the loading gap
             bgImage.style.backgroundImage = `url('${fallbackSrc}')`;
             bgImage.classList.remove('opacity-0');
@@ -1220,16 +1225,13 @@
 
             if (bgSrc.match(/\.(mp4|webm)$/i)) {
                 bgVideo.src = bgSrc;
-                bgVideo.play().catch(e => {}); // Force browser to start playing the new video
+                bgVideo.play().catch(e => {}); 
                 bgVideo.onloadeddata = () => { 
-                    bgVideo.classList.remove('opacity-0'); 
-                    // Wait a moment for video to fade in, then hide the image overlay
-                    setTimeout(() => {
-                        // FIXED: Use getAttribute to match the exact relative path
-                        if (bgVideo.getAttribute('src') === bgSrc) {
-                            bgImage.classList.add('opacity-0');
-                        }
-                    }, 1000);
+                    if (activeBgSrc === bgSrc) {
+                        bgVideo.classList.remove('opacity-0'); 
+                        // Drop the image immediately - the CSS transition will handle the smooth fade
+                        bgImage.classList.add('opacity-0');
+                    }
                 };
                 bgVideo.onerror = () => { 
                     // Leave the image visible if the video fails
@@ -1237,7 +1239,9 @@
             } else {
                 const bgImg = new Image();
                 bgImg.onload = () => { 
-                    bgImage.style.backgroundImage = `url('${bgSrc}')`; 
+                    if (activeBgSrc === bgSrc) {
+                        bgImage.style.backgroundImage = `url('${bgSrc}')`; 
+                    }
                 };
                 bgImg.src = bgSrc;
             }
