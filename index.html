@@ -229,38 +229,55 @@
         <div class="flex flex-col md:flex-row flex-1 overflow-x-hidden overflow-y-auto md:overflow-hidden relative">
             
             <!-- Left Sidebar -->
-            <div class="flex flex-col gap-2 p-4 md:p-6 w-full md:w-72 shrink-0 ui-panel z-10">
-                <h2 class="mb-2 text-xs font-semibold tracking-widest uppercase text-white/50 hidden md:block">Stations</h2>
-                <div id="stations-container" class="flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-visible pb-2 md:pb-0 scrollbar-thin">
+            <div class="flex flex-col gap-2 p-4 md:p-6 w-full md:w-72 shrink-0 ui-panel z-10 md:overflow-y-auto scrollbar-thin h-full">
+                
+                <!-- Stations Header (Collapsible on Desktop) -->
+                <h2 onclick="toggleSection('stations-wrapper', 'stations-chevron')" class="cursor-pointer mb-2 text-xs font-semibold tracking-widest uppercase text-white/50 hidden md:flex items-center justify-between hover:text-white transition-colors group select-none">
+                    <span class="flex items-center gap-2">
+                        <span class="material-symbols-rounded" style="font-size: 16px;">library_music</span>
+                        <span>Stations</span>
+                    </span>
+                    <span id="stations-chevron" class="material-symbols-rounded transition-transform" style="font-size: 18px;">expand_more</span>
+                </h2>
+                
+                <div id="stations-wrapper">
+                    <div id="stations-container" class="flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-visible pb-2 md:pb-0 scrollbar-thin">
+                    </div>
                 </div>
                 
-                <!-- Ambient Mixer -->
-                <h2 class="mt-4 md:mt-8 mb-2 md:mb-4 text-xs font-semibold tracking-widest uppercase text-white/50 flex items-center gap-2">
-                    <span class="material-symbols-rounded" style="font-size: 16px;">tune</span> Ambient Mixer
+                <!-- Ambient Mixer Header (Collapsible) -->
+                <h2 onclick="toggleSection('mixer-wrapper', 'mixer-chevron')" class="cursor-pointer mt-4 md:mt-6 mb-2 md:mb-4 text-xs font-semibold tracking-widest uppercase text-white/50 flex items-center justify-between hover:text-white transition-colors group select-none">
+                    <span class="flex items-center gap-2">
+                        <span class="material-symbols-rounded" style="font-size: 16px;">tune</span> Ambient Mixer
+                    </span>
+                    <span id="mixer-chevron" class="material-symbols-rounded transition-transform" style="font-size: 18px;">expand_more</span>
                 </h2>
-                <div class="flex flex-col gap-4 bg-black/20 p-4 rounded-xl border border-white/5 backdrop-blur-md">
-                    <!-- Rain Slider -->
-                    <div class="flex items-center gap-3 group">
-                        <span class="material-symbols-rounded text-white/50 group-hover:text-blue-300 transition-colors" style="font-size: 20px;">water_drop</span>
-                        <div class="flex-1 h-1.5 bg-white/10 rounded-full cursor-pointer relative flex items-center">
-                            <input type="range" min="0" max="1" step="0.01" value="0" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" oninput="changeSfxVolume('rain', this.value)" />
-                            <div id="bar-rain" class="h-full bg-blue-400 rounded-full pointer-events-none transition-all" style="width: 0%"></div>
+                
+                <div id="mixer-wrapper">
+                    <div class="flex flex-col gap-4 bg-black/20 p-4 rounded-xl border border-white/5 backdrop-blur-md">
+                        <!-- Rain Slider -->
+                        <div class="flex items-center gap-3 group">
+                            <span class="material-symbols-rounded text-white/50 group-hover:text-blue-300 transition-colors" style="font-size: 20px;">water_drop</span>
+                            <div class="flex-1 h-1.5 bg-white/10 rounded-full cursor-pointer relative flex items-center">
+                                <input type="range" min="0" max="1" step="0.01" value="0" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" oninput="changeSfxVolume('rain', this.value)" />
+                                <div id="bar-rain" class="h-full bg-blue-400 rounded-full pointer-events-none transition-all" style="width: 0%"></div>
+                            </div>
                         </div>
-                    </div>
-                    <!-- Fire Slider -->
-                    <div class="flex items-center gap-3 group">
-                        <span class="material-symbols-rounded text-white/50 group-hover:text-orange-400 transition-colors" style="font-size: 20px;">local_fire_department</span>
-                        <div class="flex-1 h-1.5 bg-white/10 rounded-full cursor-pointer relative flex items-center">
-                            <input type="range" min="0" max="1" step="0.01" value="0" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" oninput="changeSfxVolume('fire', this.value)" />
-                            <div id="bar-fire" class="h-full bg-orange-400 rounded-full pointer-events-none transition-all" style="width: 0%"></div>
+                        <!-- Fire Slider -->
+                        <div class="flex items-center gap-3 group">
+                            <span class="material-symbols-rounded text-white/50 group-hover:text-orange-400 transition-colors" style="font-size: 20px;">local_fire_department</span>
+                            <div class="flex-1 h-1.5 bg-white/10 rounded-full cursor-pointer relative flex items-center">
+                                <input type="range" min="0" max="1" step="0.01" value="0" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" oninput="changeSfxVolume('fire', this.value)" />
+                                <div id="bar-fire" class="h-full bg-orange-400 rounded-full pointer-events-none transition-all" style="width: 0%"></div>
+                            </div>
                         </div>
-                    </div>
-                    <!-- Cafe Slider -->
-                    <div class="flex items-center gap-3 group">
-                        <span class="material-symbols-rounded text-white/50 group-hover:text-amber-200 transition-colors" style="font-size: 20px;">storefront</span>
-                        <div class="flex-1 h-1.5 bg-white/10 rounded-full cursor-pointer relative flex items-center">
-                            <input type="range" min="0" max="1" step="0.01" value="0" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" oninput="changeSfxVolume('cafe', this.value)" />
-                            <div id="bar-cafe" class="h-full bg-amber-200 rounded-full pointer-events-none transition-all" style="width: 0%"></div>
+                        <!-- Cafe Slider -->
+                        <div class="flex items-center gap-3 group">
+                            <span class="material-symbols-rounded text-white/50 group-hover:text-amber-200 transition-colors" style="font-size: 20px;">storefront</span>
+                            <div class="flex-1 h-1.5 bg-white/10 rounded-full cursor-pointer relative flex items-center">
+                                <input type="range" min="0" max="1" step="0.01" value="0" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" oninput="changeSfxVolume('cafe', this.value)" />
+                                <div id="bar-cafe" class="h-full bg-amber-200 rounded-full pointer-events-none transition-all" style="width: 0%"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -271,10 +288,15 @@
 
             <!-- Right Sidebar (Playlist) -->
             <div id="playlist-container" class="flex flex-col w-full md:w-80 p-4 md:p-6 bg-black/40 md:bg-black/20 backdrop-blur-xl border-t md:border-t-0 md:border-l border-white/10 h-auto md:h-full transition-transform duration-300 transform md:translate-x-0 ui-panel shrink-0 z-10">
-                 <h2 class="mb-4 text-xs font-semibold tracking-widest uppercase text-white/50 flex items-center gap-2">
-                     <span class="material-symbols-rounded" style="font-size: 18px;">queue_music</span> Up Next
+                 <h2 onclick="toggleSection('tracks-wrapper', 'playlist-chevron')" class="cursor-pointer mb-4 text-xs font-semibold tracking-widest uppercase text-white/50 flex items-center justify-between hover:text-white transition-colors group select-none">
+                     <span class="flex items-center gap-2">
+                         <span class="material-symbols-rounded" style="font-size: 18px;">queue_music</span> Up Next
+                     </span>
+                     <span id="playlist-chevron" class="material-symbols-rounded transition-transform" style="font-size: 18px;">expand_more</span>
                  </h2>
-                 <div id="tracks-container" class="flex flex-col gap-3 overflow-y-auto pr-2 pb-4 scrollbar-thin max-h-64 md:max-h-none md:flex-1">
+                 <div id="tracks-wrapper" class="flex flex-col flex-1 min-h-0">
+                     <div id="tracks-container" class="flex flex-col gap-3 overflow-y-auto pr-2 pb-4 scrollbar-thin max-h-64 md:max-h-none flex-1">
+                     </div>
                  </div>
             </div>
         </div>
@@ -293,11 +315,6 @@
                         <span id="current-artist" class="text-xs text-white/60 truncate"></span>
                     </div>
                 </div>
-                
-                <!-- Mobile Playlist Toggle -->
-                <button onclick="togglePlaylist()" class="playlist-toggle-btn md:hidden p-2 rounded-lg transition-colors bg-white/20 text-white ui-panel">
-                    <span class="material-symbols-rounded">queue_music</span>
-                </button>
             </div>
 
             <div class="flex flex-col items-center justify-center w-full md:flex-1 max-w-2xl px-0 md:px-8 gap-2">
@@ -336,10 +353,6 @@
                         <div id="volume-bar" class="h-full bg-white rounded-full pointer-events-none group-hover:bg-indigo-400 transition-colors" style="width: 50%"></div>
                     </div>
                 </div>
-
-                <button onclick="togglePlaylist()" class="playlist-toggle-btn p-2 rounded-lg transition-colors bg-white/20 text-white">
-                    <span class="material-symbols-rounded">queue_music</span>
-                </button>
             </div>
             
         </div>
@@ -512,7 +525,6 @@
         let currentTrackIdx = 0;
         let isPlaying = false;
         let volume = 0.15; // Gentle low volume auto-start
-        let showPlaylist = true;
         let toastTimeout;
         let usingFallback = false;
         let consecutiveErrors = 0; 
@@ -533,7 +545,7 @@
         let audio, bgVideo, bgImage, bgGradient, stationsContainer, tracksContainer;
         let currentCover, currentCoverContainer, currentTitle, currentArtist;
         let mainPlayIcon, timeCurrent, timeTotal, progressBar, progressContainer;
-        let volumeIcon, volumeBar, volumeSlider, playlistContainer, playlistToggleBtns;
+        let volumeIcon, volumeBar, volumeSlider;
         let suggestionModal, suggestionForm;
         let timerDisplay, timerIcon, btnWork, btnBreak;
         let sfx = {};
@@ -561,9 +573,6 @@
             volumeIcon = document.getElementById('volume-icon');
             volumeBar = document.getElementById('volume-bar');
             volumeSlider = document.getElementById('volume-slider');
-            
-            playlistContainer = document.getElementById('playlist-container');
-            playlistToggleBtns = document.querySelectorAll('.playlist-toggle-btn');
             
             suggestionModal = document.getElementById('suggestion-modal');
             suggestionForm = document.getElementById('suggestion-form');
@@ -732,6 +741,19 @@
         }
 
         // --- CORE UI FUNCTIONS ---
+        function toggleSection(wrapperId, chevronId) {
+            const wrapper = document.getElementById(wrapperId);
+            const chevron = document.getElementById(chevronId);
+            
+            if (wrapper.classList.contains('hidden')) {
+                wrapper.classList.remove('hidden');
+                chevron.textContent = 'expand_more';
+            } else {
+                wrapper.classList.add('hidden');
+                chevron.textContent = 'chevron_right';
+            }
+        }
+
         function toggleSuggestionBox() {
             suggestionModal.classList.toggle('hidden');
         }
@@ -1127,29 +1149,6 @@
             } else {
                 volumeSlider.value = 0.5;
                 changeVolume(0.5);
-            }
-        }
-
-        function togglePlaylist() {
-            showPlaylist = !showPlaylist;
-            if (showPlaylist) {
-                playlistContainer.classList.remove('translate-x-full', 'hidden');
-                playlistToggleBtns.forEach(btn => {
-                    btn.classList.replace('text-white/60', 'text-white');
-                    btn.classList.replace('hover:bg-white/10', 'bg-white/20');
-                });
-                
-                if (window.innerWidth < 768) {
-                    setTimeout(() => {
-                        playlistContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }, 50);
-                }
-            } else {
-                playlistContainer.classList.add('translate-x-full', 'hidden');
-                playlistToggleBtns.forEach(btn => {
-                    btn.classList.replace('text-white', 'text-white/60');
-                    btn.classList.replace('bg-white/20', 'hover:bg-white/10');
-                });
             }
         }
 
