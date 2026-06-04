@@ -634,6 +634,12 @@
                 const bar = document.getElementById(`bar-${type}`);
                 if(bar) bar.style.width = `${sfxVolumes[type] * 100}%`;
             });
+
+            // Preload fallback images so transitions are instantly seamless
+            STATIONS.forEach(station => {
+                const img = new Image();
+                img.src = station.fallbackBg;
+            });
             
             // Setup UI immediately
             let initialStation = currentStationIdx;
@@ -1003,28 +1009,29 @@
             
             saveSettings();
             
+            // Instantly show the static thumbnail to cover the video buffering
+            bgImage.style.backgroundImage = `url('${station.fallbackBg}')`;
+            bgImage.classList.remove('opacity-0');
+            bgVideo.classList.add('opacity-0');
+            
             if (station.bg.match(/\.(mp4|webm)$/i)) {
                 bgVideo.src = station.bg;
                 bgVideo.onloadeddata = () => {
                     bgVideo.classList.remove('opacity-0');
-                    bgImage.classList.add('opacity-0');
+                    // Smoothly fade out the thumbnail once the video is playing underneath
+                    setTimeout(() => {
+                        if (bgVideo.src.includes(station.bg)) {
+                            bgImage.classList.add('opacity-0');
+                        }
+                    }, 1000);
                 };
                 bgVideo.onerror = () => {
-                    bgVideo.classList.add('opacity-0');
-                    bgImage.classList.remove('opacity-0');
-                    bgImage.style.backgroundImage = `url(${station.fallbackBg})`;
+                    // Keep the thumbnail visible if the video is missing
                 };
             } else {
                 const bgImg = new Image();
                 bgImg.onload = () => {
-                    bgImage.style.backgroundImage = `url(${station.bg})`;
-                    bgImage.classList.remove('opacity-0');
-                    bgVideo.classList.add('opacity-0');
-                };
-                bgImg.onerror = () => {
-                    bgImage.classList.remove('opacity-0');
-                    bgVideo.classList.add('opacity-0');
-                    bgImage.style.backgroundImage = `url(${station.fallbackBg})`;
+                    bgImage.style.backgroundImage = `url('${station.bg}')`;
                 };
                 bgImg.src = station.bg;
             }
@@ -1204,14 +1211,30 @@
         }
 
         function setCustomBackground(bgSrc, fallbackSrc = bgSrc) {
+            // Instantly show the fallback image to bridge the loading gap
+            bgImage.style.backgroundImage = `url('${fallbackSrc}')`;
+            bgImage.classList.remove('opacity-0');
+            bgVideo.classList.add('opacity-0');
+
             if (bgSrc.match(/\.(mp4|webm)$/i)) {
                 bgVideo.src = bgSrc;
-                bgVideo.onloadeddata = () => { bgVideo.classList.remove('opacity-0'); bgImage.classList.add('opacity-0'); };
-                bgVideo.onerror = () => { bgVideo.classList.add('opacity-0'); bgImage.classList.remove('opacity-0'); bgImage.style.backgroundImage = `url(${fallbackSrc})`; };
+                bgVideo.onloadeddata = () => { 
+                    bgVideo.classList.remove('opacity-0'); 
+                    // Wait a moment for video to fade in, then hide the image overlay
+                    setTimeout(() => {
+                        if (bgVideo.src.includes(bgSrc)) {
+                            bgImage.classList.add('opacity-0');
+                        }
+                    }, 1000);
+                };
+                bgVideo.onerror = () => { 
+                    // Leave the image visible if the video fails
+                };
             } else {
                 const bgImg = new Image();
-                bgImg.onload = () => { bgImage.style.backgroundImage = `url(${bgSrc})`; bgImage.classList.remove('opacity-0'); bgVideo.classList.add('opacity-0'); };
-                bgImg.onerror = () => { bgImage.classList.remove('opacity-0'); bgVideo.classList.add('opacity-0'); bgImage.style.backgroundImage = `url(${fallbackSrc})`; };
+                bgImg.onload = () => { 
+                    bgImage.style.backgroundImage = `url('${bgSrc}')`; 
+                };
                 bgImg.src = bgSrc;
             }
             toggleSceneryBox();
