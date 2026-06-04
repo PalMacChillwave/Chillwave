@@ -1016,11 +1016,13 @@
             
             if (station.bg.match(/\.(mp4|webm)$/i)) {
                 bgVideo.src = station.bg;
+                bgVideo.play().catch(e => {}); // Force browser to start playing the new video
                 bgVideo.onloadeddata = () => {
                     bgVideo.classList.remove('opacity-0');
                     // Smoothly fade out the thumbnail once the video is playing underneath
                     setTimeout(() => {
-                        if (bgVideo.src.includes(station.bg)) {
+                        // FIXED: Use getAttribute to match the exact relative path
+                        if (bgVideo.getAttribute('src') === station.bg) {
                             bgImage.classList.add('opacity-0');
                         }
                     }, 1000);
@@ -1218,11 +1220,13 @@
 
             if (bgSrc.match(/\.(mp4|webm)$/i)) {
                 bgVideo.src = bgSrc;
+                bgVideo.play().catch(e => {}); // Force browser to start playing the new video
                 bgVideo.onloadeddata = () => { 
                     bgVideo.classList.remove('opacity-0'); 
                     // Wait a moment for video to fade in, then hide the image overlay
                     setTimeout(() => {
-                        if (bgVideo.src.includes(bgSrc)) {
+                        // FIXED: Use getAttribute to match the exact relative path
+                        if (bgVideo.getAttribute('src') === bgSrc) {
                             bgImage.classList.add('opacity-0');
                         }
                     }, 1000);
