@@ -145,21 +145,27 @@
         
         <!-- Header: Responsive -->
         <header class="flex flex-wrap md:flex-nowrap items-center justify-between px-4 md:px-6 py-3 md:py-4 gap-y-4 shrink-0">
-            <div class="flex items-center gap-3">
-                <img src="./icon.svg" alt="Chillwave Logo" class="w-8 h-8 md:w-10 md:h-10 rounded-xl shadow-[0_0_15px_rgba(99,102,241,0.4)] border border-white/20" />
-                <div class="flex items-baseline">
+            <div class="flex flex-col gap-1">
+                <div class="flex items-center gap-3">
+                    <img src="./icon.svg" alt="Chillwave Logo" class="w-8 h-8 md:w-10 md:h-10 rounded-xl shadow-[0_0_15px_rgba(99,102,241,0.4)] border border-white/20" />
                     <h1 class="text-lg md:text-xl font-bold tracking-wider text-white drop-shadow-md mr-1 md:mr-2">
                         CHILL<span class="font-light text-white/70">WAVE</span>
                     </h1>
-                    <!-- Dynamic Time Greeting -->
-                    <span id="time-greeting" class="hidden lg:block text-sm text-white/60 italic ml-2"></span>
+                    
+                    <!-- Zen Mode Toggle -->
+                    <button onclick="toggleZenMode()" class="p-2 transition-colors rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md flex items-center gap-2 md:px-4" title="Zen Mode">
+                        <span id="zen-icon" class="material-symbols-rounded" style="font-size: 18px;">visibility</span>
+                        <span class="text-sm font-medium hidden md:block">Zen Mode</span>
+                    </button>
+
+                    <!-- Dim Lights Toggle -->
+                    <button onclick="toggleDimMode()" class="p-2 transition-colors rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md flex items-center gap-2 md:px-4 ui-panel" title="Dim Lights">
+                        <span id="dim-icon" class="material-symbols-rounded" style="font-size: 18px;">dark_mode</span>
+                        <span class="text-sm font-medium hidden md:block">Dim</span>
+                    </button>
                 </div>
-                
-                <!-- Dim Lights Toggle -->
-                <button onclick="toggleDimMode()" class="p-2 transition-colors rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md flex items-center gap-2 md:px-4 ui-panel" title="Dim Lights">
-                    <span id="dim-icon" class="material-symbols-rounded" style="font-size: 18px;">dark_mode</span>
-                    <span class="text-sm font-medium hidden md:block">Dim</span>
-                </button>
+                <!-- Dynamic Time Greeting (Moved underneath logo) -->
+                <span id="time-greeting" class="hidden sm:block text-xs md:text-sm text-white/50 italic ml-12 md:ml-14"></span>
             </div>
             
             <!-- Pomodoro Timer Unified Widget -->
@@ -202,16 +208,39 @@
                     <span class="hidden md:block">Suggest</span>
                 </a>
 
+                <!-- Scratchpad / Notes Toggle -->
+                <div class="relative z-[200]">
+                    <button id="notes-btn" onclick="toggleTodoBox()" class="p-2 transition-colors rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md flex items-center gap-2 md:px-4 ui-panel" title="Current Focus Notes">
+                        <span class="material-symbols-rounded" style="font-size: 18px;">edit_note</span>
+                        <span class="text-sm font-medium hidden md:block">Notes</span>
+                    </button>
+                    
+                    <!-- Dropdown Panel -->
+                    <div id="todo-dropdown" class="absolute top-full right-0 mt-3 w-64 sm:w-80 bg-gray-800/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-4 hidden flex flex-col gap-3 transition-opacity">
+                        <h3 class="text-sm font-bold text-white flex items-center gap-2 mb-1">
+                            <span class="material-symbols-rounded text-indigo-400" style="font-size: 18px;">task_alt</span> 
+                            Top Priorities
+                        </h3>
+                        
+                        <!-- Add New Task Form -->
+                        <form onsubmit="handleAddTodo(event)" class="flex gap-2">
+                            <input type="text" id="new-todo-input" placeholder="Add a new task..." class="w-full bg-black/20 border border-white/5 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-indigo-500 transition-colors shadow-inner" autocomplete="off">
+                            <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-2 flex items-center justify-center transition-colors">
+                                <span class="material-symbols-rounded" style="font-size: 18px;">add</span>
+                            </button>
+                        </form>
+
+                        <!-- Dynamic Task List -->
+                        <ul id="todo-list" class="flex flex-col gap-1 max-h-48 overflow-y-auto pr-1 scrollbar-thin mt-1">
+                            <!-- Rendered via JS -->
+                        </ul>
+                    </div>
+                </div>
+
                 <!-- Scenery Toggle -->
                 <button onclick="toggleSceneryBox()" class="p-2 transition-colors rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md flex items-center gap-2 md:px-4 ui-panel" title="Change Scenery">
                     <span class="material-symbols-rounded" style="font-size: 18px;">wallpaper</span>
                     <span class="text-sm font-medium hidden md:block">Scenery</span>
-                </button>
-
-                <!-- Zen Mode Toggle -->
-                <button onclick="toggleZenMode()" class="p-2 transition-colors rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md flex items-center gap-2 md:px-4" title="Zen Mode">
-                    <span id="zen-icon" class="material-symbols-rounded" style="font-size: 18px;">visibility</span>
-                    <span class="text-sm font-medium hidden md:block">Zen Mode</span>
                 </button>
                 
                 <button onclick="toggleFullscreen()" class="p-2 transition-colors rounded-full hover:bg-white/10 text-white/80 hover:text-white ui-panel" title="Fullscreen">
@@ -275,6 +304,7 @@
                         </div>
                     </div>
                 </div>
+
             </div>
 
             <!-- Middle Click-to-Play Area with Tap Feedback -->
@@ -542,6 +572,7 @@
         
         let sfxVolumes = { rain: 0, fire: 0, cafe: 0 };
         let tapTimeout; // For the tap animation
+        let todos = []; // Dynamic to-do list array
 
         // --- DOM ELEMENTS ---
         let audio, bgVideo, bgImage, bgGradient, stationsContainer, tracksContainer;
@@ -617,6 +648,19 @@
                 img.src = station.fallbackBg;
             });
             
+            // Click outside to close notes dropdown (Fixed to ignore checking off tasks!)
+            document.addEventListener('click', (e) => {
+                const dropdown = document.getElementById('todo-dropdown');
+                const btn = document.getElementById('notes-btn');
+                if (dropdown && !dropdown.classList.contains('hidden')) {
+                    // The 'composedPath' safely tracks the click even if the checkbox is instantly redrawn!
+                    const path = e.composedPath();
+                    if (!path.includes(dropdown) && !path.includes(btn)) {
+                        dropdown.classList.add('hidden');
+                    }
+                }
+            });
+
             // Setup UI immediately
             updateGreeting();
             let initialStation = currentStationIdx;
@@ -624,6 +668,7 @@
             loadStation(initialStation); 
             changeTimerMode('work'); 
             renderSceneryGrid();
+            renderTodos();
             
             // SET UP LOCK SCREEN CONTROLS (Media Session API)
             if ('mediaSession' in navigator) {
@@ -739,7 +784,8 @@
                 savedSfx: sfxVolumes,
                 savedFocus: focusPreset,
                 savedBreak: breakPreset,
-                savedStation: currentStationIdx
+                savedStation: currentStationIdx,
+                savedTodos: todos
             };
             localStorage.setItem('chillwave_settings', JSON.stringify(settings));
         }
@@ -754,6 +800,7 @@
                     if (parsed.savedFocus !== undefined) focusPreset = parsed.savedFocus;
                     if (parsed.savedBreak !== undefined) breakPreset = parsed.savedBreak;
                     if (parsed.savedStation !== undefined) currentStationIdx = parsed.savedStation;
+                    if (parsed.savedTodos !== undefined) todos = parsed.savedTodos;
                 } catch(e) {
                     console.error("Could not load settings.");
                 }
@@ -776,6 +823,69 @@
 
         function toggleSceneryBox() {
             sceneryModal.classList.toggle('hidden');
+        }
+
+        function toggleTodoBox() {
+            document.getElementById('todo-dropdown').classList.toggle('hidden');
+            // Auto-focus the input field when opening
+            if (!document.getElementById('todo-dropdown').classList.contains('hidden')) {
+                setTimeout(() => document.getElementById('new-todo-input').focus(), 50);
+            }
+        }
+
+        // --- NEW TODO LIST FUNCTIONS ---
+        function handleAddTodo(e) {
+            e.preventDefault(); // Prevents page reload on enter key
+            const input = document.getElementById('new-todo-input');
+            const text = input.value.trim();
+            
+            if (text) {
+                // Add new task object to array
+                todos.push({ id: Date.now(), text: text, completed: false });
+                input.value = ''; // Clear input
+                saveSettings();
+                renderTodos();
+            }
+        }
+
+        function toggleTodoState(id) {
+            const todo = todos.find(t => t.id === id);
+            if (todo) {
+                todo.completed = !todo.completed;
+                saveSettings();
+                renderTodos();
+            }
+        }
+
+        function deleteTodo(id) {
+            todos = todos.filter(t => t.id !== id);
+            saveSettings();
+            renderTodos();
+        }
+
+        function renderTodos() {
+            const list = document.getElementById('todo-list');
+            
+            if (todos.length === 0) {
+                list.innerHTML = `<p class="text-xs text-white/40 text-center py-4 italic">No tasks yet. You're all caught up!</p>`;
+                return;
+            }
+
+            list.innerHTML = todos.map(todo => `
+                <li class="flex items-start gap-2 group p-2 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-white/5">
+                    <button onclick="toggleTodoState(${todo.id})" class="flex-shrink-0 mt-0.5 text-white/50 hover:text-indigo-400 transition-colors">
+                        <span class="material-symbols-rounded" style="font-size: 20px;">
+                            ${todo.completed ? 'check_circle' : 'radio_button_unchecked'}
+                        </span>
+                    </button>
+                    <span class="flex-1 text-sm break-words select-text ${todo.completed ? 'line-through text-white/30' : 'text-white/90'} transition-all cursor-pointer" onclick="toggleTodoState(${todo.id})">
+                        ${todo.text}
+                    </span>
+                    <button onclick="deleteTodo(${todo.id})" class="flex-shrink-0 text-white/20 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all ml-1" title="Delete Task">
+                        <span class="material-symbols-rounded" style="font-size: 18px;">delete</span>
+                    </button>
+                </li>
+            `).join('');
         }
 
         function showToast(title, message, icon = "info") {
@@ -1182,12 +1292,19 @@
         }
 
         function toggleFullscreen() {
+            if (!document.fullscreenEnabled) {
+                showToast("Fullscreen Disabled", "Your browser blocks fullscreen mode here.", "error");
+                return;
+            }
+
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(err => {
-                    console.error(`Error enabling full-screen mode: ${err.message}`);
+                    showToast("Fullscreen Error", "Fullscreen is disallowed by your browser settings.", "error");
                 });
             } else {
-                document.exitFullscreen();
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
             }
         }
 
