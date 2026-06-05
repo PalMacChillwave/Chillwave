@@ -119,7 +119,7 @@
     </div>
 
     <video id="bg-video" class="absolute inset-0 z-0 w-full h-full object-cover opacity-0" autoplay loop muted playsinline></video>
-    <div id="bg-image" class="absolute inset-0 z-0 bg-center bg-cover"></div>
+    <div id="bg-image" class="absolute inset-0 z-0 bg-center bg-cover opacity-0"></div>
     <div id="bg-gradient" class="absolute inset-0 z-0 opacity-80 mix-blend-multiply transition-all duration-1000"></div>
     <div class="absolute inset-0 z-0 bg-black/20"></div>
 
@@ -172,13 +172,11 @@
             </div>
             
             <div class="flex items-center gap-2 md:gap-4 order-2 md:order-none">
-                <!-- Direct Link to Google Form -->
                 <a href="https://docs.google.com/forms/d/1irHZlDMjLKFtAl78hosq9uZ94vx2_xDlpA1LNKCx8j8/viewform" target="_blank" class="flex items-center gap-2 p-2 md:px-4 md:py-2 text-sm font-medium transition-colors border rounded-full bg-white/10 hover:bg-white/20 border-white/20 text-white/90 hover:text-white ui-panel" title="Suggest a song">
                     <span class="material-symbols-rounded" style="font-size: 18px;">lightbulb</span>
                     <span class="hidden md:block">Suggest</span>
                 </a>
 
-                <!-- Scenery Toggle -->
                 <button onclick="toggleSceneryBox()" class="p-2 transition-colors rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md flex items-center gap-2 md:px-4 ui-panel" title="Change Scenery">
                     <span class="material-symbols-rounded" style="font-size: 18px;">wallpaper</span>
                     <span class="text-sm font-medium hidden md:block">Scenery</span>
@@ -246,7 +244,7 @@
                 </div>
             </div>
 
-            <div class="flex-1 min-h-[35vh] md:min-h-0 order-last md:order-none pointer-events-none z-0"></div>
+            <div onclick="togglePlay()" class="flex-1 min-h-[35vh] md:min-h-0 order-last md:order-none z-0 cursor-pointer" title="Click to Play/Pause"></div>
 
             <div id="playlist-container" class="flex flex-col w-full md:w-80 p-4 md:p-6 bg-black/40 md:bg-black/20 backdrop-blur-xl border-t md:border-t-0 md:border-l border-white/10 h-auto md:h-full transition-transform duration-300 transform md:translate-x-0 ui-panel shrink-0 z-10">
                  <h2 onclick="toggleSection('tracks-wrapper', 'playlist-chevron')" class="cursor-pointer mb-4 text-xs font-semibold tracking-widest uppercase text-white/50 flex items-center justify-between hover:text-white transition-colors group select-none">
@@ -341,7 +339,7 @@
                     { id: 4, title: 'Goa Dreams', artist: 'Instrumental', url: './music/chill-4.mp3', cover: 'https://picsum.photos/seed/chill4/300/300' },
                     { id: 5, title: 'Warm Coffee', artist: 'Instrumental', url: './music/chill-5.mp3', cover: 'https://picsum.photos/seed/chill5/300/300' },
                     { id: 6, title: 'Subway Chimes', artist: 'Instrumental', url: './music/chill-6.mp3', cover: 'https://picsum.photos/seed/chill6/300/300' },
-                    { id: 7, title: 'Locked Room', artist: 'Instrumental', url: './music/chill-7.mp3', cover: 'https://picsum.photos/seed/chill7/300/300' },
+                    { id: 7, title: 'Locked Room', artist: 'Instrumental', url: './music/chill-7.mp3', cover: 'https://picsum.photos/seed/chill8/300/300' },
                     { id: 8, title: 'Sky Boy Loop', artist: 'Instrumental', url: './music/chill-8.mp3', cover: 'https://picsum.photos/seed/chill8/300/300' },
                     { id: 9, title: 'Fighter Drift', artist: 'Instrumental', url: './music/chill-9.mp3', cover: 'https://picsum.photos/seed/chill9/300/300' },
                     { id: 10, title: 'Ninja Walk', artist: 'Instrumental', url: './music/chill-10.mp3', cover: 'https://picsum.photos/seed/chill10/300/300' }
@@ -491,7 +489,7 @@
         let dimModeActive = false;
         let zenModeActive = false;
         
-        // ADDED: Bulletproof background tracker
+        // Bulletproof background tracker
         let activeBgSrc = ''; 
 
         // Pomodoro State
@@ -920,7 +918,7 @@
                 bgVideo.onloadeddata = () => {
                     if (activeBgSrc === station.bg) {
                         bgVideo.classList.remove('opacity-0');
-                        // Drop the image immediately - the CSS transition will handle the smooth fade
+                        // Drop the image immediately
                         bgImage.classList.add('opacity-0');
                     }
                 };
@@ -1125,7 +1123,7 @@
                 bgVideo.onloadeddata = () => { 
                     if (activeBgSrc === bgSrc) {
                         bgVideo.classList.remove('opacity-0'); 
-                        // Drop the image immediately - the CSS transition will handle the smooth fade
+                        // Drop the image immediately
                         bgImage.classList.add('opacity-0');
                     }
                 };
