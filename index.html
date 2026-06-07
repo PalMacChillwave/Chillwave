@@ -288,7 +288,7 @@
                     <div class="flex flex-col gap-4 bg-black/20 p-4 rounded-xl border border-white/5 backdrop-blur-md">
                         <!-- Rain Slider -->
                         <div class="flex items-center gap-3 group">
-                            <span class="material-symbols-rounded text-white/50 group-hover:text-blue-300 transition-colors" style="font-size: 20px;">water_drop</span>
+                            <span onclick="toggleSfx('rain')" class="material-symbols-rounded text-white/50 group-hover:text-blue-300 transition-colors cursor-pointer" style="font-size: 20px;" title="Toggle Rain">water_drop</span>
                             <div class="flex-1 h-1.5 bg-white/10 rounded-full cursor-pointer relative flex items-center">
                                 <input type="range" min="0" max="1" step="0.01" value="0" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" oninput="changeSfxVolume('rain', this.value)" />
                                 <div id="bar-rain" class="h-full bg-blue-400 rounded-full pointer-events-none transition-all" style="width: 0%"></div>
@@ -296,7 +296,7 @@
                         </div>
                         <!-- Fire Slider -->
                         <div class="flex items-center gap-3 group">
-                            <span class="material-symbols-rounded text-white/50 group-hover:text-orange-400 transition-colors" style="font-size: 20px;">local_fire_department</span>
+                            <span onclick="toggleSfx('fire')" class="material-symbols-rounded text-white/50 group-hover:text-orange-400 transition-colors cursor-pointer" style="font-size: 20px;" title="Toggle Fire">local_fire_department</span>
                             <div class="flex-1 h-1.5 bg-white/10 rounded-full cursor-pointer relative flex items-center">
                                 <input type="range" min="0" max="1" step="0.01" value="0" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" oninput="changeSfxVolume('fire', this.value)" />
                                 <div id="bar-fire" class="h-full bg-orange-400 rounded-full pointer-events-none transition-all" style="width: 0%"></div>
@@ -304,7 +304,7 @@
                         </div>
                         <!-- Cafe Slider -->
                         <div class="flex items-center gap-3 group">
-                            <span class="material-symbols-rounded text-white/50 group-hover:text-amber-200 transition-colors" style="font-size: 20px;">storefront</span>
+                            <span onclick="toggleSfx('cafe')" class="material-symbols-rounded text-white/50 group-hover:text-amber-200 transition-colors cursor-pointer" style="font-size: 20px;" title="Toggle Cafe">storefront</span>
                             <div class="flex-1 h-1.5 bg-white/10 rounded-full cursor-pointer relative flex items-center">
                                 <input type="range" min="0" max="1" step="0.01" value="0" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" oninput="changeSfxVolume('cafe', this.value)" />
                                 <div id="bar-cafe" class="h-full bg-amber-200 rounded-full pointer-events-none transition-all" style="width: 0%"></div>
@@ -579,6 +579,7 @@
         let breakPreset = 5;  
         
         let sfxVolumes = { rain: 0, fire: 0, cafe: 0 };
+        let sfxPreviousVolumes = { rain: 0.5, fire: 0.5, cafe: 0.5 }; // Remembers volumes
         let tapTimeout; // For the tap animation
         let todos = []; // Dynamic to-do list array
 
@@ -793,6 +794,7 @@
             const settings = {
                 savedVolume: volume,
                 savedSfx: sfxVolumes,
+                savedSfxPrev: sfxPreviousVolumes,
                 savedFocus: focusPreset,
                 savedBreak: breakPreset,
                 savedStation: currentStationIdx,
@@ -808,6 +810,7 @@
                     const parsed = JSON.parse(saved);
                     if (parsed.savedVolume !== undefined) volume = parsed.savedVolume;
                     if (parsed.savedSfx) sfxVolumes = parsed.savedSfx;
+                    if (parsed.savedSfxPrev) sfxPreviousVolumes = parsed.savedSfxPrev;
                     if (parsed.savedFocus !== undefined) focusPreset = parsed.savedFocus;
                     if (parsed.savedBreak !== undefined) breakPreset = parsed.savedBreak;
                     if (parsed.savedStation !== undefined) currentStationIdx = parsed.savedStation;
@@ -1290,6 +1293,23 @@
                 sfx[type].pause();
             }
             saveSettings(); 
+        }
+
+        function toggleSfx(type) {
+            const currentVol = sfxVolumes[type];
+            const slider = document.querySelector(`input[oninput*="changeSfxVolume('${type}'"]`);
+            
+            if (currentVol > 0) {
+                // If it is ON, save the current volume and set it to 0
+                sfxPreviousVolumes[type] = currentVol;
+                changeSfxVolume(type, 0);
+                if (slider) slider.value = 0;
+            } else {
+                // If it is OFF, restore it to the previous volume (which defaults to 0.5)
+                const restoreVol = sfxPreviousVolumes[type] || 0.5;
+                changeSfxVolume(type, restoreVol);
+                if (slider) slider.value = restoreVol;
+            }
         }
 
         function toggleMute() {
