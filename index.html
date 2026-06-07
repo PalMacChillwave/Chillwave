@@ -640,6 +640,9 @@
                 if(slider) slider.value = sfxVolumes[type];
                 const bar = document.getElementById(`bar-${type}`);
                 if(bar) bar.style.width = `${sfxVolumes[type] * 100}%`;
+                
+                // Set the dampened volume internally on load
+                if(sfx[type]) sfx[type].volume = sfxVolumes[type] * 0.5;
             });
 
             // Preload fallback images so transitions are instantly seamless
@@ -1019,9 +1022,9 @@
             let fadeOut = setInterval(() => {
                 steps--;
                 audio.volume = originalVols.main * (0.1 + (0.9 * (steps/10)));
-                if (sfx.rain) sfx.rain.volume = originalVols.rain * (0.1 + (0.9 * (steps/10)));
-                if (sfx.fire) sfx.fire.volume = originalVols.fire * (0.1 + (0.9 * (steps/10)));
-                if (sfx.cafe) sfx.cafe.volume = originalVols.cafe * (0.1 + (0.9 * (steps/10)));
+                if (sfx.rain) sfx.rain.volume = (originalVols.rain * 0.5) * (0.1 + (0.9 * (steps/10)));
+                if (sfx.fire) sfx.fire.volume = (originalVols.fire * 0.5) * (0.1 + (0.9 * (steps/10)));
+                if (sfx.cafe) sfx.cafe.volume = (originalVols.cafe * 0.5) * (0.1 + (0.9 * (steps/10)));
                 
                 if(steps <= 0) {
                     clearInterval(fadeOut);
@@ -1035,9 +1038,9 @@
                         let fadeIn = setInterval(() => {
                             inSteps++;
                             audio.volume = originalVols.main * (0.1 + (0.9 * (inSteps/10)));
-                            if (sfx.rain) sfx.rain.volume = originalVols.rain * (0.1 + (0.9 * (inSteps/10)));
-                            if (sfx.fire) sfx.fire.volume = originalVols.fire * (0.1 + (0.9 * (inSteps/10)));
-                            if (sfx.cafe) sfx.cafe.volume = originalVols.cafe * (0.1 + (0.9 * (inSteps/10)));
+                            if (sfx.rain) sfx.rain.volume = (originalVols.rain * 0.5) * (0.1 + (0.9 * (inSteps/10)));
+                            if (sfx.fire) sfx.fire.volume = (originalVols.fire * 0.5) * (0.1 + (0.9 * (inSteps/10)));
+                            if (sfx.cafe) sfx.cafe.volume = (originalVols.cafe * 0.5) * (0.1 + (0.9 * (inSteps/10)));
                             if(inSteps >= 10) clearInterval(fadeIn);
                         }, 100);
                     }, 3500);
@@ -1268,7 +1271,7 @@
             const vol = parseFloat(val);
             
             sfxVolumes[type] = vol; 
-            sfx[type].volume = vol;
+            sfx[type].volume = vol * 0.5; // Apply dampening multiplier so SFX stay in the background
             
             const bar = document.getElementById(`bar-${type}`);
             if (bar) bar.style.width = `${vol * 100}%`;
