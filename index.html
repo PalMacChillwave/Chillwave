@@ -70,6 +70,14 @@
         .eq-bar:nth-child(2) { animation-delay: 150ms; }
         .eq-bar:nth-child(3) { animation-delay: 300ms; }
 
+        /* Hardware Acceleration Fix for Video Bleed/Flicker */
+        .backdrop-blur-md, .backdrop-blur-xl, .backdrop-blur-2xl, #bg-video {
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+        }
+
         /* Zen Mode Transitions */
         .ui-panel {
             transition: opacity 0.5s ease, transform 0.5s ease;
