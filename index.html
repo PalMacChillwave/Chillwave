@@ -160,10 +160,10 @@
     <div class="absolute inset-0 z-0 bg-black/20"></div>
 
     <!-- Audio Elements -->
-    <audio id="audio-player"></audio>
-    <audio id="sfx-rain" loop src="./music/rain.mp3"></audio>
-    <audio id="sfx-fire" loop src="./music/fire.mp3"></audio>
-    <audio id="sfx-cafe" loop src="./music/cafe.mp3"></audio>
+    <audio id="audio-player" crossorigin="anonymous"></audio>
+    <audio id="sfx-rain" loop crossorigin="anonymous" src="./music/rain.mp3"></audio>
+    <audio id="sfx-fire" loop crossorigin="anonymous" src="./music/fire.mp3"></audio>
+    <audio id="sfx-cafe" loop crossorigin="anonymous" src="./music/cafe.mp3"></audio>
 
     <div class="relative z-10 flex flex-col h-full">
         
@@ -745,8 +745,14 @@
             // Setup UI immediately
             updateGreeting();
             let initialStation = currentStationIdx;
+            let initialTrack = currentTrackIdx;
+
+            // Safety check: Fall back to 0 if memory references a track/station that was deleted
+            if (initialStation < 0 || initialStation >= STATIONS.length) initialStation = 0;
+            if (initialTrack < 0 || initialTrack >= STATIONS[initialStation].tracks.length) initialTrack = 0;
+
             currentStationIdx = -1; // Force new render
-            loadStation(initialStation); 
+            loadStation(initialStation, initialTrack); 
             changeTimerMode('work'); 
             renderSceneryGrid();
             renderTodos();
@@ -836,14 +842,18 @@
 
         function handleScreenTap(e) {
             resumeWebAudio();
-            // First trigger the play/pause
+            
+            // Determine the intended action before the async playback starts
+            const willPlay = !isPlaying;
+
+            // Trigger the play/pause
             togglePlay();
             
             const feedbackEl = document.getElementById('tap-feedback');
             const iconEl = document.getElementById('tap-feedback-icon');
             
-            // Because togglePlay updates 'isPlaying', we can check the new state
-            iconEl.textContent = isPlaying ? 'play_arrow' : 'pause';
+            // Show the correct icon for the action you just took
+            iconEl.textContent = willPlay ? 'play_arrow' : 'pause';
             
             // Clear any existing timeouts to stop glitching if clicked rapidly
             clearTimeout(tapTimeout);
@@ -868,6 +878,7 @@
                 savedFocus: focusPreset,
                 savedBreak: breakPreset,
                 savedStation: currentStationIdx,
+                savedTrack: currentTrackIdx,
                 savedTodos: todos
             };
             localStorage.setItem('chillwave_settings', JSON.stringify(settings));
@@ -884,6 +895,7 @@
                     if (parsed.savedFocus !== undefined) focusPreset = parsed.savedFocus;
                     if (parsed.savedBreak !== undefined) breakPreset = parsed.savedBreak;
                     if (parsed.savedStation !== undefined) currentStationIdx = parsed.savedStation;
+                    if (parsed.savedTrack !== undefined) currentTrackIdx = parsed.savedTrack;
                     if (parsed.savedTodos !== undefined) todos = parsed.savedTodos;
                 } catch(e) {
                     console.error("Could not load settings.");
@@ -1207,7 +1219,7 @@
             }
         }
 
-        function loadStation(idx) {
+        function loadStation(idx, initialTrackIdx = 0) {
             const isNewStation = currentStationIdx !== idx;
             currentStationIdx = idx;
             const station = STATIONS[idx];
@@ -1246,7 +1258,7 @@
             bgGradient.className = `absolute inset-0 z-0 opacity-80 mix-blend-multiply transition-all duration-1000 ${station.color}`;
             
             if (isNewStation) {
-                loadTrack(0); 
+                loadTrack(initialTrackIdx); 
             } else {
                 renderStations(); 
             }
@@ -1254,6 +1266,7 @@
 
         function loadTrack(idx) {
             currentTrackIdx = idx;
+            saveSettings(); // Ensure we remember the exact song being played
             const currentStationTracks = STATIONS[currentStationIdx].tracks;
             const track = currentStationTracks[idx];
             
