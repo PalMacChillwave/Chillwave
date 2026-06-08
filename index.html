@@ -74,12 +74,21 @@
         .eq-bar:nth-child(2) { animation-delay: 150ms; }
         .eq-bar:nth-child(3) { animation-delay: 300ms; }
 
-        /* Hardware Acceleration Fix for Video Bleed/Flicker */
-        .backdrop-blur-md, .backdrop-blur-xl, .backdrop-blur-2xl, #bg-video {
+        /* Hardware Acceleration Fix for Video/Image Bleed */
+        #bg-video, #bg-image, #bg-gradient {
             -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
-            transform: translateZ(0);
-            -webkit-transform: translateZ(0);
+            transform: translate3d(0, 0, 0);
+            -webkit-transform: translate3d(0, 0, 0);
+            will-change: transform, opacity;
+        }
+
+        /* Safari Backdrop Filter Glitch Fix */
+        .backdrop-blur-md, .backdrop-blur-xl, .backdrop-blur-2xl {
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
         }
 
         /* Zen Mode Transitions */
@@ -334,7 +343,7 @@
             </div>
 
             <!-- Right Sidebar (Playlist) -->
-            <div id="playlist-container" class="flex flex-col w-full md:w-80 p-4 md:p-6 bg-black/40 md:bg-black/20 backdrop-blur-xl border-t md:border-t-0 md:border-l border-white/10 h-auto md:h-full transition-transform duration-300 transform md:translate-x-0 ui-panel shrink-0 z-10">
+            <div id="playlist-container" class="flex flex-col w-full md:w-80 p-4 md:p-6 bg-black/60 md:bg-black/40 backdrop-blur-2xl border-t md:border-t-0 md:border-l border-white/10 h-auto md:h-full transition-transform duration-300 transform md:translate-x-0 ui-panel shrink-0 z-10">
                  <h2 onclick="toggleSection('tracks-wrapper', 'playlist-chevron')" class="cursor-pointer mb-4 text-xs font-semibold tracking-widest uppercase text-white/50 flex items-center justify-between hover:text-white transition-colors group select-none">
                      <span class="flex items-center gap-2">
                          <span class="material-symbols-rounded" style="font-size: 18px;">queue_music</span> Up Next
