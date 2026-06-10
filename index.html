@@ -166,11 +166,11 @@
     <div id="bg-gradient" class="absolute inset-0 z-0 opacity-80 mix-blend-multiply transition-all duration-1000"></div>
     <div class="absolute inset-0 z-0 bg-black/20"></div>
 
-    <!-- Audio Elements (crossorigin required for Web Audio API iOS volume fix) -->
+    <!-- Audio Elements -->
     <audio id="audio-player" crossorigin="anonymous"></audio>
-    <audio id="sfx-rain" loop crossorigin="anonymous" src="./assets/rain.mp3"></audio>
-    <audio id="sfx-fire" loop crossorigin="anonymous" src="./assets/fire.mp3"></audio>
-    <audio id="sfx-cafe" loop crossorigin="anonymous" src="./assets/cafe.mp3"></audio>
+    <audio id="sfx-rain" loop src="./music/rain.mp3"></audio>
+    <audio id="sfx-fire" loop src="./music/fire.mp3"></audio>
+    <audio id="sfx-cafe" loop src="./music/cafe.mp3"></audio>
 
     <div class="relative z-10 flex flex-col h-full">
         
@@ -330,7 +330,7 @@
                                 <span onclick="toggleSfx('rain')" class="material-symbols-rounded text-white/50 group-hover:text-blue-300 transition-colors cursor-pointer" style="font-size: 20px;" title="Toggle Rain">water_drop</span>
                                 <div class="flex-1 h-8 cursor-pointer relative flex items-center">
                                     <div class="absolute left-0 right-0 h-1.5 bg-white/10 rounded-full pointer-events-none"></div>
-                                    <input type="range" min="0" max="1" step="0.01" value="0" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" style="touch-action: none;" oninput="changeSfxVolume('rain', this.value)" />
+                                    <input type="range" id="slider-rain" min="0" max="1" step="0.01" value="0" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" style="touch-action: none;" oninput="changeSfxVolume('rain', this.value)" />
                                     <div id="bar-rain" class="absolute left-0 h-1.5 bg-blue-400 rounded-full pointer-events-none transition-all" style="width: 0%"></div>
                                 </div>
                             </div>
@@ -339,7 +339,7 @@
                                 <span onclick="toggleSfx('fire')" class="material-symbols-rounded text-white/50 group-hover:text-orange-400 transition-colors cursor-pointer" style="font-size: 20px;" title="Toggle Fire">local_fire_department</span>
                                 <div class="flex-1 h-8 cursor-pointer relative flex items-center">
                                     <div class="absolute left-0 right-0 h-1.5 bg-white/10 rounded-full pointer-events-none"></div>
-                                    <input type="range" min="0" max="1" step="0.01" value="0" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" style="touch-action: none;" oninput="changeSfxVolume('fire', this.value)" />
+                                    <input type="range" id="slider-fire" min="0" max="1" step="0.01" value="0" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" style="touch-action: none;" oninput="changeSfxVolume('fire', this.value)" />
                                     <div id="bar-fire" class="absolute left-0 h-1.5 bg-orange-400 rounded-full pointer-events-none transition-all" style="width: 0%"></div>
                                 </div>
                             </div>
@@ -348,7 +348,7 @@
                                 <span onclick="toggleSfx('cafe')" class="material-symbols-rounded text-white/50 group-hover:text-amber-200 transition-colors cursor-pointer" style="font-size: 20px;" title="Toggle Cafe">storefront</span>
                                 <div class="flex-1 h-8 cursor-pointer relative flex items-center">
                                     <div class="absolute left-0 right-0 h-1.5 bg-white/10 rounded-full pointer-events-none"></div>
-                                    <input type="range" min="0" max="1" step="0.01" value="0" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" style="touch-action: none;" oninput="changeSfxVolume('cafe', this.value)" />
+                                    <input type="range" id="slider-cafe" min="0" max="1" step="0.01" value="0" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" style="touch-action: none;" oninput="changeSfxVolume('cafe', this.value)" />
                                     <div id="bar-cafe" class="absolute left-0 h-1.5 bg-amber-200 rounded-full pointer-events-none transition-all" style="width: 0%"></div>
                                 </div>
                             </div>
@@ -784,7 +784,7 @@
             }
             
             Object.keys(sfxVolumes).forEach(type => {
-                const slider = document.querySelector(`input[oninput*="changeSfxVolume('${type}'"]`);
+                const slider = document.getElementById(`slider-${type}`);
                 if(slider) slider.value = sfxVolumes[type];
                 const bar = document.getElementById(`bar-${type}`);
                 if(bar) bar.style.width = `${sfxVolumes[type] * 100}%`;
@@ -1518,6 +1518,12 @@
             const bar = document.getElementById(`bar-${type}`);
             if (bar) bar.style.width = `${vol * 100}%`;
             
+            // Explicitly sync the invisible HTML slider so clicks/toggles update perfectly
+            const slider = document.getElementById(`slider-${type}`);
+            if (slider && slider.value !== val) {
+                slider.value = val;
+            }
+            
             if (vol > 0 && sfx[type].paused) {
                 sfx[type].play().catch(e => console.log("Auto-play prevented for SFX until interaction"));
             } else if (vol === 0) {
@@ -1529,18 +1535,15 @@
         function toggleSfx(type) {
             resumeWebAudio();
             const currentVol = sfxVolumes[type];
-            const slider = document.querySelector(`input[oninput*="changeSfxVolume('${type}'"]`);
             
             if (currentVol > 0) {
                 // If it is ON, save the current volume and set it to 0
                 sfxPreviousVolumes[type] = currentVol;
                 changeSfxVolume(type, 0);
-                if (slider) slider.value = 0;
             } else {
                 // If it is OFF, restore it to the previous volume (which defaults to 0.5)
                 const restoreVol = sfxPreviousVolumes[type] || 0.5;
                 changeSfxVolume(type, restoreVol);
-                if (slider) slider.value = restoreVol;
             }
         }
 
