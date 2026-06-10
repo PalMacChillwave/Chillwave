@@ -143,7 +143,8 @@
             <p class="text-xs text-white/50 mb-6">Pick a new background vibe. Changing stations will reset it to default.</p>
             
             <!-- Dynamic Grid for Station Backgrounds -->
-            <div id="scenery-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6 max-h-[40vh] overflow-y-auto pr-2 scrollbar-thin">
+            <!-- Added padding and negative margin to give the glow room to render without shifting layout -->
+            <div id="scenery-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6 max-h-[40vh] overflow-y-auto p-2 -mx-2 scrollbar-thin">
                 <!-- Injected via JS -->
             </div>
             
@@ -1577,10 +1578,12 @@
             
             grid.innerHTML = STATIONS.map(station => {
                 const isActive = activeBgSrc === station.bg;
+                
                 // Add the glowing border to whichever background is currently being used
+                // Switched to border-2 to keep the crisp line inside the box model so it never clips!
                 const borderClass = isActive 
-                    ? 'ring-2 ring-[var(--accent)] shadow-[0_0_15px_var(--accent)]' 
-                    : 'border border-white/10 hover:border-[var(--accent)]';
+                    ? 'border-2 border-[var(--accent)] shadow-[0_0_15px_var(--accent)]' 
+                    : 'border-2 border-white/10 hover:border-[var(--accent)]';
                     
                 const badgeHtml = isActive 
                     ? `<span class="absolute top-2 right-2 bg-[var(--accent)] text-gray-900 text-[10px] font-bold px-2 py-0.5 rounded-full z-10 shadow-md">ACTIVE</span>` 
