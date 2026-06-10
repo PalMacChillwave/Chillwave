@@ -39,6 +39,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0&display=swap" rel="stylesheet" />
 
     <style>
+        /* Dynamic Theme Variable */
+        :root {
+            --accent: #818cf8; /* Default Indigo */
+        }
+
         /* Custom styles for Material Symbols and specific animations */
         .material-symbols-rounded {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
@@ -116,6 +121,9 @@
     <!-- Dim Mode Overlay -->
     <div id="dim-overlay" class="fixed inset-0 bg-black/70 pointer-events-none opacity-0 z-[100] transition-opacity duration-1000"></div>
 
+    <!-- Mobile Drawer Overlay -->
+    <div id="drawer-overlay" onclick="closeAllDrawers()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[35] opacity-0 pointer-events-none transition-opacity duration-500 md:hidden"></div>
+
     <!-- Toast Notification -->
     <div id="toast" class="fixed top-4 right-4 max-w-sm bg-indigo-600/90 backdrop-blur-md text-white px-4 py-3 rounded-lg shadow-2xl transform transition-all duration-300 translate-x-[150%] opacity-0 z-[150] flex items-start gap-3 border border-indigo-400/50">
         <span id="toast-icon" class="material-symbols-rounded mt-0.5">info</span>
@@ -132,7 +140,7 @@
                 <span class="material-symbols-rounded">close</span>
             </button>
             <h2 class="text-xl font-bold text-white mb-2 flex items-center gap-2">
-                <span class="material-symbols-rounded text-indigo-400">wallpaper</span>
+                <span class="material-symbols-rounded text-[var(--accent)]">wallpaper</span>
                 Change Scenery
             </h2>
             <p class="text-xs text-white/50 mb-6">Pick a new background vibe. Changing stations will reset it to default.</p>
@@ -145,8 +153,8 @@
             <div class="border-t border-white/10 pt-4">
                 <label class="block text-xs text-white/60 mb-1 ml-1 uppercase tracking-wider">Or Use Custom GIF/Image URL</label>
                 <form onsubmit="applyCustomUrl(event)" class="flex gap-2">
-                    <input type="url" id="custom-bg-input" required class="flex-1 bg-black/20 border border-white/10 rounded-lg px-4 py-2 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-indigo-500 transition-colors" placeholder="Paste image/gif link here..." />
-                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 rounded-lg transition-colors flex justify-center items-center">
+                    <input type="url" id="custom-bg-input" required class="flex-1 bg-black/20 border border-white/10 rounded-lg px-4 py-2 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[var(--accent)] transition-colors" placeholder="Paste image/gif link here..." />
+                    <button type="submit" class="bg-[var(--accent)] text-gray-900 hover:brightness-110 font-bold px-4 rounded-lg transition-all flex justify-center items-center shadow-lg">
                         Apply
                     </button>
                 </form>
@@ -169,7 +177,7 @@
     <div class="relative z-10 flex flex-col h-full">
         
         <!-- Header: Responsive (3-Tier Scaling) -->
-        <header class="flex flex-wrap md:flex-nowrap items-center justify-between md:justify-start px-3 md:px-6 py-3 md:py-4 safe-header relative shrink-0 w-full gap-y-3 md:gap-y-0">
+        <header class="flex flex-wrap md:flex-nowrap items-center justify-between md:justify-start px-3 md:px-6 py-3 md:py-4 safe-header relative shrink-0 w-full gap-y-3 md:gap-y-0 z-10">
             
             <!-- 1) Logo & Title (Top Left) -->
             <div class="flex items-center gap-2 md:gap-3 order-1 shrink-0">
@@ -183,8 +191,8 @@
             </div>
 
             <!-- 2) Timer (Top Right on Mobile, Absolute Center on Desktop) -->
-            <div class="flex items-center bg-black/40 backdrop-blur-md pl-3 pr-1 py-1 md:pl-6 md:pr-2 md:py-1.5 rounded-full border border-white/10 shadow-lg hover:bg-black/50 transition-colors order-2 md:order-none md:absolute md:left-1/2 md:-translate-x-1/2 z-50 shrink-0 ui-panel">
-                <button onclick="changeTimerMode('work')" id="btn-work" class="text-[10px] md:text-xs font-semibold uppercase tracking-wider text-indigo-300 transition-colors">Focus</button>
+            <div class="flex items-center bg-black/40 backdrop-blur-md pl-3 pr-1 py-1 md:pl-6 md:pr-2 md:py-1.5 rounded-full border border-white/10 shadow-lg hover:bg-black/50 transition-colors order-2 md:order-none md:absolute md:left-1/2 md:-translate-x-1/2 z-50 shrink-0 ui-panel group/timer">
+                <button onclick="changeTimerMode('work')" id="btn-work" class="text-[10px] md:text-xs font-semibold uppercase tracking-wider text-[var(--accent)] transition-colors">Focus</button>
                 <div class="w-px h-3 md:h-4 bg-white/20 mx-1.5 md:mx-3"></div>
                 <button onclick="changeTimerMode('break')" id="btn-break" class="text-[10px] md:text-xs font-semibold uppercase tracking-wider text-white/50 hover:text-white transition-colors">Break</button>
                 
@@ -207,7 +215,7 @@
                 </div>
                 
                 <!-- Play button merged right next to the time -->
-                <button onclick="toggleTimer()" class="flex items-center justify-center w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/10 hover:bg-indigo-500 text-white transition-colors shadow-inner" title="Start/Pause Timer">
+                <button onclick="toggleTimer()" class="flex items-center justify-center w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/10 group-hover/timer:bg-[var(--accent)] group-hover/timer:text-gray-900 text-white transition-colors shadow-inner" title="Start/Pause Timer">
                     <span id="timer-icon" class="material-symbols-rounded fill text-base md:text-[20px]">play_arrow</span>
                 </button>
             </div>
@@ -245,13 +253,13 @@
                 
                 <div id="todo-dropdown" class="absolute top-full right-0 mt-3 w-64 sm:w-80 bg-gray-800/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-4 hidden flex flex-col gap-3 transition-opacity">
                     <h3 class="text-sm font-bold text-white flex items-center gap-2 mb-1">
-                        <span class="material-symbols-rounded text-indigo-400" style="font-size: 18px;">task_alt</span> 
+                        <span class="material-symbols-rounded text-[var(--accent)]" style="font-size: 18px;">task_alt</span> 
                         Top Priorities
                     </h3>
                     <form onsubmit="handleAddTodo(event)" class="flex gap-2">
-                        <input type="text" id="new-todo-input" placeholder="Add a new task..." class="w-full bg-black/20 border border-white/5 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-indigo-500 transition-colors shadow-inner" autocomplete="off">
-                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-2 flex items-center justify-center transition-colors">
-                            <span class="material-symbols-rounded" style="font-size: 18px;">add</span>
+                        <input type="text" id="new-todo-input" placeholder="Add a new task..." class="w-full bg-black/20 border border-white/5 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-[var(--accent)] transition-colors shadow-inner" autocomplete="off">
+                        <button type="submit" class="bg-[var(--accent)] hover:brightness-110 text-gray-900 rounded-lg px-2 flex items-center justify-center transition-colors">
+                            <span class="material-symbols-rounded font-bold" style="font-size: 18px;">add</span>
                         </button>
                     </form>
                     <ul id="todo-list" class="flex flex-col gap-1 max-h-48 overflow-y-auto pr-1 scrollbar-thin mt-1"></ul>
@@ -270,15 +278,18 @@
             </button>
         </header>
 
-        <div class="flex flex-col md:flex-row flex-1 overflow-x-hidden overflow-y-auto md:overflow-hidden relative">
+        <div class="flex flex-col md:flex-row flex-1 overflow-x-hidden overflow-y-auto md:overflow-hidden relative z-0">
             
-            <!-- Left Sidebar -->
-            <div class="flex flex-col gap-2 p-4 md:p-6 w-full md:w-72 shrink-0 ui-panel z-10 md:overflow-y-auto scrollbar-thin h-auto md:h-full relative">
+            <!-- Left Sidebar (Slide-up drawer on mobile, static on desktop) -->
+            <div id="left-sidebar" class="flex flex-col gap-2 p-4 md:p-6 w-full md:w-72 shrink-0 ui-panel z-40 md:z-10 overflow-y-auto scrollbar-thin h-[75vh] md:h-full fixed md:relative bottom-0 left-0 md:bottom-auto bg-gray-900/95 md:bg-transparent backdrop-blur-3xl md:backdrop-blur-none border-t border-white/10 md:border-t-0 rounded-t-3xl md:rounded-none transition-transform duration-500 translate-y-full md:translate-y-0 pb-32 md:pb-6 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] md:shadow-none">
                 
-                <!-- Dedicated Glass Background (Z-index strictly managed to fix Chrome/Edge bug) -->
-                <div class="absolute inset-0 bg-black/40 md:bg-transparent backdrop-blur-md md:backdrop-blur-none z-0 pointer-events-none md:hidden"></div>
+                <!-- Dedicated Glass Background (Desktop only fix) -->
+                <div class="hidden md:block absolute inset-0 bg-transparent z-0 pointer-events-none"></div>
 
                 <div class="relative z-10">
+                    <!-- Drawer Mobile Drag Handle -->
+                    <div class="w-12 h-1.5 bg-white/20 rounded-full mx-auto mb-4 md:hidden"></div>
+
                     <!-- Stations Header (Collapsible on Desktop) -->
                     <h2 onclick="toggleSection('stations-wrapper', 'stations-chevron')" class="cursor-pointer mb-2 text-xs font-semibold tracking-widest uppercase text-white/50 hidden md:flex items-center justify-between hover:text-white transition-colors group select-none">
                         <span class="flex items-center gap-2">
@@ -287,24 +298,30 @@
                         </span>
                         <span id="stations-chevron" class="material-symbols-rounded transition-transform" style="font-size: 18px;">expand_more</span>
                     </h2>
+                    <h2 class="md:hidden mb-2 text-sm font-bold tracking-widest uppercase text-white/80 flex items-center gap-2 select-none">
+                        <span class="material-symbols-rounded text-[var(--accent)]" style="font-size: 18px;">library_music</span> Stations
+                    </h2>
                     
                     <div id="stations-wrapper">
-                        <div id="stations-container" class="flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-visible pb-2 md:pb-0 scrollbar-thin">
+                        <div id="stations-container" class="flex flex-col gap-2 overflow-x-hidden pb-2 md:pb-0 scrollbar-thin">
                         </div>
                     </div>
                     
                     <!-- Ambient Mixer Header (Collapsible) -->
-                    <h2 onclick="toggleSection('mixer-wrapper', 'mixer-chevron')" class="cursor-pointer mt-4 md:mt-6 mb-2 md:mb-4 text-xs font-semibold tracking-widest uppercase text-white/50 flex items-center justify-between hover:text-white transition-colors group select-none">
+                    <h2 onclick="toggleSection('mixer-wrapper', 'mixer-chevron')" class="cursor-pointer mt-6 mb-2 md:mb-4 text-xs font-semibold tracking-widest uppercase text-white/50 hidden md:flex items-center justify-between hover:text-white transition-colors group select-none">
                         <span class="flex items-center gap-2">
                             <span class="material-symbols-rounded" style="font-size: 16px;">tune</span> Ambient Mixer
                         </span>
                         <span id="mixer-chevron" class="material-symbols-rounded transition-transform" style="font-size: 18px;">expand_more</span>
                     </h2>
+                    <h2 class="md:hidden mt-6 mb-3 text-sm font-bold tracking-widest uppercase text-white/80 flex items-center gap-2 select-none">
+                        <span class="material-symbols-rounded text-[var(--accent)]" style="font-size: 18px;">tune</span> Ambient Mixer
+                    </h2>
                     
                     <div id="mixer-wrapper">
-                        <div class="flex flex-col gap-4 p-4 rounded-xl border border-white/5 relative overflow-hidden">
-                            <!-- Dedicated Glass Layer for Mixer -->
-                            <div class="absolute inset-0 bg-black/20 backdrop-blur-md -z-10 pointer-events-none"></div>
+                        <div class="flex flex-col gap-4 p-4 rounded-xl border border-white/5 relative overflow-hidden bg-white/5 md:bg-transparent">
+                            <!-- Dedicated Glass Layer for Mixer (Desktop Chrome fix) -->
+                            <div class="hidden md:block absolute inset-0 bg-black/20 backdrop-blur-md -z-10 pointer-events-none"></div>
 
                             <!-- Rain Slider -->
                             <div class="flex items-center gap-3 group">
@@ -340,26 +357,33 @@
             </div>
 
             <!-- Middle Click-to-Play Area with Tap Feedback -->
-            <div onclick="handleScreenTap(event)" class="flex-1 min-h-[35vh] md:min-h-0 order-last md:order-none z-0 cursor-pointer relative flex items-center justify-center" title="Click to Play/Pause">
+            <div onclick="handleScreenTap(event)" class="flex-1 h-full w-full order-last md:order-none z-0 cursor-pointer relative flex items-center justify-center" title="Click to Play/Pause">
                 <div id="tap-feedback" class="pointer-events-none opacity-0 scale-50 transition-all duration-300 text-white/90 bg-black/50 border border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.5)] rounded-full p-6 flex items-center justify-center backdrop-blur-md z-50">
                     <span id="tap-feedback-icon" class="material-symbols-rounded fill drop-shadow-lg" style="font-size: 72px;">play_arrow</span>
                 </div>
             </div>
 
-            <!-- Right Sidebar (Playlist) -->
-            <div id="playlist-container" class="relative flex flex-col w-full md:w-80 border-t md:border-t-0 md:border-l border-white/10 h-auto md:h-full ui-panel shrink-0 z-10">
+            <!-- Right Sidebar (Playlist: Slide-up drawer on mobile, static on desktop) -->
+            <div id="playlist-sidebar" class="relative flex flex-col w-full md:w-80 border-t md:border-t-0 md:border-l border-white/10 h-[75vh] md:h-full ui-panel shrink-0 z-40 md:z-10 fixed md:relative bottom-0 left-0 md:bottom-auto bg-gray-900/95 md:bg-transparent backdrop-blur-3xl md:backdrop-blur-none rounded-t-3xl md:rounded-none transition-transform duration-500 translate-y-full md:translate-y-0 pb-32 md:pb-0 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] md:shadow-none">
                  
                  <!-- Dedicated Glass Background (Z-index strictly managed to fix Chrome/Edge bug) -->
-                 <div class="absolute inset-0 bg-black/60 md:bg-black/40 backdrop-blur-2xl z-0 pointer-events-none"></div>
+                 <div class="hidden md:block absolute inset-0 bg-black/60 md:bg-black/40 backdrop-blur-2xl z-0 pointer-events-none"></div>
 
                  <!-- Content Layer (Pushed to the front) -->
                  <div class="relative z-10 flex flex-col h-full w-full p-4 md:p-6">
-                     <h2 onclick="toggleSection('tracks-wrapper', 'playlist-chevron')" class="cursor-pointer mb-4 text-xs font-semibold tracking-widest uppercase text-white/50 flex items-center justify-between hover:text-white transition-colors group select-none">
+                     <!-- Drawer Mobile Drag Handle -->
+                     <div class="w-12 h-1.5 bg-white/20 rounded-full mx-auto mb-4 md:hidden"></div>
+
+                     <h2 onclick="toggleSection('tracks-wrapper', 'playlist-chevron')" class="cursor-pointer mb-4 text-xs font-semibold tracking-widest uppercase text-white/50 hidden md:flex items-center justify-between hover:text-white transition-colors group select-none">
                          <span class="flex items-center gap-2">
                              <span class="material-symbols-rounded" style="font-size: 18px;">queue_music</span> Up Next
                          </span>
                          <span id="playlist-chevron" class="material-symbols-rounded transition-transform" style="font-size: 18px;">expand_more</span>
                      </h2>
+                     <h2 class="md:hidden mb-4 text-sm font-bold tracking-widest uppercase text-white/80 flex items-center gap-2 select-none">
+                        <span class="material-symbols-rounded text-[var(--accent)]" style="font-size: 18px;">queue_music</span> Up Next
+                     </h2>
+
                      <div id="tracks-wrapper" class="flex flex-col flex-1 min-h-0">
                          <!-- Hardware Accelerated Scrolling Box -->
                          <div id="tracks-container" class="flex flex-col gap-3 overflow-y-auto pr-2 pb-4 scrollbar-thin max-h-64 md:max-h-none flex-1" style="transform: translateZ(0); will-change: transform;">
@@ -371,10 +395,22 @@
         </div>
 
         <!-- Bottom Player Controls -->
-        <div class="bottom-player relative shrink-0 w-full h-auto md:h-24 border-t border-white/10 z-20 transition-all duration-500">
+        <div class="bottom-player relative shrink-0 w-full h-auto md:h-24 border-t border-white/10 z-50 transition-all duration-500">
             
+            <!-- Floating Mobile Drawer Buttons (Sits perfectly on top of the player) -->
+            <div class="md:hidden absolute -top-[52px] left-0 w-full flex justify-between px-4 z-50 pointer-events-none ui-panel">
+                <button onclick="toggleMobileDrawer('left-sidebar')" class="pointer-events-auto flex items-center gap-2 bg-black/60 backdrop-blur-xl border border-white/10 px-4 py-2 rounded-full text-white/90 hover:text-white shadow-lg transition-transform active:scale-95">
+                    <span class="material-symbols-rounded text-[var(--accent)]" style="font-size: 18px;">tune</span>
+                    <span class="text-xs font-semibold tracking-wider">Mixer</span>
+                </button>
+                <button onclick="toggleMobileDrawer('playlist-sidebar')" class="pointer-events-auto flex items-center gap-2 bg-black/60 backdrop-blur-xl border border-white/10 px-4 py-2 rounded-full text-white/90 hover:text-white shadow-lg transition-transform active:scale-95">
+                    <span class="text-xs font-semibold tracking-wider">Queue</span>
+                    <span class="material-symbols-rounded text-[var(--accent)]" style="font-size: 18px;">queue_music</span>
+                </button>
+            </div>
+
             <!-- Dedicated Glass Background -->
-            <div class="absolute inset-0 bg-black/60 md:bg-black/40 backdrop-blur-2xl z-0 pointer-events-none"></div>
+            <div class="absolute inset-0 bg-black/80 md:bg-black/40 backdrop-blur-2xl z-0 pointer-events-none"></div>
             
             <!-- Content Layer -->
             <div class="relative z-10 flex flex-col md:flex-row items-center justify-between p-4 md:px-8 safe-bottom gap-4 md:gap-0 w-full h-full">
@@ -383,7 +419,7 @@
                 <div class="flex items-center justify-between w-full md:w-1/4 md:min-w-[200px]">
                     
                     <div class="flex items-center gap-3 md:gap-4 w-[60%] md:w-full">
-                        <div id="current-cover-container" class="relative w-12 h-12 md:w-14 md:h-14 overflow-hidden rounded-lg shadow-lg shrink-0">
+                        <div id="current-cover-container" class="relative w-12 h-12 md:w-14 md:h-14 overflow-hidden rounded-lg shadow-lg shrink-0 border border-white/10">
                              <img id="current-cover" src="" alt="Cover" class="object-cover w-full h-full" />
                              <div class="absolute inset-0 m-auto w-3 h-3 bg-black/80 rounded-full border border-white/20"></div>
                         </div>
@@ -429,7 +465,8 @@
                         <div id="progress-container" class="relative flex-1 h-1.5 bg-white/20 rounded-full cursor-pointer group" onclick="seekTrack(event)">
                             <!-- Invisible larger touch target for mobile dragging -->
                             <div class="absolute left-0 right-0 h-6 bg-transparent -top-2 z-10" style="touch-action: none;"></div>
-                            <div id="progress-bar" class="absolute top-0 left-0 h-full bg-white rounded-full transition-all duration-75 group-hover:bg-indigo-400 pointer-events-none" style="width: 0%">
+                            <!-- Dynamic Accent Progress Bar -->
+                            <div id="progress-bar" class="absolute top-0 left-0 h-full bg-white rounded-full transition-all duration-75 group-hover:bg-[var(--accent)] pointer-events-none" style="width: 0%">
                                 <div class="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow opacity-0 group-hover:opacity-100 transition-opacity"></div>
                             </div>
                         </div>
@@ -445,7 +482,8 @@
                         <div class="w-24 h-8 cursor-pointer relative flex items-center">
                             <div class="absolute left-0 right-0 h-1.5 bg-white/20 rounded-full pointer-events-none"></div>
                             <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" style="touch-action: none;" oninput="changeVolume(this.value)" />
-                            <div id="volume-bar" class="absolute left-0 h-1.5 bg-white rounded-full pointer-events-none group-hover:bg-indigo-400 transition-colors" style="width: 50%"></div>
+                            <!-- Dynamic Accent Volume Bar -->
+                            <div id="volume-bar" class="absolute left-0 h-1.5 bg-white rounded-full pointer-events-none group-hover:bg-[var(--accent)] transition-colors" style="width: 50%"></div>
                         </div>
                     </div>
                 </div>
@@ -464,12 +502,13 @@
             'https://cdn.freesound.org/previews/410/410574_5121236-hq.mp3'
         ];
 
+        // ADDED THEME HEX COLORS FOR EVERY STATION
         const STATIONS = [
             { 
                 id: 'chill', name: 'Cozy Corner', icon: 'local_cafe', 
-                bg: './assets/chill-bg.mp4', 
-                fallbackBg: './assets/chill-thumb.jpg',
+                bg: './assets/chill-bg.mp4', fallbackBg: './assets/chill-thumb.jpg',
                 color: 'bg-gradient-to-br from-blue-900/60 to-indigo-900/60',
+                hex: '#818cf8', // Indigo-400
                 tracks: [
                     { id: 1, title: 'Summer Breeze', artist: 'Instrumental', url: './music/chill-1.mp3', cover: 'https://picsum.photos/seed/chill1/300/300' },
                     { id: 2, title: 'Quiet Afternoon', artist: 'Instrumental', url: './music/chill-2.mp3', cover: 'https://picsum.photos/seed/chill2/300/300' },
@@ -485,9 +524,9 @@
             },
             { 
                 id: 'focus', name: 'Deep Focus', icon: 'computer', 
-                bg: './assets/focus-bg.mp4', 
-                fallbackBg: './assets/focus-thumb.jpg',
+                bg: './assets/focus-bg.mp4', fallbackBg: './assets/focus-thumb.jpg',
                 color: 'bg-gradient-to-br from-emerald-900/60 to-teal-900/60',
+                hex: '#2dd4bf', // Teal-400
                 tracks: [
                     { id: 11, title: 'Dungeon Dive', artist: 'Instrumental', url: './music/focus-1.mp3', cover: 'https://picsum.photos/seed/focus1/300/300' },
                     { id: 12, title: 'Doll Dance', artist: 'Instrumental', url: './music/focus-2.mp3', cover: 'https://picsum.photos/seed/focus2/300/300' },
@@ -503,9 +542,9 @@
             },
             { 
                 id: 'party', name: 'Midnight Drive', icon: 'celebration', 
-                bg: './assets/party-bg.mp4', 
-                fallbackBg: './assets/party-thumb.jpg',
+                bg: './assets/party-bg.mp4', fallbackBg: './assets/party-thumb.jpg',
                 color: 'bg-gradient-to-br from-fuchsia-900/60 to-rose-900/60',
+                hex: '#e879f9', // Fuchsia-400
                 tracks: [
                     { id: 21, title: 'Neon Lights', artist: 'Dance Beats', url: './music/party-1.mp3', cover: 'https://picsum.photos/seed/party1/300/300' },
                     { id: 22, title: 'Midnight Groove', artist: 'Dance Beats', url: './music/party-2.mp3', cover: 'https://picsum.photos/seed/party2/300/300' },
@@ -521,9 +560,9 @@
             },
             { 
                 id: 'morning', name: 'Sunrise Sips', icon: 'wb_sunny', 
-                bg: './assets/morning-bg.mp4', 
-                fallbackBg: './assets/morning-thumb.jpg',
+                bg: './assets/morning-bg.mp4', fallbackBg: './assets/morning-thumb.jpg',
                 color: 'bg-gradient-to-br from-orange-900/60 to-amber-900/60',
+                hex: '#fbbf24', // Amber-400
                 tracks: [
                     { id: 31, title: 'Bossa Rise', artist: 'Instrumental', url: './music/morning-1.mp3', cover: 'https://picsum.photos/seed/morning1/300/300' },
                     { id: 32, title: 'Jungle Sip', artist: 'Instrumental', url: './music/morning-2.mp3', cover: 'https://picsum.photos/seed/morning2/300/300' },
@@ -539,9 +578,9 @@
             },
             { 
                 id: 'quiet', name: 'Quiet Hours', icon: 'desk', 
-                bg: './assets/quiet-bg.mp4', 
-                fallbackBg: './assets/quiet-thumb.jpg',
+                bg: './assets/quiet-bg.mp4', fallbackBg: './assets/quiet-thumb.jpg',
                 color: 'bg-gradient-to-br from-indigo-900/80 to-purple-900/80',
+                hex: '#c084fc', // Purple-400
                 tracks: [
                     { id: 41, title: 'Midnight Hush', artist: 'Instrumental', url: './music/quiet-1.mp3', cover: 'https://picsum.photos/seed/quiet1/300/300' },
                     { id: 42, title: 'Soft Shadows', artist: 'Instrumental', url: './music/quiet-2.mp3', cover: 'https://picsum.photos/seed/quiet2/300/300' },
@@ -562,9 +601,9 @@
             },
             { 
                 id: 'groove', name: 'Easy Groove', icon: 'headphones', 
-                bg: './assets/groove-bg.mp4', 
-                fallbackBg: './assets/groove-thumb.jpg',
+                bg: './assets/groove-bg.mp4', fallbackBg: './assets/groove-thumb.jpg',
                 color: 'bg-gradient-to-br from-emerald-900/60 to-green-900/60',
+                hex: '#34d399', // Emerald-400
                 tracks: [
                     { id: 56, title: 'Smooth Steps', artist: 'Instrumental', url: './music/groove-1.mp3', cover: 'https://picsum.photos/seed/groove1/300/300' },
                     { id: 57, title: 'Sunday Stroll', artist: 'Instrumental', url: './music/groove-2.mp3', cover: 'https://picsum.photos/seed/groove2/300/300' },
@@ -579,9 +618,9 @@
             },
             { 
                 id: 'spark', name: 'Spark', icon: 'bolt', 
-                bg: './assets/spark-bg.mp4', 
-                fallbackBg: './assets/spark-thumb.jpg',
+                bg: './assets/spark-bg.mp4', fallbackBg: './assets/spark-thumb.jpg',
                 color: 'bg-gradient-to-br from-yellow-900/60 to-orange-900/60',
+                hex: '#fb923c', // Orange-400
                 tracks: [
                     { id: 65, title: 'Ignite', artist: 'Instrumental', url: './music/spark-1.mp3', cover: 'https://picsum.photos/seed/spark1/300/300' },
                     { id: 66, title: 'Creative Flow', artist: 'Instrumental', url: './music/spark-2.mp3', cover: 'https://picsum.photos/seed/spark2/300/300' },
@@ -597,9 +636,9 @@
             },
             { 
                 id: 'nightfall', name: 'Night Fall', icon: 'nights_stay', 
-                bg: './assets/nightfall-bg.mp4', 
-                fallbackBg: './assets/nightfall-thumb.jpg',
+                bg: './assets/nightfall-bg.mp4', fallbackBg: './assets/nightfall-thumb.jpg',
                 color: 'bg-gradient-to-br from-slate-900/80 to-black/80',
+                hex: '#94a3b8', // Slate-400
                 tracks: [
                     { id: 75, title: 'Dusk Descends', artist: 'Instrumental', url: './music/nightfall-1.mp3', cover: 'https://picsum.photos/seed/nightfall1/300/300' },
                     { id: 76, title: 'Streetlamp Glow', artist: 'Instrumental', url: './music/nightfall-2.mp3', cover: 'https://picsum.photos/seed/nightfall2/300/300' },
@@ -758,12 +797,11 @@
                 img.src = station.fallbackBg;
             });
             
-            // Click outside to close notes dropdown (Fixed to ignore checking off tasks!)
+            // Click outside to close notes dropdown
             document.addEventListener('click', (e) => {
                 const dropdown = document.getElementById('todo-dropdown');
                 const btn = document.getElementById('notes-btn');
                 if (dropdown && !dropdown.classList.contains('hidden')) {
-                    // The 'composedPath' safely tracks the click even if the checkbox is instantly redrawn!
                     const path = e.composedPath();
                     if (!path.includes(dropdown) && !path.includes(btn)) {
                         dropdown.classList.add('hidden');
@@ -783,7 +821,6 @@
             currentStationIdx = -1; // Force new render
             loadStation(initialStation, initialTrack); 
             changeTimerMode('work'); 
-            renderSceneryGrid();
             renderTodos();
             
             // SET UP LOCK SCREEN CONTROLS (Media Session API)
@@ -949,6 +986,9 @@
 
         function toggleSceneryBox() {
             sceneryModal.classList.toggle('hidden');
+            if(!sceneryModal.classList.contains('hidden')) {
+                renderSceneryGrid(); // Re-render to ensure correct active border!
+            }
         }
 
         function toggleTodoBox() {
@@ -957,6 +997,38 @@
             if (!document.getElementById('todo-dropdown').classList.contains('hidden')) {
                 setTimeout(() => document.getElementById('new-todo-input').focus(), 50);
             }
+        }
+
+        // --- MOBILE DRAWER LOGIC ---
+        function toggleMobileDrawer(id) {
+            const drawer = document.getElementById(id);
+            const overlay = document.getElementById('drawer-overlay');
+            const isClosing = drawer.classList.contains('translate-y-0');
+            
+            closeAllDrawers(); // Close any currently open ones first
+            
+            if (!isClosing) {
+                // Open the requested drawer
+                drawer.classList.remove('translate-y-full');
+                drawer.classList.add('translate-y-0');
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
+                overlay.classList.add('opacity-100', 'pointer-events-auto');
+            }
+        }
+
+        function closeAllDrawers() {
+            const leftDrawer = document.getElementById('left-sidebar');
+            const rightDrawer = document.getElementById('playlist-sidebar');
+            const overlay = document.getElementById('drawer-overlay');
+            
+            leftDrawer.classList.add('translate-y-full');
+            leftDrawer.classList.remove('translate-y-0');
+            
+            rightDrawer.classList.add('translate-y-full');
+            rightDrawer.classList.remove('translate-y-0');
+            
+            overlay.classList.add('opacity-0', 'pointer-events-none');
+            overlay.classList.remove('opacity-100', 'pointer-events-auto');
         }
 
         // --- NEW TODO LIST FUNCTIONS ---
@@ -1000,7 +1072,7 @@
 
             list.innerHTML = todos.map(todo => `
                 <li class="flex items-start gap-2 group p-2 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-white/5">
-                    <button onclick="toggleTodoState(${todo.id})" class="flex-shrink-0 mt-0.5 text-white/50 hover:text-indigo-400 transition-colors">
+                    <button onclick="toggleTodoState(${todo.id})" class="flex-shrink-0 mt-0.5 text-white/50 hover:text-[var(--accent)] transition-colors">
                         <span class="material-symbols-rounded" style="font-size: 20px;">
                             ${todo.completed ? 'check_circle' : 'radio_button_unchecked'}
                         </span>
@@ -1088,7 +1160,7 @@
             presetSelect.innerHTML = ''; 
             
             if (mode === 'work') {
-                btnWork.className = 'text-[10px] md:text-xs font-semibold uppercase tracking-wider text-indigo-300 transition-colors';
+                btnWork.className = 'text-[10px] md:text-xs font-semibold uppercase tracking-wider text-[var(--accent)] transition-colors';
                 btnBreak.className = 'text-[10px] md:text-xs font-semibold uppercase tracking-wider text-white/50 hover:text-white transition-colors';
                 
                 const options = [5, 10, 15, 20, 25, 30];
@@ -1255,6 +1327,14 @@
             currentStationIdx = idx;
             const station = STATIONS[idx];
             
+            // Apply the station's Theme Color to the global CSS variables
+            document.documentElement.style.setProperty('--accent', station.hex);
+
+            // Re-render the Pomodoro active text specifically for the new color
+            if(timerMode === 'work') {
+                btnWork.className = 'text-[10px] md:text-xs font-semibold uppercase tracking-wider text-[var(--accent)] transition-colors';
+            }
+
             activeBgSrc = station.bg; // Track current background
             saveSettings();
             
@@ -1493,13 +1573,27 @@
         function renderSceneryGrid() {
             const grid = document.getElementById('scenery-grid');
             if (!grid) return;
-            grid.innerHTML = STATIONS.map(station => `
-                <div onclick="setCustomBackground('${station.bg}', '${station.fallbackBg}')" class="cursor-pointer group relative rounded-lg overflow-hidden aspect-video border border-white/10 hover:border-indigo-400 transition-all shadow-md hover:shadow-[0_0_15px_rgba(99,102,241,0.5)]">
-                    <div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" style="background-image: url('${station.fallbackBg}')"></div>
-                    <div class="absolute inset-0 bg-black/50 group-hover:bg-black/10 transition-colors"></div>
-                    <span class="absolute bottom-2 left-2 text-xs font-bold text-white drop-shadow-md truncate w-full pr-2">${station.name}</span>
-                </div>
-            `).join('');
+            
+            grid.innerHTML = STATIONS.map(station => {
+                const isActive = activeBgSrc === station.bg;
+                // Add the glowing border to whichever background is currently being used
+                const borderClass = isActive 
+                    ? 'ring-2 ring-[var(--accent)] shadow-[0_0_15px_var(--accent)]' 
+                    : 'border border-white/10 hover:border-[var(--accent)]';
+                    
+                const badgeHtml = isActive 
+                    ? `<span class="absolute top-2 right-2 bg-[var(--accent)] text-gray-900 text-[10px] font-bold px-2 py-0.5 rounded-full z-10 shadow-md">ACTIVE</span>` 
+                    : '';
+
+                return `
+                    <div onclick="setCustomBackground('${station.bg}', '${station.fallbackBg}')" class="cursor-pointer group relative rounded-lg overflow-hidden aspect-video transition-all shadow-md ${borderClass}">
+                        <div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" style="background-image: url('${station.fallbackBg}')"></div>
+                        <div class="absolute inset-0 bg-black/50 group-hover:bg-black/10 transition-colors"></div>
+                        <span class="absolute bottom-2 left-2 text-xs font-bold text-white drop-shadow-md truncate w-full pr-2 z-10">${station.name}</span>
+                        ${badgeHtml}
+                    </div>
+                `;
+            }).join('');
         }
 
         function setCustomBackground(bgSrc, fallbackSrc = bgSrc) {
@@ -1553,9 +1647,9 @@
                 if (isActive && isPlaying) {
                     eqHtml = `
                         <div class="flex items-end gap-1 ml-auto h-4">
-                            <div class="w-1 bg-white/80 rounded-t-sm eq-bar"></div>
-                            <div class="w-1 bg-white/80 rounded-t-sm eq-bar"></div>
-                            <div class="w-1 bg-white/80 rounded-t-sm eq-bar"></div>
+                            <div class="w-1 bg-[var(--accent)] rounded-t-sm eq-bar shadow-[0_0_5px_var(--accent)]"></div>
+                            <div class="w-1 bg-[var(--accent)] rounded-t-sm eq-bar shadow-[0_0_5px_var(--accent)]"></div>
+                            <div class="w-1 bg-[var(--accent)] rounded-t-sm eq-bar shadow-[0_0_5px_var(--accent)]"></div>
                         </div>
                     `;
                 }
@@ -1606,8 +1700,10 @@
                             <img src="${track.cover}" alt="${track.title}" class="object-cover w-full h-full" />
                             ${overlayIcon}
                         </div>
-                        <div class="flex flex-col overflow-hidden">
-                            <span class="text-sm font-medium truncate ${isActive ? 'text-white' : 'text-white/80 group-hover:text-white'}">
+                        
+                        <!-- Added tactile hover slide (translate-x-1.5) for the text on desktop -->
+                        <div class="flex flex-col overflow-hidden transition-transform duration-300 group-hover:translate-x-1.5">
+                            <span class="text-sm font-medium truncate ${isActive ? 'text-[var(--accent)]' : 'text-white/80 group-hover:text-white'}">
                                 ${track.title}
                             </span>
                             <span class="text-xs text-white/50 truncate">
