@@ -387,7 +387,7 @@
                      </h2>
 
                      <div id="tracks-wrapper" class="flex flex-col flex-1 min-h-0">
-                         <!-- Hardware Accelerated Scrolling Box (Removed artificial max height) -->
+                         <!-- Hardware Accelerated Scrolling Box -->
                          <div id="tracks-container" class="flex flex-col gap-3 overflow-y-auto pr-2 pb-4 scrollbar-thin flex-1" style="transform: translateZ(0); will-change: transform;">
                          </div>
                      </div>
@@ -1583,7 +1583,7 @@
                 // Switched to border-2 to keep the crisp line inside the box model so it never clips!
                 const borderClass = isActive 
                     ? 'border-2 border-[var(--accent)] shadow-[0_0_15px_var(--accent)]' 
-                    : 'border-2 border-white/10 hover:border-[var(--accent)]';
+                    : 'border border-white/10 hover:border-[var(--accent)]';
                     
                 const badgeHtml = isActive 
                     ? `<span class="absolute top-2 right-2 bg-[var(--accent)] text-gray-900 text-[10px] font-bold px-2 py-0.5 rounded-full z-10 shadow-md">ACTIVE</span>` 
