@@ -289,8 +289,10 @@
                 <div class="hidden md:block absolute inset-0 bg-transparent z-0 pointer-events-none"></div>
 
                 <div class="relative z-10">
-                    <!-- Drawer Mobile Drag Handle -->
-                    <div class="w-12 h-1.5 bg-white/20 rounded-full mx-auto mb-4 md:hidden"></div>
+                    <!-- Drawer Mobile Drag Handle (Now acts as a Close button) -->
+                    <div onclick="closeAllDrawers()" class="w-full flex justify-center pb-4 pt-2 md:hidden cursor-pointer active:scale-95 transition-transform group">
+                        <div class="w-12 h-1.5 bg-white/20 group-hover:bg-white/40 transition-colors rounded-full"></div>
+                    </div>
 
                     <!-- Stations Header (Collapsible on Desktop) -->
                     <h2 onclick="toggleSection('stations-wrapper', 'stations-chevron')" class="cursor-pointer mb-2 text-xs font-semibold tracking-widest uppercase text-white/50 hidden md:flex items-center justify-between hover:text-white transition-colors group select-none">
@@ -300,8 +302,12 @@
                         </span>
                         <span id="stations-chevron" class="material-symbols-rounded transition-transform" style="font-size: 18px;">expand_more</span>
                     </h2>
-                    <h2 class="md:hidden mb-2 text-sm font-bold tracking-widest uppercase text-white/80 flex items-center gap-2 select-none">
-                        <span class="material-symbols-rounded text-[var(--accent)]" style="font-size: 18px;">library_music</span> Stations
+                    <!-- Mobile Stations Header (Now acts as a Close button) -->
+                    <h2 onclick="closeAllDrawers()" class="md:hidden mb-2 text-sm font-bold tracking-widest uppercase text-white/80 flex items-center justify-between select-none cursor-pointer active:scale-95 transition-transform">
+                        <span class="flex items-center gap-2">
+                            <span class="material-symbols-rounded text-[var(--accent)]" style="font-size: 18px;">library_music</span> Stations
+                        </span>
+                        <span class="material-symbols-rounded text-white/30" style="font-size: 20px;">expand_more</span>
                     </h2>
                     
                     <div id="stations-wrapper">
@@ -316,8 +322,12 @@
                         </span>
                         <span id="mixer-chevron" class="material-symbols-rounded transition-transform" style="font-size: 18px;">expand_more</span>
                     </h2>
-                    <h2 class="md:hidden mt-6 mb-3 text-sm font-bold tracking-widest uppercase text-white/80 flex items-center gap-2 select-none">
-                        <span class="material-symbols-rounded text-[var(--accent)]" style="font-size: 18px;">tune</span> Ambient Mixer
+                    <!-- Mobile Mixer Header (Now acts as a Close button) -->
+                    <h2 onclick="closeAllDrawers()" class="md:hidden mt-6 mb-3 text-sm font-bold tracking-widest uppercase text-white/80 flex items-center justify-between select-none cursor-pointer active:scale-95 transition-transform">
+                        <span class="flex items-center gap-2">
+                            <span class="material-symbols-rounded text-[var(--accent)]" style="font-size: 18px;">tune</span> Ambient Mixer
+                        </span>
+                        <span class="material-symbols-rounded text-white/30" style="font-size: 20px;">expand_more</span>
                     </h2>
                     
                     <div id="mixer-wrapper">
@@ -373,8 +383,10 @@
 
                  <!-- Content Layer (Pushed to the front) -->
                  <div class="relative z-10 flex flex-col h-full w-full p-4 md:p-6">
-                     <!-- Drawer Mobile Drag Handle -->
-                     <div class="w-12 h-1.5 bg-white/20 rounded-full mx-auto mb-4 md:hidden"></div>
+                     <!-- Drawer Mobile Drag Handle (Now acts as a Close button) -->
+                     <div onclick="closeAllDrawers()" class="w-full flex justify-center pb-4 pt-0 md:hidden cursor-pointer active:scale-95 transition-transform group">
+                         <div class="w-12 h-1.5 bg-white/20 group-hover:bg-white/40 transition-colors rounded-full"></div>
+                     </div>
 
                      <h2 onclick="toggleSection('tracks-wrapper', 'playlist-chevron')" class="cursor-pointer mb-4 text-xs font-semibold tracking-widest uppercase text-white/50 hidden md:flex items-center justify-between hover:text-white transition-colors group select-none">
                          <span class="flex items-center gap-2">
@@ -382,8 +394,12 @@
                          </span>
                          <span id="playlist-chevron" class="material-symbols-rounded transition-transform" style="font-size: 18px;">expand_more</span>
                      </h2>
-                     <h2 class="md:hidden mb-4 text-sm font-bold tracking-widest uppercase text-white/80 flex items-center gap-2 select-none">
-                        <span class="material-symbols-rounded text-[var(--accent)]" style="font-size: 18px;">queue_music</span> Up Next
+                     <!-- Mobile Queue Header (Now acts as a Close button) -->
+                     <h2 onclick="closeAllDrawers()" class="md:hidden mb-4 text-sm font-bold tracking-widest uppercase text-white/80 flex items-center justify-between select-none cursor-pointer active:scale-95 transition-transform">
+                        <span class="flex items-center gap-2">
+                            <span class="material-symbols-rounded text-[var(--accent)]" style="font-size: 18px;">queue_music</span> Up Next
+                        </span>
+                        <span class="material-symbols-rounded text-white/30" style="font-size: 20px;">expand_more</span>
                      </h2>
 
                      <div id="tracks-wrapper" class="flex flex-col flex-1 min-h-0">
@@ -1375,6 +1391,9 @@
             } else {
                 renderStations(); 
             }
+            
+            // Automatically collapse drawer on mobile when a station is picked
+            closeAllDrawers();
         }
 
         function loadTrack(idx) {
@@ -1447,6 +1466,9 @@
         function playTrackFromPlaylist(idx, userInitiated = false) {
             if (userInitiated) { isPlaying = true; }
             loadTrack(idx);
+            
+            // Automatically collapse drawer on mobile when a track is picked
+            closeAllDrawers();
         }
 
         // --- UI UPDATES & SLIDERS ---
