@@ -79,13 +79,13 @@
         .eq-bar:nth-child(2) { animation-delay: 150ms; }
         .eq-bar:nth-child(3) { animation-delay: 300ms; }
 
-        /* Hardware Acceleration Fix for Video Bleed/Flicker */
+        /* Stable Fullscreen Background Sizing to prevent Chrome/Safari Paint thrashes */
         #bg-video, #bg-image, #bg-gradient {
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-            transform: translate3d(0, 0, 0);
-            -webkit-transform: translate3d(0, 0, 0);
-            will-change: transform, opacity;
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         /* Zen Mode Transitions */
@@ -130,7 +130,7 @@
         </div>
     </div>
 
-    <!-- Scenery Selection Modal (Fixed Chrome Ghosting Bug) -->
+    <!-- Scenery Selection Modal (Fixed Chrome/Edge Rendering Conflict with hidden class) -->
     <div id="scenery-modal" class="fixed inset-0 z-[150] hidden items-center justify-center bg-black/60 backdrop-blur-sm overflow-y-auto py-10">
         <div class="bg-gray-800/90 p-6 rounded-2xl w-full max-w-lg border border-white/10 shadow-2xl relative mx-4 mt-auto mb-auto">
             <button onclick="toggleSceneryBox()" class="absolute top-4 right-4 text-white/50 hover:text-white transition-colors">
@@ -143,7 +143,6 @@
             <p class="text-xs text-white/50 mb-6">Pick a new background vibe. Changing stations will reset it to default.</p>
             
             <!-- Dynamic Grid for Station Backgrounds -->
-            <!-- Added padding and negative margin to give the glow room to render without shifting layout -->
             <div id="scenery-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6 max-h-[40vh] overflow-y-auto p-2 -mx-2 scrollbar-thin">
                 <!-- Injected via JS -->
             </div>
@@ -249,7 +248,7 @@
                     <span class="text-sm font-medium hidden xl:block ml-2">Notes</span>
                 </button>
                 
-                <!-- Dropdown Panel (Fixed Chrome Ghosting Bug) -->
+                <!-- Dropdown Panel (Strictly Hidden when closed to resolve Chrome repaint thrashes) -->
                 <div id="todo-dropdown" class="absolute top-full right-0 mt-3 w-64 sm:w-80 bg-gray-800/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-4 hidden flex-col gap-3">
                     <h3 class="text-sm font-bold text-white flex items-center gap-2 mb-1">
                         <span class="material-symbols-rounded text-[var(--accent)]" style="font-size: 18px;">task_alt</span> 
@@ -277,14 +276,14 @@
             </button>
         </header>
 
-        <!-- Middle Flex container (Z-index increased to 20 to safely contain the overlay beneath the header & player) -->
+        <!-- Middle Flex container. Z-index 20 contains the overlay safely beneath headers -->
         <div class="flex flex-col md:flex-row flex-1 overflow-x-hidden overflow-y-auto md:overflow-hidden relative z-20">
             
-            <!-- Mobile Drawer Overlay (Moved here to fix the Z-index bug!) -->
-            <div id="drawer-overlay" onclick="closeAllDrawers()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[35] opacity-0 pointer-events-none transition-opacity duration-500 md:hidden"></div>
+            <!-- Mobile Drawer Overlay -->
+            <div id="drawer-overlay" onclick="closeAllDrawers()" class="fixed inset-0 bg-black/60 backdrop-blur-md z-[35] opacity-0 pointer-events-none transition-opacity duration-500 md:hidden"></div>
 
-            <!-- Left Sidebar (Slide-up drawer on mobile, static on desktop) -->
-            <div id="left-sidebar" class="flex flex-col gap-2 p-4 md:p-6 w-full md:w-72 shrink-0 ui-panel z-40 md:z-10 overflow-y-auto scrollbar-thin h-[75vh] md:h-full fixed md:relative bottom-0 left-0 md:bottom-auto bg-gray-900/95 md:bg-transparent backdrop-blur-3xl md:backdrop-blur-none border-t border-white/10 md:border-t-0 rounded-t-3xl md:rounded-none transition-transform duration-500 translate-y-full md:translate-y-0 pb-32 md:pb-6 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] md:shadow-none">
+            <!-- Left Sidebar (High Performance Backdrop Blur to prevent stuttering) -->
+            <div id="left-sidebar" class="flex flex-col gap-2 p-4 md:p-6 w-full md:w-72 shrink-0 ui-panel z-40 md:z-10 overflow-y-auto scrollbar-thin h-[75vh] md:h-full fixed md:relative bottom-0 left-0 md:bottom-auto bg-slate-950/80 md:bg-transparent backdrop-blur-md md:backdrop-blur-none border-t border-white/10 md:border-t-0 rounded-t-3xl md:rounded-none transition-transform duration-500 translate-y-full md:translate-y-0 pb-32 md:pb-6 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] md:shadow-none">
                 
                 <!-- Dedicated Glass Background (Desktop only fix) -->
                 <div class="hidden md:block absolute inset-0 bg-transparent z-0 pointer-events-none"></div>
@@ -333,7 +332,7 @@
                     
                     <div id="mixer-wrapper">
                         <div class="flex flex-col gap-4 p-4 rounded-xl border border-white/5 relative overflow-hidden bg-white/5 md:bg-transparent">
-                            <!-- Dedicated Glass Layer for Mixer (Desktop Chrome fix) -->
+                            <!-- Dedicated Glass Layer for Mixer (High Performance blur avoids constant repaints) -->
                             <div class="hidden md:block absolute inset-0 bg-black/20 backdrop-blur-md -z-10 pointer-events-none"></div>
 
                             <!-- Rain Slider -->
@@ -376,13 +375,13 @@
                 </div>
             </div>
 
-            <!-- Right Sidebar (Playlist: Slide-up drawer on mobile, static on desktop) -->
-            <div id="playlist-sidebar" class="relative flex flex-col w-full md:w-80 border-t md:border-t-0 md:border-l border-white/10 h-[75vh] md:h-full ui-panel shrink-0 z-40 md:z-10 fixed md:relative bottom-0 left-0 md:bottom-auto bg-gray-900/95 md:bg-transparent backdrop-blur-3xl md:backdrop-blur-none rounded-t-3xl md:rounded-none transition-transform duration-500 translate-y-full md:translate-y-0 pb-32 md:pb-0 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] md:shadow-none">
+            <!-- Right Sidebar (Playlist: High-Performance Blur prevents rendering stutter) -->
+            <div id="playlist-sidebar" class="relative flex flex-col w-full md:w-80 border-t md:border-t-0 md:border-l border-white/10 h-[75vh] md:h-full ui-panel shrink-0 z-40 md:z-10 fixed md:relative bottom-0 left-0 md:bottom-auto bg-slate-950/80 md:bg-transparent backdrop-blur-md md:backdrop-blur-none rounded-t-3xl md:rounded-none transition-transform duration-500 translate-y-full md:translate-y-0 pb-32 md:pb-0 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] md:shadow-none">
                  
-                 <!-- Dedicated Glass Background (Z-index strictly managed to fix Chrome/Edge bug) -->
-                 <div class="hidden md:block absolute inset-0 bg-black/60 md:bg-black/40 backdrop-blur-2xl z-0 pointer-events-none"></div>
+                 <!-- Dedicated Glass Background (Z-index managed strictly to avoid Chrome repaint conflict) -->
+                 <div class="hidden md:block absolute inset-0 bg-slate-950/80 backdrop-blur-md z-0 pointer-events-none"></div>
 
-                 <!-- Content Layer (Pushed to the front) -->
+                 <!-- Content Layer -->
                  <div class="relative z-10 flex flex-col h-full w-full p-4 md:p-6">
                      <!-- Drawer Mobile Drag Handle (Now acts as a Close button) -->
                      <div onclick="closeAllDrawers()" class="w-full flex justify-center pb-4 pt-0 md:hidden cursor-pointer active:scale-95 transition-transform group">
@@ -404,7 +403,7 @@
                      </h2>
 
                      <div id="tracks-wrapper" class="flex flex-col flex-1 min-h-0">
-                         <!-- Hardware Accelerated Scrolling Box (Removed aggressive hardware hack causing Safari flashes) -->
+                         <!-- Hardware Accelerated Scrolling Box -->
                          <div id="tracks-container" class="flex flex-col gap-3 overflow-y-auto pr-2 pb-4 scrollbar-thin flex-1">
                          </div>
                      </div>
@@ -413,23 +412,23 @@
             </div>
         </div>
 
-        <!-- Bottom Player Controls (Z-index 50 ensures it strictly stays on top of everything) -->
+        <!-- Bottom Player Controls (High performance glass styling is incredibly light on Chrome GPU) -->
         <div class="bottom-player relative shrink-0 w-full h-auto md:h-24 border-t border-white/10 z-50 transition-all duration-500">
             
             <!-- Floating Mobile Drawer Buttons (Sits perfectly on top of the player) -->
             <div class="md:hidden absolute -top-[52px] left-0 w-full flex justify-between px-4 z-50 pointer-events-none ui-panel">
-                <button onclick="toggleMobileDrawer('left-sidebar')" class="pointer-events-auto flex items-center gap-2 bg-black/60 backdrop-blur-xl border border-white/10 px-4 py-2 rounded-full text-white/90 hover:text-white shadow-lg transition-transform active:scale-95">
+                <button onclick="toggleMobileDrawer('left-sidebar')" class="pointer-events-auto flex items-center gap-2 bg-black/60 backdrop-blur-md border border-white/10 px-4 py-2 rounded-full text-white/90 hover:text-white shadow-lg transition-transform active:scale-95">
                     <span class="material-symbols-rounded text-[var(--accent)]" style="font-size: 18px;">tune</span>
                     <span class="text-xs font-semibold tracking-wider">Mixer</span>
                 </button>
-                <button onclick="toggleMobileDrawer('playlist-sidebar')" class="pointer-events-auto flex items-center gap-2 bg-black/60 backdrop-blur-xl border border-white/10 px-4 py-2 rounded-full text-white/90 hover:text-white shadow-lg transition-transform active:scale-95">
+                <button onclick="toggleMobileDrawer('playlist-sidebar')" class="pointer-events-auto flex items-center gap-2 bg-black/60 backdrop-blur-md border border-white/10 px-4 py-2 rounded-full text-white/90 hover:text-white shadow-lg transition-transform active:scale-95">
                     <span class="text-xs font-semibold tracking-wider">Queue</span>
                     <span class="material-symbols-rounded text-[var(--accent)]" style="font-size: 18px;">queue_music</span>
                 </button>
             </div>
 
             <!-- Dedicated Glass Background -->
-            <div class="absolute inset-0 bg-black/80 md:bg-black/40 backdrop-blur-2xl z-0 pointer-events-none"></div>
+            <div class="absolute inset-0 bg-slate-950/85 backdrop-blur-md z-0 pointer-events-none"></div>
             
             <!-- Content Layer -->
             <div class="relative z-10 flex flex-col md:flex-row items-center justify-between p-4 md:px-8 safe-bottom gap-4 md:gap-0 w-full h-full">
@@ -1154,172 +1153,6 @@
             }
         }
 
-        function toggleDimMode() {
-            dimModeActive = !dimModeActive;
-            const overlay = document.getElementById('dim-overlay');
-            const icon = document.getElementById('dim-icon');
-            if (dimModeActive) {
-                overlay.classList.remove('opacity-0');
-                icon.textContent = 'light_mode';
-            } else {
-                overlay.classList.add('opacity-0');
-                icon.textContent = 'dark_mode';
-            }
-        }
-
-        function formatTimer(seconds) {
-            const m = Math.floor(seconds / 60);
-            const s = seconds % 60;
-            return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-        }
-
-        function updateTimerDisplay() {
-            timerDisplay.textContent = formatTimer(timeLeft);
-            updateDocumentTitle(); // Also update the browser tab dynamically
-        }
-
-        function changeTimerMode(mode) {
-            timerMode = mode;
-            isTimerRunning = false;
-            clearInterval(timerInterval);
-            timerIcon.textContent = 'play_arrow';
-            
-            const presetSelect = document.getElementById('timer-preset');
-            presetSelect.innerHTML = ''; 
-            
-            if (mode === 'work') {
-                btnWork.className = 'text-[10px] md:text-xs font-semibold uppercase tracking-wider text-[var(--accent)] transition-colors';
-                btnBreak.className = 'text-[10px] md:text-xs font-semibold uppercase tracking-wider text-white/50 hover:text-white transition-colors';
-                
-                const options = [5, 10, 15, 20, 25, 30];
-                options.forEach(opt => {
-                    const option = document.createElement('option');
-                    option.value = opt;
-                    option.className = 'bg-gray-800 text-white';
-                    option.textContent = opt + ' Min';
-                    if (opt === focusPreset) option.selected = true;
-                    presetSelect.appendChild(option);
-                });
-                timeLeft = focusPreset * 60;
-                
-            } else {
-                btnBreak.className = 'text-[10px] md:text-xs font-semibold uppercase tracking-wider text-emerald-300 transition-colors';
-                btnWork.className = 'text-[10px] md:text-xs font-semibold uppercase tracking-wider text-white/50 hover:text-white transition-colors';
-                
-                const options = [2, 5, 10];
-                options.forEach(opt => {
-                    const option = document.createElement('option');
-                    option.value = opt;
-                    option.className = 'bg-gray-800 text-white';
-                    option.textContent = opt + ' Min';
-                    if (opt === breakPreset) option.selected = true;
-                    presetSelect.appendChild(option);
-                });
-                timeLeft = breakPreset * 60;
-            }
-            updateTimerDisplay();
-        }
-
-        function changeTimerPreset(mins) {
-            isTimerRunning = false;
-            clearInterval(timerInterval);
-            timerIcon.textContent = 'play_arrow';
-            
-            const m = parseInt(mins);
-            if (timerMode === 'work') focusPreset = m;
-            else breakPreset = m;
-            
-            timeLeft = m * 60;
-            updateTimerDisplay();
-            saveSettings(); 
-        }
-
-        function playTimerChime() {
-            const originalVols = { 
-                main: volume, 
-                rain: sfxVolumes.rain, 
-                fire: sfxVolumes.fire, 
-                cafe: sfxVolumes.cafe 
-            };
-            
-            let steps = 10;
-            let fadeOut = setInterval(() => {
-                steps--;
-                const factor = 0.1 + (0.9 * (steps/10));
-                
-                audio.volume = originalVols.main * factor;
-                if (mainAudioNode) mainAudioNode.gain.value = originalVols.main * factor;
-
-                if (sfx.rain) sfx.rain.volume = (originalVols.rain * 0.5) * factor;
-                if (sfxNodes.rain) sfxNodes.rain.gain.value = (originalVols.rain * 0.5) * factor;
-                
-                if (sfx.fire) sfx.fire.volume = (originalVols.fire * 0.5) * factor;
-                if (sfxNodes.fire) sfxNodes.fire.gain.value = (originalVols.fire * 0.5) * factor;
-                
-                if (sfx.cafe) sfx.cafe.volume = (originalVols.cafe * 0.5) * factor;
-                if (sfxNodes.cafe) sfxNodes.cafe.gain.value = (originalVols.cafe * 0.5) * factor;
-                
-                if(steps <= 0) {
-                    clearInterval(fadeOut);
-                    
-                    const chime = new Audio('https://cdn.freesound.org/previews/411/411088_5121236-hq.mp3');
-                    chime.crossOrigin = "anonymous";
-                    chime.volume = 0.8;
-                    chime.play();
-                    
-                    setTimeout(() => {
-                        let inSteps = 0;
-                        let fadeIn = setInterval(() => {
-                            inSteps++;
-                            const inFactor = 0.1 + (0.9 * (inSteps/10));
-                            
-                            audio.volume = originalVols.main * inFactor;
-                            if (mainAudioNode) mainAudioNode.gain.value = originalVols.main * inFactor;
-
-                            if (sfx.rain) sfx.rain.volume = (originalVols.rain * 0.5) * inFactor;
-                            if (sfxNodes.rain) sfxNodes.rain.gain.value = (originalVols.rain * 0.5) * inFactor;
-                            
-                            if (sfx.fire) sfx.fire.volume = (originalVols.fire * 0.5) * inFactor;
-                            if (sfxNodes.fire) sfxNodes.fire.gain.value = (originalVols.fire * 0.5) * inFactor;
-                            
-                            if (sfx.cafe) sfx.cafe.volume = (originalVols.cafe * 0.5) * inFactor;
-                            if (sfxNodes.cafe) sfxNodes.cafe.gain.value = (originalVols.cafe * 0.5) * inFactor;
-                            
-                            if(inSteps >= 10) clearInterval(fadeIn);
-                        }, 100);
-                    }, 3500);
-                }
-            }, 50);
-        }
-
-        function toggleTimer() {
-            resumeWebAudio();
-            if (isTimerRunning) {
-                clearInterval(timerInterval);
-                isTimerRunning = false;
-                timerIcon.textContent = 'play_arrow';
-            } else {
-                isTimerRunning = true;
-                timerIcon.textContent = 'pause';
-                timerInterval = setInterval(() => {
-                    timeLeft--;
-                    updateTimerDisplay();
-                    
-                    if (timeLeft <= 0) {
-                        clearInterval(timerInterval);
-                        isTimerRunning = false;
-                        timerIcon.textContent = 'play_arrow';
-                        
-                        playTimerChime();
-                        
-                        const presetSelect = document.getElementById('timer-preset');
-                        timeLeft = parseInt(presetSelect.value) * 60;
-                        updateTimerDisplay();
-                    }
-                }, 1000);
-            }
-        }
-
         // --- AUDIO CONTROLS ---
 
         function attemptPlay() {
@@ -1675,6 +1508,172 @@
             if(input) {
                 setCustomBackground(input);
                 document.getElementById('custom-bg-input').value = '';
+            }
+        }
+
+        function toggleDimMode() {
+            dimModeActive = !dimModeActive;
+            const overlay = document.getElementById('dim-overlay');
+            const icon = document.getElementById('dim-icon');
+            if (dimModeActive) {
+                overlay.classList.remove('opacity-0');
+                icon.textContent = 'light_mode';
+            } else {
+                overlay.classList.add('opacity-0');
+                icon.textContent = 'dark_mode';
+            }
+        }
+
+        function formatTimer(seconds) {
+            const m = Math.floor(seconds / 60);
+            const s = seconds % 60;
+            return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function updateTimerDisplay() {
+            timerDisplay.textContent = formatTimer(timeLeft);
+            updateDocumentTitle(); // Also update the browser tab dynamically
+        }
+
+        function changeTimerMode(mode) {
+            timerMode = mode;
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            timerIcon.textContent = 'play_arrow';
+            
+            const presetSelect = document.getElementById('timer-preset');
+            presetSelect.innerHTML = ''; 
+            
+            if (mode === 'work') {
+                btnWork.className = 'text-[10px] md:text-xs font-semibold uppercase tracking-wider text-[var(--accent)] transition-colors';
+                btnBreak.className = 'text-[10px] md:text-xs font-semibold uppercase tracking-wider text-white/50 hover:text-white transition-colors';
+                
+                const options = [5, 10, 15, 20, 25, 30];
+                options.forEach(opt => {
+                    const option = document.createElement('option');
+                    option.value = opt;
+                    option.className = 'bg-gray-800 text-white';
+                    option.textContent = opt + ' Min';
+                    if (opt === focusPreset) option.selected = true;
+                    presetSelect.appendChild(option);
+                });
+                timeLeft = focusPreset * 60;
+                
+            } else {
+                btnBreak.className = 'text-[10px] md:text-xs font-semibold uppercase tracking-wider text-emerald-300 transition-colors';
+                btnWork.className = 'text-[10px] md:text-xs font-semibold uppercase tracking-wider text-white/50 hover:text-white transition-colors';
+                
+                const options = [2, 5, 10];
+                options.forEach(opt => {
+                    const option = document.createElement('option');
+                    option.value = opt;
+                    option.className = 'bg-gray-800 text-white';
+                    option.textContent = opt + ' Min';
+                    if (opt === breakPreset) option.selected = true;
+                    presetSelect.appendChild(option);
+                });
+                timeLeft = breakPreset * 60;
+            }
+            updateTimerDisplay();
+        }
+
+        function changeTimerPreset(mins) {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            timerIcon.textContent = 'play_arrow';
+            
+            const m = parseInt(mins);
+            if (timerMode === 'work') focusPreset = m;
+            else breakPreset = m;
+            
+            timeLeft = m * 60;
+            updateTimerDisplay();
+            saveSettings(); 
+        }
+
+        function playTimerChime() {
+            const originalVols = { 
+                main: volume, 
+                rain: sfxVolumes.rain, 
+                fire: sfxVolumes.fire, 
+                cafe: sfxVolumes.cafe 
+            };
+            
+            let steps = 10;
+            let fadeOut = setInterval(() => {
+                steps--;
+                const factor = 0.1 + (0.9 * (steps/10));
+                
+                audio.volume = originalVols.main * factor;
+                if (mainAudioNode) mainAudioNode.gain.value = originalVols.main * factor;
+
+                if (sfx.rain) sfx.rain.volume = (originalVols.rain * 0.5) * factor;
+                if (sfxNodes.rain) sfxNodes.rain.gain.value = (originalVols.rain * 0.5) * factor;
+                
+                if (sfx.fire) sfx.fire.volume = (originalVols.fire * 0.5) * factor;
+                if (sfxNodes.fire) sfxNodes.fire.gain.value = (originalVols.fire * 0.5) * factor;
+                
+                if (sfx.cafe) sfx.cafe.volume = (originalVols.cafe * 0.5) * factor;
+                if (sfxNodes.cafe) sfxNodes.cafe.gain.value = (originalVols.cafe * 0.5) * factor;
+                
+                if(steps <= 0) {
+                    clearInterval(fadeOut);
+                    
+                    const chime = new Audio('https://cdn.freesound.org/previews/411/411088_5121236-hq.mp3');
+                    chime.crossOrigin = "anonymous";
+                    chime.volume = 0.8;
+                    chime.play();
+                    
+                    setTimeout(() => {
+                        let inSteps = 0;
+                        let fadeIn = setInterval(() => {
+                            inSteps++;
+                            const inFactor = 0.1 + (0.9 * (inSteps/10));
+                            
+                            audio.volume = originalVols.main * inFactor;
+                            if (mainAudioNode) mainAudioNode.gain.value = originalVols.main * inFactor;
+
+                            if (sfx.rain) sfx.rain.volume = (originalVols.rain * 0.5) * inFactor;
+                            if (sfxNodes.rain) sfxNodes.rain.gain.value = (originalVols.rain * 0.5) * inFactor;
+                            
+                            if (sfx.fire) sfx.fire.volume = (originalVols.fire * 0.5) * inFactor;
+                            if (sfxNodes.fire) sfxNodes.fire.gain.value = (originalVols.fire * 0.5) * inFactor;
+                            
+                            if (sfx.cafe) sfx.cafe.volume = (originalVols.cafe * 0.5) * inFactor;
+                            if (sfxNodes.cafe) sfxNodes.cafe.gain.value = (originalVols.cafe * 0.5) * inFactor;
+                            
+                            if(inSteps >= 10) clearInterval(fadeIn);
+                        }, 100);
+                    }, 3500);
+                }
+            }, 50);
+        }
+
+        function toggleTimer() {
+            resumeWebAudio();
+            if (isTimerRunning) {
+                clearInterval(timerInterval);
+                isTimerRunning = false;
+                timerIcon.textContent = 'play_arrow';
+            } else {
+                isTimerRunning = true;
+                timerIcon.textContent = 'pause';
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    updateTimerDisplay();
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        isTimerRunning = false;
+                        timerIcon.textContent = 'play_arrow';
+                        
+                        playTimerChime();
+                        
+                        const presetSelect = document.getElementById('timer-preset');
+                        timeLeft = parseInt(presetSelect.value) * 60;
+                        updateTimerDisplay();
+                    }
+                }, 1000);
             }
         }
 
