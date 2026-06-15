@@ -130,8 +130,8 @@
         </div>
     </div>
 
-    <!-- Scenery Selection Modal (Updated to fix WebKit Safari ghosting) -->
-    <div id="scenery-modal" class="fixed inset-0 z-[150] flex items-center justify-center opacity-0 invisible pointer-events-none bg-black/60 backdrop-blur-sm transition-all duration-300 overflow-y-auto py-10">
+    <!-- Scenery Selection Modal (Fixed Chrome Ghosting Bug) -->
+    <div id="scenery-modal" class="fixed inset-0 z-[150] hidden items-center justify-center bg-black/60 backdrop-blur-sm overflow-y-auto py-10">
         <div class="bg-gray-800/90 p-6 rounded-2xl w-full max-w-lg border border-white/10 shadow-2xl relative mx-4 mt-auto mb-auto">
             <button onclick="toggleSceneryBox()" class="absolute top-4 right-4 text-white/50 hover:text-white transition-colors">
                 <span class="material-symbols-rounded">close</span>
@@ -249,8 +249,8 @@
                     <span class="text-sm font-medium hidden xl:block ml-2">Notes</span>
                 </button>
                 
-                <!-- Dropdown Panel (Updated to fix WebKit Safari ghosting) -->
-                <div id="todo-dropdown" class="absolute top-full right-0 mt-3 w-64 sm:w-80 bg-gray-800/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-4 flex flex-col gap-3 transition-all duration-300 opacity-0 invisible pointer-events-none translate-y-2">
+                <!-- Dropdown Panel (Fixed Chrome Ghosting Bug) -->
+                <div id="todo-dropdown" class="absolute top-full right-0 mt-3 w-64 sm:w-80 bg-gray-800/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-4 hidden flex-col gap-3">
                     <h3 class="text-sm font-bold text-white flex items-center gap-2 mb-1">
                         <span class="material-symbols-rounded text-[var(--accent)]" style="font-size: 18px;">task_alt</span> 
                         Top Priorities
@@ -820,10 +820,11 @@
             document.addEventListener('click', (e) => {
                 const dropdown = document.getElementById('todo-dropdown');
                 const btn = document.getElementById('notes-btn');
-                if (dropdown && !dropdown.classList.contains('opacity-0')) {
+                if (dropdown && !dropdown.classList.contains('hidden')) {
                     const path = e.composedPath();
                     if (!path.includes(dropdown) && !path.includes(btn)) {
-                        dropdown.classList.add('opacity-0', 'invisible', 'pointer-events-none', 'translate-y-2');
+                        dropdown.classList.add('hidden');
+                        dropdown.classList.remove('flex');
                     }
                 }
             });
@@ -1004,23 +1005,25 @@
         }
 
         function toggleSceneryBox() {
-            const isHidden = sceneryModal.classList.contains('opacity-0');
-            if (isHidden) {
-                sceneryModal.classList.remove('opacity-0', 'invisible', 'pointer-events-none');
+            if (sceneryModal.classList.contains('hidden')) {
+                sceneryModal.classList.remove('hidden');
+                sceneryModal.classList.add('flex');
                 renderSceneryGrid(); // Re-render to ensure correct active border!
             } else {
-                sceneryModal.classList.add('opacity-0', 'invisible', 'pointer-events-none');
+                sceneryModal.classList.add('hidden');
+                sceneryModal.classList.remove('flex');
             }
         }
 
         function toggleTodoBox() {
             const dropdown = document.getElementById('todo-dropdown');
-            const isHidden = dropdown.classList.contains('opacity-0');
-            if (isHidden) {
-                dropdown.classList.remove('opacity-0', 'invisible', 'pointer-events-none', 'translate-y-2');
+            if (dropdown.classList.contains('hidden')) {
+                dropdown.classList.remove('hidden');
+                dropdown.classList.add('flex');
                 setTimeout(() => document.getElementById('new-todo-input').focus(), 50);
             } else {
-                dropdown.classList.add('opacity-0', 'invisible', 'pointer-events-none', 'translate-y-2');
+                dropdown.classList.add('hidden');
+                dropdown.classList.remove('flex');
             }
         }
 
