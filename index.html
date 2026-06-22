@@ -1348,10 +1348,14 @@
                 if (el) {
                     if (isShuffle) {
                         el.classList.remove('text-white/60', 'hover:text-white');
-                        el.classList.add('text-[var(--accent)]', 'hover:brightness-125');
+                        // Apply the color and a glowing drop-shadow directly using the station's accent variable!
+                        el.style.color = 'var(--accent)';
+                        el.style.filter = 'drop-shadow(0 0 8px var(--accent))';
                     } else {
                         el.classList.add('text-white/60', 'hover:text-white');
-                        el.classList.remove('text-[var(--accent)]', 'hover:brightness-125');
+                        // Remove the glow when disabled
+                        el.style.color = '';
+                        el.style.filter = '';
                     }
                 }
             });
