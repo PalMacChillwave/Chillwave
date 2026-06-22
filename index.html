@@ -653,10 +653,13 @@
 
         // CLEANUP: Override Unreliable External Placeholders
         STATIONS.forEach(station => {
+            // Automatically calculate the custom album art file name for this specific station
+            station.albumArt = `./assets/${station.id}-cover.jpg`;
+            
             station.tracks.forEach(track => {
                 if (!track.cover || track.cover.includes('picsum.photos')) {
-                    // Forcefully replaces blocked images with the beautiful, reliable local background thumbnail
-                    track.cover = station.fallbackBg; 
+                    // Forcefully replaces blocked images with your new dedicated album cover!
+                    track.cover = station.albumArt; 
                 }
             });
         });
