@@ -899,6 +899,21 @@
             setTimeout(() => {
                 attemptPlay();
             }, 500);
+
+            // --- SMART BATTERY SAVER ---
+            // Suspends the heavy Web Audio context when the tab is hidden to save mobile battery, 
+            // BUT only if music and timers are paused so background listening still works!
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    if (!isPlaying && !isTimerRunning && audioCtx && audioCtx.state === 'running') {
+                        audioCtx.suspend();
+                    }
+                } else {
+                    if ((isPlaying || isTimerRunning) && audioCtx && audioCtx.state === 'suspended') {
+                        audioCtx.resume();
+                    }
+                }
+            });
         }
 
         // --- XSS PROTECTION & UTILS ---
@@ -1253,6 +1268,9 @@
                 cafe: sfxVolumes.cafe 
             };
             
+            // AUDIO DUCKING: We intentionally modify the internal volume here without updating the visual sliders.
+            // This creates a professional "audio ducking" effect (like a radio DJ talking over a song) 
+            // without moving the user's physical slider controls like a ghost.
             let steps = 10;
             let fadeOut = setInterval(() => {
                 steps--;
@@ -1662,6 +1680,9 @@
         function changeVolume(val) {
             resumeWebAudio();
             volume = parseFloat(val);
+            
+            // REDUNDANCY SAFETY: We set BOTH the HTML element volume and the WebAudio gain node.
+            // WebAudio overrides the HTML element, but keeping both synced prevents sudden loud bursts if the audio context resets.
             audio.volume = volume;
             if (mainAudioNode) mainAudioNode.gain.value = volume;
             
@@ -1687,6 +1708,7 @@
             sfxVolumes[type] = vol; 
             const finalVol = vol * 0.5; // Apply dampening multiplier
             
+            // REDUNDANCY SAFETY (Same as main volume)
             sfx[type].volume = finalVol; 
             if (sfxNodes[type]) sfxNodes[type].gain.value = finalVol;
             
