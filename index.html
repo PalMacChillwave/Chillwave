@@ -242,7 +242,7 @@
                     <span class="text-sm font-medium hidden xl:block ml-2">Notes</span>
                 </button>
                 
-                <!-- Dropdown Panel (Fixed Chrome Ghosting with 'hidden') -->
+                <!-- Dropdown Panel -->
                 <div id="todo-dropdown" class="absolute top-full right-0 mt-3 w-64 sm:w-80 bg-gray-800/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-4 hidden flex-col gap-3">
                     <h3 class="text-sm font-bold text-white flex items-center gap-2 mb-1">
                         <span class="material-symbols-rounded text-[var(--accent)]" style="font-size: 18px;">task_alt</span> 
@@ -412,9 +412,9 @@
                 
                 <!-- Left Side / Mobile Top Row -->
                 <div class="flex items-center justify-between w-full md:w-1/4 md:min-w-[200px]">
-                    
                     <div class="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
                         <div id="current-cover-container" class="relative w-12 h-12 md:w-14 md:h-14 overflow-hidden rounded-lg shadow-lg shrink-0 border border-white/10">
+                             <!-- Fallback image is ready, but shouldn't be needed with the new local injection script! -->
                              <img id="current-cover" src="" alt="Cover" class="object-cover w-full h-full" />
                              <div class="absolute inset-0 m-auto w-3 h-3 bg-black/80 rounded-full border border-white/20"></div>
                         </div>
@@ -426,7 +426,6 @@
 
                     <!-- MOBILE Play Controls -->
                     <div class="flex md:hidden items-center justify-end gap-1.5 sm:gap-2 shrink-0 ml-2">
-                        <!-- SHUFFLE (Mobile) -->
                         <button onclick="toggleShuffle()" title="Toggle Shuffle" class="p-1">
                             <span id="shuffle-icon-mobile" class="material-symbols-rounded text-[20px] text-white/60 hover:text-white transition-colors">shuffle</span>
                         </button>
@@ -444,10 +443,7 @@
 
                 <!-- Center Column (Desktop Play Controls + Universal Progress Bar) -->
                 <div class="flex flex-col items-center justify-center w-full md:flex-1 max-w-2xl px-0 md:px-8 gap-2">
-                    
-                    <!-- Desktop Play Controls -->
                     <div class="hidden md:flex items-center gap-6">
-                        <!-- SHUFFLE (Desktop) -->
                         <button onclick="toggleShuffle()" title="Toggle Shuffle" class="transition-colors">
                             <span id="shuffle-icon" class="material-symbols-rounded text-white/60 hover:text-white transition-colors">shuffle</span>
                         </button>
@@ -461,12 +457,9 @@
                         <button onclick="playNext(true)" class="text-white/60 hover:text-white transition-colors">
                             <span class="material-symbols-rounded fill">skip_next</span>
                         </button>
-                        
-                        <!-- Empty spacer for visual symmetry on desktop if desired, but 4 buttons looks modern -->
                         <div class="w-[24px]"></div>
                     </div>
 
-                    <!-- Progress Bar -->
                     <div class="flex items-center w-full gap-3 text-xs text-white/50 font-medium">
                         <span id="time-current">0:00</span>
                         <div id="progress-container" class="relative flex-1 h-1.5 bg-white/20 rounded-full cursor-pointer group" onclick="seekTrack(event)">
@@ -657,6 +650,16 @@
                 ]
             }
         ];
+
+        // CLEANUP: Override Unreliable External Placeholders
+        STATIONS.forEach(station => {
+            station.tracks.forEach(track => {
+                if (!track.cover || track.cover.includes('picsum.photos')) {
+                    // Forcefully replaces blocked images with the beautiful, reliable local background thumbnail
+                    track.cover = station.fallbackBg; 
+                }
+            });
+        });
 
         // --- STATE ---
         let currentStationIdx = 0; 
@@ -897,7 +900,8 @@
 
         // --- XSS PROTECTION & UTILS ---
         function escapeHTML(str) {
-            return str.replace(/[&<>'"]/g, 
+            if (str === null || str === undefined) return '';
+            return String(str).replace(/[&<>'"]/g, 
                 tag => ({
                     '&': '&amp;',
                     '<': '&lt;',
@@ -1266,7 +1270,6 @@
                 if(steps <= 0) {
                     clearInterval(fadeOut);
                     
-                    // Fixed external dependency failure! Pointing to safe local asset
                     const chime = new Audio('./assets/chime.mp3');
                     chime.crossOrigin = "anonymous";
                     chime.volume = 0.8;
@@ -1449,15 +1452,20 @@
             currentArtist.textContent = track.artist || 'Unknown Artist';
             
             if ('mediaSession' in navigator) {
-                navigator.mediaSession.metadata = new MediaMetadata({
-                    title: track.title || 'Unknown Track',
-                    artist: track.artist || 'Unknown Artist',
-                    album: STATIONS[currentStationIdx].name,
-                    artwork: [
-                        { src: track.cover, sizes: '300x300', type: 'image/jpeg' },
-                        { src: track.cover, sizes: '512x512', type: 'image/jpeg' }
-                    ]
-                });
+                try {
+                    const absoluteCoverUrl = new URL(track.cover || './icon.svg', window.location.href).href;
+                    navigator.mediaSession.metadata = new MediaMetadata({
+                        title: track.title || 'Unknown Track',
+                        artist: track.artist || 'Unknown Artist',
+                        album: STATIONS[currentStationIdx].name,
+                        artwork: [
+                            { src: absoluteCoverUrl, sizes: '300x300', type: 'image/jpeg' },
+                            { src: absoluteCoverUrl, sizes: '512x512', type: 'image/jpeg' }
+                        ]
+                    });
+                } catch (e) {
+                    console.warn("Failed to set MediaMetadata", e);
+                }
             }
 
             if (isPlaying) {
@@ -1580,8 +1588,9 @@
             const currentStationTracks = STATIONS[currentStationIdx].tracks;
             tracksContainer.innerHTML = currentStationTracks.map((track, idx) => `
                 <div id="track-item-${idx}" onclick="playTrackFromPlaylist(${idx}, true)" class="flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all duration-200 group hover:bg-white/5">
-                    <div class="relative w-12 h-12 overflow-hidden rounded-md shadow-sm shrink-0">
-                        <img src="${track.cover}" alt="${escapeHTML(track.title)}" class="object-cover w-full h-full" />
+                    <div class="relative w-12 h-12 overflow-hidden rounded-md shadow-sm shrink-0 bg-black/20">
+                        <!-- Robust onerror fallback to display icon.svg if track images are missing or blocked -->
+                        <img src="${track.cover || track.image || './icon.svg'}" onerror="this.onerror=null; this.src='./icon.svg'; this.classList.add('p-2', 'opacity-50');" alt="${escapeHTML(track.title)}" class="object-cover w-full h-full" />
                         <div id="track-overlay-${idx}" class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity">
                             <span id="track-icon-${idx}" class="material-symbols-rounded fill text-white" style="font-size: 20px;">play_arrow</span>
                         </div>
