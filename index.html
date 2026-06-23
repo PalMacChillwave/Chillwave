@@ -716,7 +716,7 @@
                         if (!sfx[type]) return;
                         const source = audioCtx.createMediaElementSource(sfx[type]);
                         const gainNode = audioCtx.createGain();
-                        gainNode.gain.value = (sfxVolumes[type] || 0) * 0.5;
+                        gainNode.gain.value = (sfxVolumes[type] || 0); // Removed 0.5 dampening multiplier
                         source.connect(gainNode);
                         gainNode.connect(audioCtx.destination);
                         sfxNodes[type] = gainNode;
@@ -797,8 +797,8 @@
                 const bar = document.getElementById(`bar-${type}`);
                 if(bar) bar.style.width = `${sfxVolumes[type] * 100}%`;
                 
-                // Set the dampened volume internally on load
-                if(sfx[type]) sfx[type].volume = sfxVolumes[type] * 0.5;
+                // Set the volume internally on load
+                if(sfx[type]) sfx[type].volume = sfxVolumes[type];
             });
 
             // Preload fallback images so transitions are instantly seamless
@@ -1279,14 +1279,14 @@
                 audio.volume = originalVols.main * factor;
                 if (mainAudioNode) mainAudioNode.gain.value = originalVols.main * factor;
 
-                if (sfx.rain) sfx.rain.volume = (originalVols.rain * 0.5) * factor;
-                if (sfxNodes.rain) sfxNodes.rain.gain.value = (originalVols.rain * 0.5) * factor;
+                if (sfx.rain) sfx.rain.volume = originalVols.rain * factor;
+                if (sfxNodes.rain) sfxNodes.rain.gain.value = originalVols.rain * factor;
                 
-                if (sfx.fire) sfx.fire.volume = (originalVols.fire * 0.5) * factor;
-                if (sfxNodes.fire) sfxNodes.fire.gain.value = (originalVols.fire * 0.5) * factor;
+                if (sfx.fire) sfx.fire.volume = originalVols.fire * factor;
+                if (sfxNodes.fire) sfxNodes.fire.gain.value = originalVols.fire * factor;
                 
-                if (sfx.cafe) sfx.cafe.volume = (originalVols.cafe * 0.5) * factor;
-                if (sfxNodes.cafe) sfxNodes.cafe.gain.value = (originalVols.cafe * 0.5) * factor;
+                if (sfx.cafe) sfx.cafe.volume = originalVols.cafe * factor;
+                if (sfxNodes.cafe) sfxNodes.cafe.gain.value = originalVols.cafe * factor;
                 
                 if(steps <= 0) {
                     clearInterval(fadeOut);
@@ -1308,14 +1308,14 @@
                             audio.volume = originalVols.main * inFactor;
                             if (mainAudioNode) mainAudioNode.gain.value = originalVols.main * inFactor;
 
-                            if (sfx.rain) sfx.rain.volume = (originalVols.rain * 0.5) * inFactor;
-                            if (sfxNodes.rain) sfxNodes.rain.gain.value = (originalVols.rain * 0.5) * inFactor;
+                            if (sfx.rain) sfx.rain.volume = originalVols.rain * inFactor;
+                            if (sfxNodes.rain) sfxNodes.rain.gain.value = originalVols.rain * inFactor;
                             
-                            if (sfx.fire) sfx.fire.volume = (originalVols.fire * 0.5) * inFactor;
-                            if (sfxNodes.fire) sfxNodes.fire.gain.value = (originalVols.fire * 0.5) * inFactor;
+                            if (sfx.fire) sfx.fire.volume = originalVols.fire * inFactor;
+                            if (sfxNodes.fire) sfxNodes.fire.gain.value = originalVols.fire * inFactor;
                             
-                            if (sfx.cafe) sfx.cafe.volume = (originalVols.cafe * 0.5) * inFactor;
-                            if (sfxNodes.cafe) sfxNodes.cafe.gain.value = (originalVols.cafe * 0.5) * inFactor;
+                            if (sfx.cafe) sfx.cafe.volume = originalVols.cafe * inFactor;
+                            if (sfxNodes.cafe) sfxNodes.cafe.gain.value = originalVols.cafe * inFactor;
                             
                             if(inSteps >= 10) clearInterval(fadeIn);
                         }, 100);
@@ -1706,7 +1706,7 @@
             
             const vol = parseFloat(val);
             sfxVolumes[type] = vol; 
-            const finalVol = vol * 0.5; // Apply dampening multiplier
+            const finalVol = vol; // Removed dampening multiplier
             
             // REDUNDANCY SAFETY (Same as main volume)
             sfx[type].volume = finalVol; 
