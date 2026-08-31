@@ -498,14 +498,6 @@
 
     <script>
         // --- DATA ---
-        const fallbackMusic = [
-            'https://cdn.freesound.org/previews/665/665181_11861866-hq.mp3', 
-            'https://cdn.freesound.org/previews/607/607261_1648170-hq.mp3', 
-            'https://cdn.freesound.org/previews/538/538556_11861866-hq.mp3',
-            'https://cdn.freesound.org/previews/506/506053_10991815-hq.mp3',
-            'https://cdn.freesound.org/previews/410/410574_5121236-hq.mp3'
-        ];
-
         const STATIONS = [
             { 
                 id: 'chill', name: 'Cozy Corner', icon: 'local_cafe', 
@@ -870,13 +862,6 @@
             
             audio.addEventListener('error', (e) => {
                 const track = STATIONS[currentStationIdx].tracks[currentTrackIdx];
-                if (!usingFallback && track.fallbackSrc) {
-                    usingFallback = true;
-                    const wasPlaying = isPlaying;
-                    audio.src = track.fallbackSrc;
-                    if (wasPlaying) attemptPlay();
-                    return; 
-                }
 
                 const wasPlayingBeforeError = isPlaying;
                 isPlaying = false;
@@ -1428,6 +1413,7 @@
         }
 
         function loadStation(idx, initialTrackIdx = 0) {
+            consecutiveErrors = 0;
             const isNewStation = currentStationIdx !== idx;
             currentStationIdx = idx;
             const station = STATIONS[idx];
@@ -1482,7 +1468,6 @@
             const track = currentStationTracks[idx];
             
             usingFallback = false;
-            track.fallbackSrc = fallbackMusic[idx % fallbackMusic.length];
             
             audio.src = track.url;
             
