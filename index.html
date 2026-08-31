@@ -689,6 +689,8 @@
         let audioCtx;
         let sfxNodes = {};
         let mainAudioNode;
+        // Keep a reference to the silent oscillator heartbeat
+        let keepAliveOscillator; 
 
         function resumeWebAudio() {
             if (!audioCtx) {
@@ -714,6 +716,18 @@
                         gainNode.connect(audioCtx.destination);
                         sfxNodes[type] = gainNode;
                     });
+                    
+                    // --- iOS BACKGROUND AUDIO FIX (The Heartbeat) ---
+                    // iOS will aggressively suspend WebAudio when the screen locks.
+                    // Creating an inaudible, continuously running oscillator tricks the OS into 
+                    // keeping the audio context alive in the background indefinitely!
+                    keepAliveOscillator = audioCtx.createOscillator();
+                    const silentGain = audioCtx.createGain();
+                    silentGain.gain.value = 0; // Literally zero volume
+                    keepAliveOscillator.connect(silentGain);
+                    silentGain.connect(audioCtx.destination);
+                    keepAliveOscillator.start();
+                    
                 } catch (e) {
                     console.warn("Web Audio API not supported", e);
                 }
@@ -896,16 +910,18 @@
                 attemptPlay();
             }, 500);
 
-            // --- SMART BATTERY SAVER ---
+            // --- SMART BATTERY SAVER (Updated for iOS Background Play) ---
             // Suspends the heavy Web Audio context when the tab is hidden to save mobile battery, 
             // BUT only if music and timers are paused so background listening still works!
             document.addEventListener('visibilitychange', () => {
                 if (document.hidden) {
+                    // Only suspend if NOTHING is happening. 
                     if (!isPlaying && !isTimerRunning && audioCtx && audioCtx.state === 'running') {
                         audioCtx.suspend();
                     }
                 } else {
-                    if ((isPlaying || isTimerRunning) && audioCtx && audioCtx.state === 'suspended') {
+                    // Always ensure audio context wakes up when coming back to the app
+                    if (audioCtx && audioCtx.state === 'suspended') {
                         audioCtx.resume();
                     }
                 }
