@@ -166,7 +166,8 @@
     <div class="absolute inset-0 z-0 bg-black/20"></div>
 
     <!-- Audio Elements -->
-    <audio id="audio-player" crossorigin="anonymous"></audio>
+    <!-- Removed crossorigin="anonymous" to ensure iOS natively handles playback without CORS restrictions -->
+    <audio id="audio-player"></audio>
     <audio id="sfx-rain" loop src="./music/rain.mp3"></audio>
     <audio id="sfx-fire" loop src="./music/fire.mp3"></audio>
     <audio id="sfx-cafe" loop src="./music/cafe.mp3"></audio>
@@ -300,6 +301,7 @@
                     </h2>
                     
                     <div id="stations-wrapper">
+                        <!-- Stations injected dynamically via JS so they only render once -->
                         <div id="stations-container" class="flex flex-col gap-2 overflow-x-hidden pb-2 md:pb-0 scrollbar-thin"></div>
                     </div>
                     
@@ -382,6 +384,7 @@
                      </h2>
 
                      <div id="tracks-wrapper" class="flex flex-col flex-1 min-h-0">
+                         <!-- Playlist injected dynamically so it only builds DOM when the station changes -->
                          <div id="tracks-container" class="flex flex-col gap-3 overflow-y-auto pr-2 pb-4 scrollbar-thin flex-1"></div>
                      </div>
                  </div>
@@ -392,6 +395,7 @@
         <!-- Bottom Player Controls -->
         <div class="bottom-player relative shrink-0 w-full h-auto md:h-24 border-t border-white/10 z-50 transition-all duration-500">
             
+            <!-- Floating Mobile Drawer Buttons -->
             <div class="md:hidden absolute -top-[52px] left-0 w-full flex justify-between px-4 z-50 pointer-events-none ui-panel">
                 <button onclick="toggleMobileDrawer('left-sidebar')" class="pointer-events-auto flex items-center gap-2 bg-black/60 backdrop-blur-md border border-white/10 px-4 py-2 rounded-full text-white/90 hover:text-white shadow-lg transition-transform active:scale-95">
                     <span class="material-symbols-rounded text-[var(--accent)]" style="font-size: 18px;">tune</span>
@@ -407,9 +411,12 @@
             
             <div class="relative z-10 flex flex-col md:flex-row items-center justify-between p-4 md:px-8 safe-bottom gap-4 md:gap-0 w-full h-full">
                 
+                <!-- Left Side / Mobile Top Row -->
                 <div class="flex items-center justify-between w-full md:w-1/4 md:min-w-[200px]">
+                    
                     <div class="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
                         <div id="current-cover-container" class="relative w-12 h-12 md:w-14 md:h-14 overflow-hidden rounded-lg shadow-lg shrink-0 border border-white/10">
+                             <!-- Fallback image is ready, but shouldn't be needed with the new local injection script! -->
                              <img id="current-cover" src="" alt="Cover" class="object-cover w-full h-full" />
                              <div class="absolute inset-0 m-auto w-3 h-3 bg-black/80 rounded-full border border-white/20"></div>
                         </div>
@@ -419,6 +426,7 @@
                         </div>
                     </div>
 
+                    <!-- MOBILE Play Controls -->
                     <div class="flex md:hidden items-center justify-end gap-1.5 sm:gap-2 shrink-0 ml-2">
                         <button onclick="toggleShuffle()" title="Toggle Shuffle" class="p-1">
                             <span id="shuffle-icon-mobile" class="material-symbols-rounded text-[20px] text-white/60 hover:text-white transition-colors">shuffle</span>
@@ -435,7 +443,10 @@
                     </div>
                 </div>
 
+                <!-- Center Column (Desktop Play Controls + Universal Progress Bar) -->
                 <div class="flex flex-col items-center justify-center w-full md:flex-1 max-w-2xl px-0 md:px-8 gap-2">
+                    
+                    <!-- Desktop Play Controls -->
                     <div class="hidden md:flex items-center gap-6">
                         <button onclick="toggleShuffle()" title="Toggle Shuffle" class="transition-colors">
                             <span id="shuffle-icon" class="material-symbols-rounded text-white/60 hover:text-white transition-colors">shuffle</span>
@@ -450,9 +461,12 @@
                         <button onclick="playNext(true)" class="text-white/60 hover:text-white transition-colors">
                             <span class="material-symbols-rounded fill">skip_next</span>
                         </button>
+                        
+                        <!-- Empty spacer for visual symmetry -->
                         <div class="w-[24px]"></div>
                     </div>
 
+                    <!-- Progress Bar -->
                     <div class="flex items-center w-full gap-3 text-xs text-white/50 font-medium">
                         <span id="time-current">0:00</span>
                         <div id="progress-container" class="relative flex-1 h-1.5 bg-white/20 rounded-full cursor-pointer group" onclick="seekTrack(event)">
@@ -688,9 +702,6 @@
         // --- WEB AUDIO API (iOS VOLUME FIX) ---
         let audioCtx;
         let sfxNodes = {};
-        let mainAudioNode;
-        // Keep a reference to the silent oscillator heartbeat
-        let keepAliveOscillator; 
 
         function resumeWebAudio() {
             if (!audioCtx) {
@@ -699,31 +710,25 @@
                     if (!AudioContext) return;
                     audioCtx = new AudioContext();
 
-                    // Main Audio Interceptor
-                    const mainSource = audioCtx.createMediaElementSource(audio);
-                    mainAudioNode = audioCtx.createGain();
-                    mainAudioNode.gain.value = volume;
-                    mainSource.connect(mainAudioNode);
-                    mainAudioNode.connect(audioCtx.destination);
+                    // CRITICAL iOS FIX: We NO LONGER route the main `audio` tag through the WebAudio API.
+                    // By leaving it untethered, native HTML5 background audio works perfectly on locked iPhones.
 
-                    // SFX Interceptors
+                    // SFX Interceptors (Only background noise uses WebAudio now)
                     ['rain', 'fire', 'cafe'].forEach(type => {
                         if (!sfx[type]) return;
                         const source = audioCtx.createMediaElementSource(sfx[type]);
                         const gainNode = audioCtx.createGain();
-                        gainNode.gain.value = (sfxVolumes[type] || 0); // Dampener removed for 100% volume
+                        gainNode.gain.value = (sfxVolumes[type] || 0); 
                         source.connect(gainNode);
                         gainNode.connect(audioCtx.destination);
                         sfxNodes[type] = gainNode;
                     });
                     
                     // --- iOS BACKGROUND AUDIO FIX (The Heartbeat) ---
-                    // iOS will aggressively suspend WebAudio when the screen locks.
-                    // Creating an inaudible, continuously running oscillator tricks the OS into 
-                    // keeping the audio context alive in the background indefinitely!
-                    keepAliveOscillator = audioCtx.createOscillator();
+                    // Still helpful to keep the ambient sounds running as long as possible
+                    const keepAliveOscillator = audioCtx.createOscillator();
                     const silentGain = audioCtx.createGain();
-                    silentGain.gain.value = 0; // Literally zero volume
+                    silentGain.gain.value = 0; 
                     keepAliveOscillator.connect(silentGain);
                     silentGain.connect(audioCtx.destination);
                     keepAliveOscillator.start();
@@ -910,18 +915,16 @@
                 attemptPlay();
             }, 500);
 
-            // --- SMART BATTERY SAVER (Updated for iOS Background Play) ---
+            // --- SMART BATTERY SAVER ---
             // Suspends the heavy Web Audio context when the tab is hidden to save mobile battery, 
             // BUT only if music and timers are paused so background listening still works!
             document.addEventListener('visibilitychange', () => {
                 if (document.hidden) {
-                    // Only suspend if NOTHING is happening. 
                     if (!isPlaying && !isTimerRunning && audioCtx && audioCtx.state === 'running') {
                         audioCtx.suspend();
                     }
                 } else {
-                    // Always ensure audio context wakes up when coming back to the app
-                    if (audioCtx && audioCtx.state === 'suspended') {
+                    if ((isPlaying || isTimerRunning) && audioCtx && audioCtx.state === 'suspended') {
                         audioCtx.resume();
                     }
                 }
@@ -1289,7 +1292,7 @@
                 const factor = 0.1 + (0.9 * (steps/10));
                 
                 audio.volume = originalVols.main * factor;
-                if (mainAudioNode) mainAudioNode.gain.value = originalVols.main * factor;
+                // Removed mainAudioNode dependency
 
                 if (sfx.rain) sfx.rain.volume = originalVols.rain * factor;
                 if (sfxNodes.rain) sfxNodes.rain.gain.value = originalVols.rain * factor;
@@ -1318,7 +1321,7 @@
                             const inFactor = 0.1 + (0.9 * (inSteps/10));
                             
                             audio.volume = originalVols.main * inFactor;
-                            if (mainAudioNode) mainAudioNode.gain.value = originalVols.main * inFactor;
+                            // Removed mainAudioNode dependency
 
                             if (sfx.rain) sfx.rain.volume = originalVols.rain * inFactor;
                             if (sfxNodes.rain) sfxNodes.rain.gain.value = originalVols.rain * inFactor;
@@ -1704,10 +1707,9 @@
             resumeWebAudio();
             volume = parseFloat(val);
             
-            // REDUNDANCY SAFETY: We set BOTH the HTML element volume and the WebAudio gain node.
-            // WebAudio overrides the HTML element, but keeping both synced prevents sudden loud bursts if the audio context resets.
+            // REDUNDANCY SAFETY: We now ONLY set the HTML element volume.
             audio.volume = volume;
-            if (mainAudioNode) mainAudioNode.gain.value = volume;
+            // Removed mainAudioNode.gain.value to fix iOS Lock Screen Bug
             
             if (volumeBar) volumeBar.style.width = `${volume * 100}%`;
             
@@ -1731,7 +1733,6 @@
             sfxVolumes[type] = vol; 
             const finalVol = vol; // Removed dampening multiplier
             
-            // REDUNDANCY SAFETY (Same as main volume)
             sfx[type].volume = finalVol; 
             if (sfxNodes[type]) sfxNodes[type].gain.value = finalVol;
             
@@ -1796,4 +1797,3 @@
     </script>
 </body>
 </html>
-```eof
