@@ -74,6 +74,7 @@
         }
         .eq-bar {
             animation: bounce-eq 1s ease-in-out infinite;
+            width: 4px;
         }
         .eq-bar:nth-child(1) { animation-delay: 0ms; }
         .eq-bar:nth-child(2) { animation-delay: 150ms; }
@@ -227,6 +228,25 @@
                 <span id="dim-icon" class="material-symbols-rounded" style="font-size: 18px;">dark_mode</span>
                 <span class="text-sm font-medium hidden xl:block ml-2">Dim</span>
             </button>
+
+            <!-- Sleep Timer -->
+            <div class="relative z-[200] order-4 md:order-2 md:ml-3 shrink-0">
+                <button id="sleep-btn" onclick="toggleSleepMenu()" class="p-2 xl:px-4 transition-colors rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md flex items-center justify-center w-10 h-10 xl:w-auto xl:h-auto ui-panel" title="Sleep Timer">
+                    <span id="sleep-icon" class="material-symbols-rounded" style="font-size: 18px;">bedtime</span>
+                    <span id="sleep-label" class="text-sm font-medium hidden xl:block ml-2">Sleep</span>
+                </button>
+                <div id="sleep-dropdown" class="absolute top-full left-0 mt-3 w-48 bg-gray-800/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-3 hidden flex-col gap-1">
+                    <p class="text-xs text-white/50 mb-2 px-1">Stop music after...</p>
+                    <button onclick="startSleepTimer(15)" class="text-sm text-white/80 hover:text-white hover:bg-white/10 rounded-lg px-3 py-2 text-left transition-colors">15 minutes</button>
+                    <button onclick="startSleepTimer(30)" class="text-sm text-white/80 hover:text-white hover:bg-white/10 rounded-lg px-3 py-2 text-left transition-colors">30 minutes</button>
+                    <button onclick="startSleepTimer(45)" class="text-sm text-white/80 hover:text-white hover:bg-white/10 rounded-lg px-3 py-2 text-left transition-colors">45 minutes</button>
+                    <button onclick="startSleepTimer(60)" class="text-sm text-white/80 hover:text-white hover:bg-white/10 rounded-lg px-3 py-2 text-left transition-colors">60 minutes</button>
+                    <button onclick="startSleepTimer(90)" class="text-sm text-white/80 hover:text-white hover:bg-white/10 rounded-lg px-3 py-2 text-left transition-colors">90 minutes</button>
+                    <div class="border-t border-white/10 mt-1 pt-1">
+                        <button onclick="cancelSleepTimer()" class="text-sm text-red-400 hover:text-red-300 hover:bg-white/10 rounded-lg px-3 py-2 text-left transition-colors w-full">Cancel timer</button>
+                    </div>
+                </div>
+            </div>
 
             <div class="hidden md:block flex-1 order-2"></div>
 
@@ -688,6 +708,11 @@
         // Bulletproof background tracker
         let activeBgSrc = '';
         let currentScenery = 0;
+
+        // Sleep Timer State
+        let sleepTimerInterval;
+        let sleepTimerActive = false;
+        let sleepTimerSeconds = 0;
 
         // Pomodoro State
         let timerInterval;
@@ -1282,6 +1307,115 @@
             }
         }
 
+        // --- SLEEP TIMER ---
+        function toggleSleepMenu() {
+            const dropdown = document.getElementById('sleep-dropdown');
+            if (dropdown.classList.contains('hidden')) {
+                dropdown.classList.remove('hidden');
+                dropdown.classList.add('flex');
+            } else {
+                dropdown.classList.add('hidden');
+                dropdown.classList.remove('flex');
+            }
+        }
+
+        function startSleepTimer(minutes) {
+            cancelSleepTimer();
+            sleepTimerActive = true;
+            sleepTimerSeconds = minutes * 60;
+
+            const sleepIcon = document.getElementById('sleep-icon');
+            const sleepLabel = document.getElementById('sleep-label');
+            if (sleepIcon) sleepIcon.textContent = 'bedtime';
+            if (sleepLabel) sleepLabel.textContent = formatSleepTime(sleepTimerSeconds);
+
+            showToast("Sleep Timer Set", `Music will stop in ${minutes} minutes.`, "bedtime");
+
+            sleepTimerInterval = setInterval(() => {
+                sleepTimerSeconds--;
+                const sleepLabel = document.getElementById('sleep-label');
+                if (sleepLabel) sleepLabel.textContent = formatSleepTime(sleepTimerSeconds);
+
+                if (sleepTimerSeconds <= 0) {
+                    clearInterval(sleepTimerInterval);
+                    sleepTimerActive = false;
+                    executeSleepFade();
+                }
+            }, 1000);
+
+            // Close the dropdown
+            const dropdown = document.getElementById('sleep-dropdown');
+            if (dropdown) {
+                dropdown.classList.add('hidden');
+                dropdown.classList.remove('flex');
+            }
+        }
+
+        function cancelSleepTimer() {
+            clearInterval(sleepTimerInterval);
+            sleepTimerActive = false;
+            sleepTimerSeconds = 0;
+            const sleepLabel = document.getElementById('sleep-label');
+            if (sleepLabel) sleepLabel.textContent = 'Sleep';
+            const dropdown = document.getElementById('sleep-dropdown');
+            if (dropdown) {
+                dropdown.classList.add('hidden');
+                dropdown.classList.remove('flex');
+            }
+        }
+
+        function formatSleepTime(seconds) {
+            const m = Math.floor(seconds / 60);
+            const s = seconds % 60;
+            return `${m}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function executeSleepFade() {
+            showToast("Good Night", "Fading out music...", "bedtime");
+            const originalVolume = volume;
+            let steps = 0;
+            const totalSteps = 50; // 5 seconds at 100ms intervals
+
+            const fadeOut = setInterval(() => {
+                steps++;
+                const factor = 1 - (steps / totalSteps);
+                audio.volume = originalVolume * factor;
+
+                if (sfx.rain) sfx.rain.volume = sfxVolumes.rain * factor;
+                if (sfx.fire) sfx.fire.volume = sfxVolumes.fire * factor;
+                if (sfx.cafe) sfx.cafe.volume = sfxVolumes.cafe * factor;
+
+                if (steps >= totalSteps) {
+                    clearInterval(fadeOut);
+                    // Pause everything
+                    audio.pause();
+                    Object.values(sfx).forEach(sound => { if (sound) sound.pause(); });
+                    isPlaying = false;
+                    if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused';
+                    updatePlayStateUI();
+                    // Restore volumes silently so sliders are correct next time
+                    audio.volume = originalVolume;
+                    if (sfx.rain) sfx.rain.volume = sfxVolumes.rain;
+                    if (sfx.fire) sfx.fire.volume = sfxVolumes.fire;
+                    if (sfx.cafe) sfx.cafe.volume = sfxVolumes.cafe;
+                    const sleepLabel = document.getElementById('sleep-label');
+                    if (sleepLabel) sleepLabel.textContent = 'Sleep';
+                }
+            }, 100);
+        }
+
+        // Close sleep dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('sleep-dropdown');
+            const btn = document.getElementById('sleep-btn');
+            if (dropdown && !dropdown.classList.contains('hidden')) {
+                if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                    dropdown.classList.remove('flex');
+                }
+            }
+        });
+
         function formatTimer(seconds) {
             const m = Math.floor(seconds / 60);
             const s = seconds % 60;
@@ -1384,8 +1518,7 @@
                     chime.crossOrigin = "anonymous";
                     chime.volume = 0.8;
                     chime.play().catch(e => {
-                        console.warn("Could not play local chime. Falling back to CDN", e);
-                        new Audio('https://cdn.freesound.org/previews/411/411088_5121236-hq.mp3').play();
+                        console.warn("Could not play local chime.", e);
                     });
                     
                     setTimeout(() => {
