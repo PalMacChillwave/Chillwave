@@ -730,6 +730,10 @@
         // --- WEB AUDIO API (iOS VOLUME FIX) ---
         let audioCtx;
         let sfxNodes = {};
+        let analyserNode;
+        let analyserSource;
+        let eqAnimationFrame;
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
         function resumeWebAudio() {
             if (!audioCtx) {
@@ -740,6 +744,21 @@
 
                     // CRITICAL iOS FIX: We NO LONGER route the main `audio` tag through the WebAudio API.
                     // By leaving it untethered, native HTML5 background audio works perfectly on locked iPhones.
+
+                    // DESKTOP ONLY: Connect main audio to an AnalyserNode for the EQ visualizer.
+                    // We deliberately do NOT connect it to the destination — audio plays natively,
+                    // the analyser just taps in to read frequency data without affecting output.
+                    if (!isMobile) {
+                        try {
+                            analyserSource = audioCtx.createMediaElementSource(audio);
+                            analyserNode = audioCtx.createAnalyser();
+                            analyserNode.fftSize = 64;
+                            analyserSource.connect(analyserNode);
+                            analyserSource.connect(audioCtx.destination);
+                        } catch(e) {
+                            console.warn("Could not create analyser", e);
+                        }
+                    }
 
                     // SFX Interceptors (Only background noise uses WebAudio now)
                     ['rain', 'fire', 'cafe'].forEach(type => {
@@ -1798,13 +1817,53 @@
 
             if (isPlaying) {
                 currentCoverContainer.classList.add('spin-slow');
+                if (!isMobile) startEQVisualizer();
             } else {
                 currentCoverContainer.classList.remove('spin-slow');
+                stopEQVisualizer();
             }
             
             updateActiveStationUI(); 
             updateActiveTrackUI(); 
             updateDocumentTitle();
+        }
+
+        // --- EQ VISUALIZER (Desktop only) ---
+        function startEQVisualizer() {
+            stopEQVisualizer();
+            if (!analyserNode || isMobile) return;
+
+            const dataArray = new Uint8Array(analyserNode.frequencyBinCount);
+
+            function draw() {
+                eqAnimationFrame = requestAnimationFrame(draw);
+                analyserNode.getByteFrequencyData(dataArray);
+
+                const binCount = dataArray.length;
+                // Sample low, mid, high frequency buckets
+                const low  = dataArray[Math.floor(binCount * 0.1)];
+                const mid  = dataArray[Math.floor(binCount * 0.4)];
+                const high = dataArray[Math.floor(binCount * 0.75)];
+
+                const toHeight = val => Math.max(4, Math.min(16, (val / 255) * 16));
+
+                const bar0 = document.getElementById('eq-bar-0');
+                const bar1 = document.getElementById('eq-bar-1');
+                const bar2 = document.getElementById('eq-bar-2');
+
+                if (bar0) bar0.style.height = toHeight(low) + 'px';
+                if (bar1) bar1.style.height = toHeight(mid) + 'px';
+                if (bar2) bar2.style.height = toHeight(high) + 'px';
+            }
+
+            draw();
+        }
+
+        function stopEQVisualizer() {
+            if (eqAnimationFrame) {
+                cancelAnimationFrame(eqAnimationFrame);
+                eqAnimationFrame = null;
+            }
         }
 
         // Runs ONLY ONCE during startup. Creates the buttons.
@@ -1829,11 +1888,27 @@
                 
                 if (isActive) {
                     btn.className = "flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 backdrop-blur-md border shrink-0 bg-white/20 border-white/30 text-white shadow-lg";
-                    eq.innerHTML = isPlaying ? `
-                        <div class="w-1 bg-[var(--accent)] rounded-t-sm eq-bar shadow-[0_0_5px_var(--accent)]"></div>
-                        <div class="w-1 bg-[var(--accent)] rounded-t-sm eq-bar shadow-[0_0_5px_var(--accent)]"></div>
-                        <div class="w-1 bg-[var(--accent)] rounded-t-sm eq-bar shadow-[0_0_5px_var(--accent)]"></div>
-                    ` : '';
+                    if (isPlaying) {
+                        if (isMobile) {
+                            // Mobile: use CSS animation
+                            eq.innerHTML = `
+                                <div class="w-1 bg-[var(--accent)] rounded-t-sm eq-bar shadow-[0_0_5px_var(--accent)]"></div>
+                                <div class="w-1 bg-[var(--accent)] rounded-t-sm eq-bar shadow-[0_0_5px_var(--accent)]"></div>
+                                <div class="w-1 bg-[var(--accent)] rounded-t-sm eq-bar shadow-[0_0_5px_var(--accent)]"></div>
+                            `;
+                        } else {
+                            // Desktop: plain divs, heights driven by JS visualizer
+                            eq.innerHTML = `
+                                <div id="eq-bar-0" style="width:4px;height:4px;background:var(--accent);border-radius:2px 2px 0 0;box-shadow:0 0 5px var(--accent);transition:height 0.05s;"></div>
+                                <div id="eq-bar-1" style="width:4px;height:4px;background:var(--accent);border-radius:2px 2px 0 0;box-shadow:0 0 5px var(--accent);transition:height 0.05s;"></div>
+                                <div id="eq-bar-2" style="width:4px;height:4px;background:var(--accent);border-radius:2px 2px 0 0;box-shadow:0 0 5px var(--accent);transition:height 0.05s;"></div>
+                            `;
+                            startEQVisualizer();
+                        }
+                    } else {
+                        eq.innerHTML = '';
+                        stopEQVisualizer();
+                    }
                 } else {
                     btn.className = "flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 backdrop-blur-md border shrink-0 bg-white/5 border-transparent text-white/60 hover:bg-white/10 hover:text-white";
                     eq.innerHTML = '';
