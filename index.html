@@ -665,10 +665,11 @@
 
         // --- SCENERY DATA ---
         const SCENERY = [
-            { label: 'Station Default', src: null },
+            { label: 'Station Default', src: null, video: null },
             ...STATIONS.map(station => ({
                 label: station.name,
-                src: station.fallbackBg
+                src: station.fallbackBg,
+                video: station.bg
             }))
         ];
 
@@ -1069,20 +1070,28 @@
         function setScenery(idx) {
             currentScenery = idx;
             const scene = SCENERY[idx];
-            if (scene.src) {
+            if (scene.video) {
+                // Apply the station's video background
+                activeBgSrc = scene.video;
+                bgImage.style.backgroundImage = `url('${scene.src}')`;
+                bgImage.classList.remove('opacity-0');
+                bgVideo.classList.add('opacity-0');
+                bgVideo.src = scene.video;
+                bgVideo.play().catch(e => {});
+                bgVideo.onloadeddata = () => {
+                    if (activeBgSrc === scene.video) {
+                        bgVideo.classList.remove('opacity-0');
+                        bgImage.classList.add('opacity-0');
+                    }
+                };
+            } else if (scene.src) {
+                // Static image fallback
                 activeBgSrc = scene.src;
-                if (scene.src.match(/\.(mp4|webm)$/i)) {
-                    bgVideo.src = scene.src;
-                    bgVideo.play().catch(e => {});
-                    bgVideo.classList.remove('opacity-0');
-                    bgImage.classList.add('opacity-0');
-                } else {
-                    bgImage.style.backgroundImage = `url('${scene.src}')`;
-                    bgImage.classList.remove('opacity-0');
-                    bgVideo.classList.add('opacity-0');
-                }
+                bgImage.style.backgroundImage = `url('${scene.src}')`;
+                bgImage.classList.remove('opacity-0');
+                bgVideo.classList.add('opacity-0');
             } else {
-                // Reset to station default
+                // Reset to current station default
                 const station = STATIONS[currentStationIdx];
                 activeBgSrc = station.bg;
                 bgImage.style.backgroundImage = `url('${station.fallbackBg}')`;
