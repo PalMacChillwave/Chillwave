@@ -663,6 +663,16 @@
             });
         });
 
+        // --- SCENERY DATA ---
+        const SCENERY = [
+            { label: 'Station Default', src: null },
+            { label: 'Rainy Window', src: 'https://media.giphy.com/media/l0HlBO7eyXzSZkJri/giphy.gif' },
+            { label: 'Cozy Fireplace', src: 'https://media.giphy.com/media/WoWm8YzFQJg28/giphy.gif' },
+            { label: 'Night City', src: 'https://media.giphy.com/media/3o7TKsQ8MoUCf3RP8k/giphy.gif' },
+            { label: 'Cherry Blossoms', src: 'https://media.giphy.com/media/xT9IgDEI1iZIn1JMEU/giphy.gif' },
+            { label: 'Snowy Cabin', src: 'https://media.giphy.com/media/3oEjHLzm4BCF8zfPy0/giphy.gif' },
+        ];
+
         // --- STATE ---
         let currentStationIdx = 0; 
         let currentTrackIdx = 0;
@@ -676,7 +686,8 @@
         let zenModeActive = false;
         
         // Bulletproof background tracker
-        let activeBgSrc = ''; 
+        let activeBgSrc = '';
+        let currentScenery = 0;
 
         // Pomodoro State
         let timerInterval;
@@ -1040,6 +1051,76 @@
                 sceneryModal.classList.add('hidden');
                 sceneryModal.classList.remove('flex');
             }
+        }
+
+        function renderSceneryGrid() {
+            const grid = document.getElementById('scenery-grid');
+            if (!grid) return;
+            grid.innerHTML = SCENERY.map((scene, idx) => `
+                <button onclick="setScenery(${idx})" class="relative rounded-xl overflow-hidden border-2 transition-all duration-200 aspect-video ${currentScenery === idx ? 'border-[var(--accent)] shadow-[0_0_10px_var(--accent)]' : 'border-white/10 hover:border-white/40'}">
+                    ${scene.src
+                        ? `<img src="${scene.src}" class="w-full h-full object-cover" alt="${scene.label}" />`
+                        : `<div class="w-full h-full bg-black/40 flex items-center justify-center"><span class="material-symbols-rounded text-white/50">refresh</span></div>`
+                    }
+                    <div class="absolute bottom-0 left-0 right-0 bg-black/60 text-xs text-white text-center py-1 truncate px-1">${scene.label}</div>
+                </button>
+            `).join('');
+        }
+
+        function setScenery(idx) {
+            currentScenery = idx;
+            const scene = SCENERY[idx];
+            if (scene.src) {
+                activeBgSrc = scene.src;
+                if (scene.src.match(/\.(mp4|webm)$/i)) {
+                    bgVideo.src = scene.src;
+                    bgVideo.play().catch(e => {});
+                    bgVideo.classList.remove('opacity-0');
+                    bgImage.classList.add('opacity-0');
+                } else {
+                    bgImage.style.backgroundImage = `url('${scene.src}')`;
+                    bgImage.classList.remove('opacity-0');
+                    bgVideo.classList.add('opacity-0');
+                }
+            } else {
+                // Reset to station default
+                const station = STATIONS[currentStationIdx];
+                activeBgSrc = station.bg;
+                bgImage.style.backgroundImage = `url('${station.fallbackBg}')`;
+                bgImage.classList.remove('opacity-0');
+                bgVideo.classList.add('opacity-0');
+                if (station.bg.match(/\.(mp4|webm)$/i)) {
+                    bgVideo.src = station.bg;
+                    bgVideo.play().catch(e => {});
+                    bgVideo.onloadeddata = () => {
+                        if (activeBgSrc === station.bg) {
+                            bgVideo.classList.remove('opacity-0');
+                            bgImage.classList.add('opacity-0');
+                        }
+                    };
+                }
+            }
+            renderSceneryGrid();
+            toggleSceneryBox();
+        }
+
+        function applyCustomUrl(e) {
+            e.preventDefault();
+            const url = document.getElementById('custom-bg-input').value.trim();
+            if (!url) return;
+            currentScenery = -1;
+            activeBgSrc = url;
+            if (url.match(/\.(mp4|webm)$/i)) {
+                bgVideo.src = url;
+                bgVideo.play().catch(e => {});
+                bgVideo.classList.remove('opacity-0');
+                bgImage.classList.add('opacity-0');
+            } else {
+                bgImage.style.backgroundImage = `url('${url}')`;
+                bgImage.classList.remove('opacity-0');
+                bgVideo.classList.add('opacity-0');
+            }
+            toggleSceneryBox();
         }
 
         function toggleTodoBox() {
