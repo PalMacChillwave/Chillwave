@@ -666,11 +666,10 @@
         // --- SCENERY DATA ---
         const SCENERY = [
             { label: 'Station Default', src: null },
-            { label: 'Rainy Window', src: 'https://media.giphy.com/media/l0HlBO7eyXzSZkJri/giphy.gif' },
-            { label: 'Cozy Fireplace', src: 'https://media.giphy.com/media/WoWm8YzFQJg28/giphy.gif' },
-            { label: 'Night City', src: 'https://media.giphy.com/media/3o7TKsQ8MoUCf3RP8k/giphy.gif' },
-            { label: 'Cherry Blossoms', src: 'https://media.giphy.com/media/xT9IgDEI1iZIn1JMEU/giphy.gif' },
-            { label: 'Snowy Cabin', src: 'https://media.giphy.com/media/3oEjHLzm4BCF8zfPy0/giphy.gif' },
+            ...STATIONS.map(station => ({
+                label: station.name,
+                src: station.fallbackBg
+            }))
         ];
 
         // --- STATE ---
