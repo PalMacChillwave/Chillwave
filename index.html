@@ -726,6 +726,7 @@
         let sfxPreviousVolumes = { rain: 0.5, fire: 0.5, cafe: 0.5 }; // Remembers volumes
         let tapTimeout; // For the tap animation
         let todos = []; // Dynamic to-do list array
+        let savedTrackTime = 0; // Resume position on reload
 
         // --- WEB AUDIO API (iOS VOLUME FIX) ---
         let audioCtx;
@@ -960,6 +961,7 @@
             // BUT only if music and timers are paused so background listening still works!
             document.addEventListener('visibilitychange', () => {
                 if (document.hidden) {
+                    saveSettings(); // Save position when tab is hidden
                     if (!isPlaying && !isTimerRunning && audioCtx && audioCtx.state === 'running') {
                         audioCtx.suspend();
                     }
@@ -968,6 +970,11 @@
                         audioCtx.resume();
                     }
                 }
+            });
+
+            // Save position when tab is closed
+            window.addEventListener('beforeunload', () => {
+                saveSettings();
             });
         }
 
@@ -1046,6 +1053,7 @@
                 savedBreak: breakPreset,
                 savedStation: currentStationIdx,
                 savedTrack: currentTrackIdx,
+                savedTime: (audio && isFinite(audio.currentTime)) ? audio.currentTime : 0,
                 savedShuffle: isShuffle,
                 savedTodos: todos
             };
@@ -1064,6 +1072,7 @@
                     if (parsed.savedBreak !== undefined) breakPreset = parsed.savedBreak;
                     if (parsed.savedStation !== undefined) currentStationIdx = parsed.savedStation;
                     if (parsed.savedTrack !== undefined) currentTrackIdx = parsed.savedTrack;
+                    if (parsed.savedTime !== undefined) savedTrackTime = parsed.savedTime;
                     if (parsed.savedShuffle !== undefined) isShuffle = parsed.savedShuffle;
                     if (parsed.savedTodos !== undefined) todos = parsed.savedTodos;
                 } catch(e) {
@@ -1711,6 +1720,15 @@
             usingFallback = false;
             
             audio.src = track.url;
+
+            // Restore saved position on first load only, then clear it
+            if (savedTrackTime > 0) {
+                audio.addEventListener('loadedmetadata', function seekOnce() {
+                    audio.currentTime = savedTrackTime;
+                    savedTrackTime = 0;
+                    audio.removeEventListener('loadedmetadata', seekOnce);
+                });
+            }
             
             // Apply robust fallback for the bottom player image
             currentCover.onerror = function() {
