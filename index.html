@@ -225,17 +225,18 @@
 
             <!-- Dim Lights -->
             <button onclick="toggleDimMode()" class="p-2 xl:px-4 transition-colors rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md flex items-center justify-center w-10 h-10 xl:w-auto xl:h-auto order-4 md:order-2 md:ml-3 shrink-0 ui-panel" title="Dim Lights">
-                <span id="dim-icon" class="material-symbols-rounded" style="font-size: 18px;">mode_night</span>
+                <span id="dim-icon" class="material-symbols-rounded" style="font-size: 18px;">dark_mode</span>
                 <span class="text-sm font-medium hidden xl:block ml-2">Dim</span>
             </button>
 
             <!-- Sleep Timer -->
             <div class="relative z-[200] order-4 md:order-2 md:ml-3 shrink-0">
                 <button id="sleep-btn" onclick="toggleSleepMenu()" class="p-2 xl:px-4 transition-colors rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md flex items-center justify-center w-10 h-10 xl:w-auto xl:h-auto ui-panel" title="Sleep Timer">
-                    <span id="sleep-icon" class="material-symbols-rounded" style="font-size: 18px;">nights_stay</span>
+                    <span id="sleep-icon" class="material-symbols-rounded" style="font-size: 18px;">bedtime</span>
                     <span id="sleep-label" class="text-sm font-medium hidden xl:block ml-2">Sleep</span>
                 </button>
                 <div id="sleep-dropdown" class="absolute top-full left-0 mt-3 w-48 bg-gray-800/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-3 hidden flex-col gap-1">
+                    <p class="text-xs text-white/50 mb-2 px-1">Stop music after...</p>
                     <button onclick="startSleepTimer(15)" class="text-sm text-white/80 hover:text-white hover:bg-white/10 rounded-lg px-3 py-2 text-left transition-colors">15 minutes</button>
                     <button onclick="startSleepTimer(30)" class="text-sm text-white/80 hover:text-white hover:bg-white/10 rounded-lg px-3 py-2 text-left transition-colors">30 minutes</button>
                     <button onclick="startSleepTimer(45)" class="text-sm text-white/80 hover:text-white hover:bg-white/10 rounded-lg px-3 py-2 text-left transition-colors">45 minutes</button>
@@ -248,6 +249,12 @@
             </div>
 
             <div class="hidden md:block flex-1 order-2"></div>
+
+            <!-- Suggest Song -->
+            <a href="https://docs.google.com/forms/d/1irHZlDMjLKFtAl78hosq9uZ94vx2_xDlpA1LNKCx8j8/viewform" target="_blank" class="p-2 xl:px-4 transition-colors rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md flex items-center justify-center w-10 h-10 xl:w-auto xl:h-auto order-4 md:order-3 md:ml-3 shrink-0 ui-panel" title="Suggest a song">
+                <span class="material-symbols-rounded" style="font-size: 18px;">lightbulb</span>
+                <span class="hidden xl:block text-sm font-medium ml-2">Suggest</span>
+            </a>
 
             <!-- Notes Toggle -->
             <div class="relative z-[200] order-4 md:order-3 md:ml-3 shrink-0">
@@ -676,10 +683,34 @@
             });
         });
 
+        // --- RANDOM STATION (built dynamically from all stations) ---
+        (function buildRandomStation() {
+            // Gather all tracks from all stations, tagging each with its source station's cover
+            const allTracks = STATIONS.flatMap(station =>
+                station.tracks.map(track => ({ ...track }))
+            );
+            // Fisher-Yates shuffle
+            for (let i = allTracks.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [allTracks[i], allTracks[j]] = [allTracks[j], allTracks[i]];
+            }
+            STATIONS.push({
+                id: 'random',
+                name: 'Mix',
+                icon: 'shuffle',
+                bg: './assets/chill-bg.mp4',
+                fallbackBg: './assets/chill-thumb.jpg',
+                albumArt: './assets/chill-cover.jpg',
+                color: 'bg-gradient-to-br from-purple-900/60 to-pink-900/60',
+                hex: '#c084fc',
+                tracks: allTracks
+            });
+        })();
+
         // --- SCENERY DATA ---
         const SCENERY = [
             { label: 'Station Default', src: null, video: null },
-            ...STATIONS.map(station => ({
+            ...STATIONS.filter(s => s.id !== 'random').map(station => ({
                 label: station.name,
                 src: station.fallbackBg,
                 video: station.bg
